@@ -1,16 +1,18 @@
-import { PrismaClient } from '@prisma/client';
+// this file is used to test the connection to the database
 
-const prisma = new PrismaClient();
+// import { PrismaClient } from '@prisma/client';
 
-async function main() {
-    try {
-        await prisma.$connect();
-        console.log('Connection to the database was successful!');
-    } catch (e) {
-        console.error('Failed to connect to the database', e);
-    } finally {
-        await prisma.$disconnect();
-    }
-}
+// const prisma = new PrismaClient();
 
-main();
+// async function main() {
+//     try {
+//         await prisma.$connect();
+//         console.log('Connection to the database was successful!');
+//     } catch (e) {
+//         console.error('Failed to connect to the database', e);
+//     } finally {
+//         await prisma.$disconnect();
+//     }
+// }
+
+// main();
