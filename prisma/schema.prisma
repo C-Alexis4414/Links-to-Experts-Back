@@ -18,7 +18,7 @@ model User {
   First_name    String
   Last_Name     String
   Password      String
-  Email_address String
+  Email_address String  @unique
   Is_Youtuber   Boolean
   Is_Pro        Boolean
 }
