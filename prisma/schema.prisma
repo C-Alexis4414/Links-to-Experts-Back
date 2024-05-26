@@ -14,11 +14,11 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  Firt_name String
-  Last_Name String
-  Password String
+  id            Int     @id @default(autoincrement())
+  First_name    String
+  Last_Name     String
+  Password      String
   Email_address String
-  Is_Youtuber Boolean
-  Is_Pro Boolean
+  Is_Youtuber   Boolean
+  Is_Pro        Boolean
 }
