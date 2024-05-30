@@ -3,7 +3,9 @@ import { UserService } from '../service/user.service';
 import { UserDto } from '../dto/getUser.dto';
 import { UpdateUserDto } from '../dto/updateUer.dto';
 import { CreateUserDto } from '../dto/createUser.dto';
+import { ApiSecurity } from '@nestjs/swagger';
 
+@ApiSecurity('basic')
 @Controller('users')
 export class UserController {
     constructor(private readonly userService: UserService) { }
