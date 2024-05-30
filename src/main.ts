@@ -14,6 +14,11 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
+  const options = new DocumentBuilder().addSecurity('basic', {
+    type: 'http',
+    scheme: 'basic',
+  });
+
   app.enableCors();
   await app.listen(3000);
 }
