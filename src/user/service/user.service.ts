@@ -16,9 +16,15 @@ export class UserService {
         return await this.prisma.user.findUnique({ where: { id: Number(id) } });
     }
 
-    async signIn(userName: string, password: string): Promise<UserType[]> {
-        return await this.prisma.user.findMany({ where: { First_name: userName, Password: password } });
+    async signIn(userName: string, password: string): Promise<UserType> {
+        const user = await this.prisma.user.findFirst({ where: { First_name: userName, Password: password } });
+        return user
     }
+    async findName(userName: string): Promise<UserType> {
+        const user = await this.prisma.user.findFirst({ where: { First_name: userName } });
+        return user
+    }
+
 
     async createUser(createUserDto: CreateUserDto): Promise<UserType> {
         const newUser = await this.prisma.user.create({
