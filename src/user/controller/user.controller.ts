@@ -35,8 +35,15 @@ export class UserController {
     }
 
     @Delete('delete/:id')
-    async deleteUser(@Param('id') id: number): Promise<void> {
+    async deleteUser(@Param('id') id: number): Promise<any> {
         const deleteUser = await this.userService.deleteUser(Number(id));
+        return deleteUser;
+    }
+
+    @Get('getName/:name')
+    async getName(@Param('name') name: string): Promise<UserDto> {
+        const getName = await this.userService.getName(name);
+        return getName;
     }
 }
 
