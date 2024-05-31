@@ -46,8 +46,14 @@ export class UserService {
 
     }
 
-    async deleteUser(id: number): Promise<void> {
+    async deleteUser(id: number): Promise<any> {
         const deleteUser = await this.prisma.user.delete({ where: { id: id } });
+        return deleteUser;
+    }
+
+    async getName(name: string): Promise<UserType> {
+        const getName = await this.prisma.user.findFirst({ where: { First_name: name } });
+        return getName;
     }
 }
 
