@@ -1,5 +1,6 @@
 // TOOLS
-import { Body, Controller, Post, Get, Request, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Get, Request, HttpCode, HttpStatus, UseGuards, HttpException } from '@nestjs/common';
+// import { AuthGuard } from '@nestjs/passport';
 import { AuthGuard } from './auth.guard';
 
 // SERVICES
@@ -8,17 +9,25 @@ import { AuthService } from './auth.service';
 // DTO
 import { signInDto } from './auth.dto';
 
+
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) { }
+    constructor(
+        private readonly authService: AuthService
+    ) { }
 
-    @HttpCode(HttpStatus.OK)
+    // @HttpCode(HttpStatus.OK)
+    // @UseGuards(AuthGuard('local'))
+    @UseGuards(AuthGuard)
     @Post('login')
     async signIn(@Body() signInDto: signInDto) {
-        return await this.authService.signInAuth(signInDto.First_name, signInDto.Password);
+        const user = await this.authService.validateUser(signInDto.First_name, signInDto.Password);
+        if (!user) throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+        return user
+
+
     }
 
-    @UseGuards(AuthGuard)
     @Get('profile')
     async getProfile(@Request() req) {
         return await req.user;

@@ -12,6 +12,10 @@ export class CreateUserDto {
 
     @ApiProperty()
     @IsString()
+    Username: string;
+
+    @ApiProperty()
+    @IsString()
     Password: string;
 
     @ApiProperty()
@@ -25,4 +29,13 @@ export class CreateUserDto {
     @ApiProperty()
     @IsBoolean()
     Is_Pro: boolean;
+
+    @ApiProperty()
+    @IsString()
+    Salt: string;
+
+
+    @ApiProperty()
+    @IsString()
+    Role: string;
 }

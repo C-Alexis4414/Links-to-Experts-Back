@@ -16,7 +16,7 @@ export class UserService {
         return await this.prisma.user.findUnique({ where: { id: Number(id) } });
     }
 
-    async signIn(userName: string, password: string): Promise<UserType> {
+    async signInUser(userName: string, password: string): Promise<UserType> {
         const user = await this.prisma.user.findFirst({ where: { First_name: userName, Password: password } });
         return user
     }

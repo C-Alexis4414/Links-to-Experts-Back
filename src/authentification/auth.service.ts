@@ -11,8 +11,8 @@ export class AuthService {
     private readonly jwtService: JwtService
   ) { }
 
-  async signInAuth(username: string, password: string): Promise<any> {
-    const user = await this.userService.signIn(username, password);
+  async validateUser(username: string, password: string): Promise<any> {
+    const user = await this.userService.signInUser(username, password);
     if (!user) {
       throw new UnauthorizedException();
     }

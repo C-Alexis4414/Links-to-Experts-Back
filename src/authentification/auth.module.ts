@@ -1,5 +1,7 @@
 //TOOLS
 import { Module } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
 
 //CONTROLLERS
 import { AuthController } from './auth.controller';
@@ -10,12 +12,16 @@ import { AuthService } from './auth.service';
 //MODULES
 import { UserModule } from 'src/user/user.module';
 
-//JWT
-import { JwtModule } from '@nestjs/jwt';
+//TEST
+// import { LocalStrategy } from './strategies/local.strategy';
+
 import { jwtConstants } from './auth.constant';
+
+
 
 @Module({
   imports: [UserModule,
+    PassportModule,
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
