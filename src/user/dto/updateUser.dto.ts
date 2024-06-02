@@ -1,7 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsBoolean, IsEmail, IsOptional } from 'class-validator';
+import { IsString, IsBoolean, IsEmail, IsOptional, IsDate } from 'class-validator';
 
 export class UpdateUserDto {
+
+    @ApiProperty()
+    @IsOptional()
+    @IsString()
+    id?: number;
+
     @ApiProperty()
     @IsOptional()
     @IsString()
@@ -36,4 +42,13 @@ export class UpdateUserDto {
     @IsOptional()
     @IsBoolean()
     Is_Pro?: boolean;
+
+    
+    @ApiProperty()
+    @IsDate()
+    createdAt: Date;
+
+    @ApiProperty()
+    @IsDate()
+    updatedAt: Date;
 }

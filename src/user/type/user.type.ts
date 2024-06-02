@@ -1,3 +1,4 @@
+import { Role } from "src/enum/role.enum";
 
 export type UserType = {
     id: number;
@@ -9,5 +10,7 @@ export type UserType = {
     Email_address: string;
     Is_Youtuber: boolean;
     Is_Pro: boolean;
-    Role: string;
+    Role: Role;
+    createdAt: Date;
+    updatedAt: Date;
 }

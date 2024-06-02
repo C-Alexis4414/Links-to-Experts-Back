@@ -23,7 +23,13 @@ model User {
   Email_address String   @unique
   Is_Youtuber   Boolean
   Is_Pro        Boolean
-  Role          String
+  Role          UserRole @default(USER)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+// TODO : utiliser les enum avec la mtehode prisma orm
+enum UserRole {
+  USER
+  ADMIN
 }

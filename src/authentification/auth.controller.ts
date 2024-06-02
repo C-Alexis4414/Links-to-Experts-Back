@@ -8,6 +8,7 @@ import { AuthService } from './auth.service';
 
 // DTO
 import { signInDto } from './auth.dto';
+import { LogInUserDto } from 'src/user/dto/logInUser.dto';
 
 
 @Controller('auth')
@@ -18,10 +19,10 @@ export class AuthController {
 
     // @HttpCode(HttpStatus.OK)
     // @UseGuards(AuthGuard('local'))
-    @UseGuards(AuthGuard)
+    // @UseGuards(AuthGuard)
     @Post('login')
-    async signIn(@Body() signInDto: signInDto) {
-        const user = await this.authService.validateUser(signInDto.First_name, signInDto.Password);
+    async signIn(@Body() logInData: LogInUserDto) {
+        const user = await this.authService.authenticateUser(logInData);
         if (!user) throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
         return user
 

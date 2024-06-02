@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { UserService } from '../service/user.service';
 import { UserDto } from '../dto/getUser.dto';
-import { UpdateUserDto } from '../dto/updateUer.dto';
-import { CreateUserDto } from '../dto/createUser.dto';
+import { UpdateUserDto } from '../dto/updateUser.dto';
+import { RegisterDto } from '../dto/register.dto';
 import { ApiSecurity } from '@nestjs/swagger';
 
 @ApiSecurity('basic')
@@ -12,17 +12,17 @@ export class UserController {
 
     @Get('getUsers')
     async getUsers(): Promise<UserDto[]> {
-        return this.userService.getUsers();
+        return await this.userService.getUsers();
     }
 
     @Get(':id')
     async getUser(@Param('id') id: number): Promise<UserDto> {
-        return this.userService.getUser(id);
+        return await this.userService.getUser(id);
     }
 
-    @Post('create')
-    async createUser(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
-        const newUser = await this.userService.createUser(createUserDto);
+    @Post('register')
+    async createUser(@Body() createUserDto: RegisterDto): Promise<Partial<UserDto>> {
+        const newUser = await this.userService.registerUser(createUserDto);
         return newUser;
     }
 
@@ -31,7 +31,7 @@ export class UserController {
         @Param('id') id: string,
         @Body() updateUserDto: UpdateUserDto
     ): Promise<UpdateUserDto> {
-        return this.userService.updateUser(Number(id), updateUserDto);
+        return await this.userService.updateUser(Number(id), updateUserDto);
     }
 
     @Delete('delete/:id')

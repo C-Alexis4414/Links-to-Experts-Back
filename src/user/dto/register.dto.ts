@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsBoolean, IsEmail } from 'class-validator';
+import { IsString, IsBoolean, IsEmail, IsEnum, IsDate } from 'class-validator';
+import { Role } from 'src/enum/role.enum';
 
-export class CreateUserDto {
+
+
+export class RegisterDto {
     @ApiProperty()
     @IsString()
     First_name: string;
@@ -31,11 +34,10 @@ export class CreateUserDto {
     Is_Pro: boolean;
 
     @ApiProperty()
-    @IsString()
-    Salt: string;
-
+    @IsDate()
+    createdAt: Date;
 
     @ApiProperty()
-    @IsString()
-    Role: string;
+    @IsDate()
+    updatedAt: Date;
 }
