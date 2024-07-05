@@ -20,18 +20,18 @@ model User {
   email           String         @unique
   is_Youtuber     Boolean        @default(true)
   is_Professional Boolean        @default(true)
-  subscription    Subscription[]
+  subscriptions   Subscription[] @relation("subscription") // Utilisateurs que cet utilisateur suit
+  followers       Subscription[] @relation("follow") // Utilisateurs qui suivent cet utilisateur
   likes           Liked[]
   professional    Professional?
   youtuber        Youtuber?
 }
 
 model Category {
-  id     Int     @id @default(autoincrement())
-  name   String  @unique
-  tagsId Int[]
-  likes  Liked[]
-  tags   Tags[]
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  likes Liked[]
+  tags  Tags[]
 }
 
 model Liked {
@@ -51,12 +51,12 @@ model Tags {
 }
 
 model Subscription {
-  userId         Int
-  subscriptionId Int[]
-  // subscription User @relation(fields: [subscriptionId], references: [id])
-  user           User  @relation(fields: [userId], references: [id])
+  subscribeUserId Int // Identifiant de l'utilisateur qui s'abonne (qui suit)
+  followedUserId  Int // Identifiant de l'utilisateur qui est suivi
+  subscribeUser   User @relation("subscription", fields: [subscribeUserId], references: [id])
+  followedUser    User @relation("follow", fields: [followedUserId], references: [id])
 
-  @@id([userId])
+  @@id([subscribeUserId, followedUserId])
 }
 
 model Youtuber {
@@ -71,5 +71,6 @@ model Professional {
   userId                 Int    @unique
   user                   User   @relation(fields: [userId], references: [id])
   urlLinkedin            String @unique
+  // format des recommandationsà valider
   recommandationLinkedin Json
 }
