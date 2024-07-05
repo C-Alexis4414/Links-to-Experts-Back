@@ -9,6 +9,17 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
+
+  // Delete all records from each table
+  // await prisma.liked.deleteMany({});
+  // await prisma.tags.deleteMany({});
+  // await prisma.subscription.deleteMany({});
+  // await prisma.youtuber.deleteMany({});
+  // await prisma.professional.deleteMany({});
+  // await prisma.category.deleteMany({});
+  // await prisma.user.deleteMany({});
+
+
   // Créer des utilisateurs
   const user1 = await prisma.user.create({
     data: {
@@ -112,22 +123,36 @@ async function main() {
   // // Créer des abonnements
   await prisma.subscription.create({
     data: {
-      userId: user1.id,
-      subscriptionId: [user2.id, user3.id]
+      subscribeUserId: user1.id,
+      followedUserId: user2.id
     }
   });
 
   await prisma.subscription.create({
     data: {
-      userId: user2.id,
-      subscriptionId: [user1.id, user3.id]
+      subscribeUserId: user1.id,
+      followedUserId: user3.id
     }
   });
 
   await prisma.subscription.create({
     data: {
-      userId: user3.id,
-      subscriptionId: [user1.id]
+      subscribeUserId: user2.id,
+      followedUserId: user1.id
+    }
+  });
+
+  await prisma.subscription.create({
+    data: {
+      subscribeUserId: user2.id,
+      followedUserId: user3.id
+    }
+  });
+
+  await prisma.subscription.create({
+    data: {
+      subscribeUserId: user3.id,
+      followedUserId: user1.id
     }
   });
 }
