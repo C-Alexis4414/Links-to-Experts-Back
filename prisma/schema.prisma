@@ -14,11 +14,62 @@ datasource db {
 }
 
 model User {
-  id            Int     @id @default(autoincrement())
-  First_name    String
-  Last_Name     String
-  Password      String
-  Email_address String  @unique
-  Is_Youtuber   Boolean
-  Is_Pro        Boolean
+  id              Int            @id @default(autoincrement())
+  userName        String         @unique
+  password        String
+  email           String         @unique
+  is_Youtuber     Boolean        @default(true)
+  is_Professional Boolean        @default(true)
+  subscription    Subscription[]
+  likes           Liked[]
+  professional    Professional?
+  youtuber        Youtuber?
+}
+
+model Category {
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  tagsId Int[]
+  likes  Liked[]
+  tags   Tags[]
+}
+
+model Liked {
+  userId     Int
+  categoryId Int
+  user       User     @relation(fields: [userId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@id([userId, categoryId])
+}
+
+model Tags {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+}
+
+model Subscription {
+  userId         Int
+  subscriptionId Int[]
+  // subscription User @relation(fields: [subscriptionId], references: [id])
+  user           User  @relation(fields: [userId], references: [id])
+
+  @@id([userId])
+}
+
+model Youtuber {
+  id         Int    @id @default(autoincrement())
+  userId     Int    @unique
+  user       User   @relation(fields: [userId], references: [id])
+  tagChannel String //@default("@")
+}
+
+model Professional {
+  id                     Int    @id @default(autoincrement())
+  userId                 Int    @unique
+  user                   User   @relation(fields: [userId], references: [id])
+  urlLinkedin            String @unique
+  recommandationLinkedin Json
 }
