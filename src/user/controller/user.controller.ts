@@ -1,49 +1,46 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { UserService } from '../service/user.service';
-import { UserDto } from '../dto/getUser.dto';
-import { UpdateUserDto } from '../dto/updateUer.dto';
+import { UserDataDto } from '../dto/UserData.dto';
 import { CreateUserDto } from '../dto/createUser.dto';
 import { ApiSecurity } from '@nestjs/swagger';
+import { UserType } from '../type/user.type';
 
 @ApiSecurity('basic')
-@Controller('users')
+@Controller('user')
 export class UserController {
     constructor(private readonly userService: UserService) { }
 
-    @Get('getUsers')
-    async getUsers(): Promise<UserDto[]> {
-        return this.userService.getUsers();
+    @Get('id/:id')
+    async getUser(@Param('id') id: number): Promise<UserType> {
+        return this.userService.getUser(Number(id));
     }
 
-    @Get(':id')
-    async getUser(@Param('id') id: number): Promise<UserDto> {
-        return this.userService.getUser(id);
+    @Get('name/:name')
+    async getUserByName(@Param('name') name: string): Promise<UserType> {
+        return await this.userService.getByUserName(name);
+    }
+
+    @Get('allUsers')
+    async getAllUsers(): Promise<UserType[]> {
+        return await this.userService.getAllUser()
     }
 
     @Post('create')
-    async createUser(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
-        const newUser = await this.userService.createUser(createUserDto);
-        return newUser;
+    async createUser(@Body() userData: CreateUserDto): Promise<CreateUserDto> {
+        return await this.userService.createUser(userData);
     }
 
     @Put('update/:id')
     async update(
         @Param('id') id: string,
-        @Body() updateUserDto: UpdateUserDto
-    ): Promise<UpdateUserDto> {
-        return this.userService.updateUser(Number(id), updateUserDto);
+        @Body() updateUserData: UserDataDto
+    ): Promise<UserType> {
+        return await this.userService.updateUser(Number(id), updateUserData);
     }
 
     @Delete('delete/:id')
-    async deleteUser(@Param('id') id: number): Promise<any> {
-        const deleteUser = await this.userService.deleteUser(Number(id));
-        return deleteUser;
-    }
-
-    @Get('getName/:name')
-    async getName(@Param('name') name: string): Promise<UserDto> {
-        const getName = await this.userService.getName(name);
-        return getName;
+    async deleteUser(@Param('id') id: number): Promise<void> {
+        await this.userService.deleteUser(Number(id));
     }
 }
 

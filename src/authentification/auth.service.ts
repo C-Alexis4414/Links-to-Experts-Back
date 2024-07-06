@@ -12,13 +12,13 @@ export class AuthService {
   ) { }
 
 
-  async signInAuth(username: string, password: string): Promise<any> {
-    const user = await this.userService.signIn(username, password);
-    if (!user) {
-      throw new UnauthorizedException();
-    }
-    const { Password, ...payload } = user;
-    return await this.jwtService.signAsync(payload);
-  }
+  // async signInAuth(username: string, password: string): Promise<any> {
+  //   const user = await this.userService.signIn(username, password);
+  //   if (!user) {
+  //     throw new UnauthorizedException();
+  //   }
+  //   const { Password, ...payload } = user;
+  //   return await this.jwtService.signAsync(payload);
+  // }
 }
 
