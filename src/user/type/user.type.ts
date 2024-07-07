@@ -6,3 +6,4 @@ export type UserType = {
     is_Youtuber: boolean;
     is_Professional: boolean;
 }
+
