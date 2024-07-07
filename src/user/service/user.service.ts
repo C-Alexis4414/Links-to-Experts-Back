@@ -1,8 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserType } from '../type/user.type';
 import { PrismaService } from 'src/prisma.service';
-import { CreateUserDto } from '../dto/createUser.dto';
-import { UserDataDto } from '../dto/UserData.dto';
+import { UserDataDto, CreateUserDto, UserIsProfessional, UserIsYoutuber } from '../dto/userData.dto';
 
 @Injectable()
 export class UserService {
@@ -31,13 +30,37 @@ export class UserService {
         return toto;
     }
 
-    async createUser(userData: CreateUserDto): Promise<UserType> {
+    async createUser(userData: CreateUserDto, userIsYoutuber: UserIsYoutuber, userIsPro: UserIsProfessional): Promise<UserType> { //dto pour youtube et pro
+        if (!userData.is_Youtuber && !userData.is_Professional) {
+            throw new BadRequestException('User must be either a Youtuber or a Professional');
+        }
         const newUser = await this.prisma.user.create({
             data: {
                 ...userData,
                 // if isYoutube ou isPro est vrai alors => create la dépandance
             },
         });
+        if (userData.is_Youtuber) {
+
+            // call youtube api to check tag channel
+
+            await this.prisma.youtuber.create({
+                data: {
+                    userId: newUser.id,
+                    tagChannel: userIsYoutuber.tagChannel,
+                },
+            });
+        }
+
+        if (userData.is_Professional) {
+            await this.prisma.professional.create({
+                data: {
+                    userId: newUser.id,
+                    urlLinkedin: userIsPro.urlLikendin,
+                    recommandationLinkedin: '{}', // Ajoutez les autres champs nécessaires
+                },
+            });
+        }
         return newUser;
     }
 
@@ -50,13 +73,11 @@ export class UserService {
             },
         });
         return updatedUser;
-
     }
 
     async deleteUser(id: number): Promise<void> {
         await this.prisma.user.delete({ where: { id: id } });
     }
-
 
 }
 

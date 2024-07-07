@@ -1,6 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsBoolean, IsEmail, IsOptional } from 'class-validator';
 
+export class CreateUserDto {
+    @ApiProperty()
+    @IsString()
+    userName: string;
+
+    @ApiProperty()
+    @IsString()
+    password: string;
+
+    @ApiProperty()
+    @IsEmail()
+    email: string;
+
+    @ApiProperty()
+    @IsBoolean()
+    is_Youtuber: boolean;
+
+    @ApiProperty()
+    @IsBoolean()
+    is_Professional: boolean;
+}
+
 export class UserDataDto {
     @ApiProperty()
     @IsString()
@@ -27,3 +49,19 @@ export class UserDataDto {
     @IsOptional()
     is_Professional?: boolean;
 }
+
+export class UserIsYoutuber {
+    @ApiProperty()
+    @IsString()
+    @IsOptional()
+    tagChannel?: string;
+}
+
+export class UserIsProfessional {
+    @ApiProperty()
+    @IsString()
+    @IsOptional()
+    urlLikendin: string;
+}
+
+
