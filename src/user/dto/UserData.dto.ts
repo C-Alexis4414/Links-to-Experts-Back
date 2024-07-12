@@ -21,6 +21,16 @@ export class CreateUserDto {
     @ApiProperty()
     @IsBoolean()
     is_Professional: boolean;
+
+    @ApiProperty()
+    @IsString()
+    @IsOptional()
+    tagChannel?: string;
+
+    @ApiProperty()
+    @IsString()
+    @IsOptional()
+    urlLikendin?: string;
 }
 
 export class UserDataDto {
