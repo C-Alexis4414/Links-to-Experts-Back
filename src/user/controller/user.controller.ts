@@ -32,8 +32,8 @@ export class UserController {
     }
 
     @Post('create')
-    async createUser(@Body() userData: CreateUserDto, @Body() isyoutube: UserIsYoutuber, @Body() isPro: UserIsProfessional): Promise<CreateUserDto> {
-        return await this.userService.createUser(userData, isyoutube, isPro);
+    async createUser(@Body() userData: CreateUserDto,): Promise<CreateUserDto> {
+        return await this.userService.createUser(userData,);
     }
 
     @Put('update/:id')
@@ -58,7 +58,7 @@ export class UserController {
     async testProfessional(@Param('id') id: number): Promise<ProfessionalType> {
         return await this.professionalService.getUrlLinkedinById(Number(id));
     }
-
+    // recupère toutes les infos d'un utilisateur --- ne marche pas vraiment
     @Get('getAllUserInfo/:id')
     async getAllInfo(@Param('id') id: number): Promise<{ user: UserType, youtuber?: YoutuberType, professional?: ProfessionalType }> {
         const user = await this.userService.getUser(Number(id));
