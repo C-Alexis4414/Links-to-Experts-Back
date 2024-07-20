@@ -29,33 +29,50 @@ export class UserService {
         }
         console.log(userData);
 
+        const youtuberData = userData.is_Youtuber
+            ? { create: { tagChannel: userData.tagChannel } }
+            : undefined;
+
+        const professionalData = userData.is_Professional
+            ? { create: { urlLinkedin: userData.urlLikendin, recommandationLinkedin: {} } }
+            : undefined;
+
         const newUser = await this.prisma.user.create({
             data: {
-                ...userData,
-                // if isYoutube ou isPro est vrai alors => create la dépandance
+                userName: userData.userName,
+                password: userData.password,
+                email: userData.email,
+                is_Youtuber: userData.is_Youtuber,
+                is_Professional: userData.is_Professional,
+                youtuber: youtuberData,
+                professional: professionalData,
+            },
+            include: {
+                youtuber: true,
+                professional: true,
             },
         });
-        if (userData.is_Youtuber) {
+        // if (userData.is_Youtuber) {
 
-            // call youtube api to check tag channel
+        //     // call youtube api to check tag channel
 
-            await this.prisma.youtuber.create({
-                data: {
-                    userId: newUser.id,
-                    tagChannel: userData.tagChannel,
-                },
-            });
-        }
+        //     await this.prisma.youtuber.create({
+        //         data: {
+        //             userId: newUser.id,
+        //             tagChannel: userData.tagChannel,
+        //         },
+        //     });
+        // }
 
-        if (userData.is_Professional) {
-            await this.prisma.professional.create({
-                data: {
-                    userId: newUser.id,
-                    urlLinkedin: userData.urlLikendin,
-                    recommandationLinkedin: '{}', // Ajoutez les autres champs nécessaires
-                },
-            });
-        }
+        // if (userData.is_Professional) {
+        //     await this.prisma.professional.create({
+        //         data: {
+        //             userId: newUser.id,
+        //             urlLinkedin: userData.urlLikendin,
+        //             recommandationLinkedin: '{}', // Ajoutez les autres champs nécessaires
+        //         },
+        //     });
+        // }
         return newUser;
     }
     // TODO: gérer les donées user, youtuber et professional
@@ -75,4 +92,3 @@ export class UserService {
     }
 
 }
-

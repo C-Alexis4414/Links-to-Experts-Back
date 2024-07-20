@@ -32,8 +32,8 @@ export class UserController {
     }
 
     @Post('create')
-    async createUser(@Body() userData: CreateUserDto,): Promise<CreateUserDto> {
-        return await this.userService.createUser(userData,);
+    async createUser(@Body() userData: CreateUserDto,): Promise<UserType> {
+        return await this.userService.createUser(userData);
     }
 
     @Put('update/:id')
