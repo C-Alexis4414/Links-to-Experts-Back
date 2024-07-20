@@ -58,20 +58,17 @@ export class UserDataDto {
     @IsBoolean()
     @IsOptional()
     is_Professional?: boolean;
-}
 
-export class UserIsYoutuber {
     @ApiProperty()
     @IsString()
     @IsOptional()
     tagChannel?: string;
-}
 
-export class UserIsProfessional {
     @ApiProperty()
     @IsString()
     @IsOptional()
-    urlLikendin: string;
+    urlLikendin?: string;
 }
+
 
 

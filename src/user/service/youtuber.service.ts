@@ -1,6 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
-import { UserIsYoutuber } from '../dto/userData.dto';
 import { YoutuberType } from '../type/youtuber.type';
 
 @Injectable()

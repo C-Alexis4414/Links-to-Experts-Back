@@ -62,14 +62,14 @@ model Subscription {
 model Youtuber {
   id         Int    @id @default(autoincrement())
   userId     Int    @unique
-  user       User   @relation(fields: [userId], references: [id])
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   tagChannel String //@default("@")
 }
 
 model Professional {
   id                     Int    @id @default(autoincrement())
   userId                 Int    @unique
-  user                   User   @relation(fields: [userId], references: [id])
+  user                   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   urlLinkedin            String @unique
   // format des recommandationsà valider
   recommandationLinkedin Json
