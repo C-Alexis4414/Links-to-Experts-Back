@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserType } from '../type/user.type';
 import { PrismaService } from 'src/prisma.service';
 import { UserDataDto, CreateUserDto } from '../dto/userData.dto';
@@ -6,7 +6,17 @@ import { UserDataDto, CreateUserDto } from '../dto/userData.dto';
 @Injectable()
 export class UserService {
     private readonly prisma = new PrismaService();
-    
+
+    /*
+    TODO
+    log in logout
+    sign in
+    password hash
+    verify user
+    */
+
+
+
     // find a user by id
     async getUser(id: number): Promise<UserType> {
         return await this.prisma.user.findUnique({ where: { id: id } });
@@ -146,7 +156,7 @@ export class UserService {
     //     };
     // }
 
-    async deleteUser(id: number): Promise<any> {
+    async deleteUser(id: number): Promise<void> {
         const deletedUser = await this.prisma.user.delete({
             where: { id },
             include: {
