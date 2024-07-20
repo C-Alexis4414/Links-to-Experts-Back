@@ -6,6 +6,7 @@ import { UserDataDto, CreateUserDto } from '../dto/userData.dto';
 @Injectable()
 export class UserService {
     private readonly prisma = new PrismaService();
+    
     // find a user by id
     async getUser(id: number): Promise<UserType> {
         return await this.prisma.user.findUnique({ where: { id: id } });
@@ -20,7 +21,6 @@ export class UserService {
     // find all users
     async getAllUser(): Promise<UserType[]> {
         return await this.prisma.user.findMany();
-
     }
 
     // create a user with relations queries
