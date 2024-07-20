@@ -5,6 +5,8 @@
  * Learn more about the Seed Client by following our guide: https://docs.snaplet.dev/seed/getting-started
  */
 
+import { Subscription } from "rxjs";
+
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
@@ -31,14 +33,14 @@ async function main() {
       youtuber: {
         create: {
           tagChannel: '@johnchannel'
-        }
+        },
       },
       professional: {
         create: {
           urlLinkedin: 'https://linkedin.com/in/johndoe',
           recommandationLinkedin: JSON.stringify({ text: 'Great professional!' })
-        }
-      }
+        },
+      },
     }
   });
 

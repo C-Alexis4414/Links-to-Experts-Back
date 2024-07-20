@@ -89,4 +89,7 @@ npx prisma db pull
 
 # reset data base and apply all migration
 npx prisma migrate reset
+
+# load seed
+npx prisma db seed
 ```

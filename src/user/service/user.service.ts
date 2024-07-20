@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { UserType } from '../type/user.type';
 import { PrismaService } from 'src/prisma.service';
 import { UserDataDto, CreateUserDto } from '../dto/userData.dto';
@@ -52,13 +52,15 @@ export class UserService {
             include: {
                 youtuber: true,
                 professional: true,
+                subscriptions: true,
+                likes: true,
+                followers: true
             },
         });
         return newUser;
     }
-    // TODO: gérer les donées user, youtuber et professional
+    // TODO: gérer la modifications des données et les relations queries
     async updateUser(id: number, userData: UserDataDto): Promise<UserType> {
-
         if (!userData.is_Youtuber && !userData.is_Professional) {
             throw new BadRequestException('User must be either a Youtuber or a Professional');
         }
@@ -83,13 +85,66 @@ export class UserService {
                 youtuber: youtuberData,
                 professional: professionalData,
             },
-            include: {
-                youtuber: false,
-                professional: false,
-            },
+            // include: {
+            //     youtuber: true,
+            //     professional: true,
+            // },
         });
         return updatedUser;
     }
+
+    //exemple code  generer =>
+    // async updateUser(id: number, userData: UserDataDto): Promise<any> {
+    //     const user = await this.prisma.user.findUnique({
+    //         where: { id },
+    //         include: {
+    //             youtuber: true,
+    //             professional: true,
+    //         },
+    //     });
+
+    //     if (!user) {
+    //         throw new NotFoundException('User not found');
+    //     }
+
+    //     if (!userData.is_Youtuber && !userData.is_Professional) {
+    //         throw new BadRequestException('User must be either a Youtuber or a Professional');
+    //     }
+
+    //     const [updatedUser, youtuberUpdate, professionalUpdate] =
+    //         await this.prisma.$transaction([
+    //             this.prisma.user.update({
+    //                 where: { id },
+    //                 data: {
+    //                     userName: userData.userName,
+    //                     password: userData.password,
+    //                     email: userData.email,
+    //                     is_Youtuber: userData.is_Youtuber,
+    //                     is_Professional: userData.is_Professional,
+    //                 },
+    //             }),
+    //             userData.is_Youtuber
+    //                 ? this.prisma.youtuber.upsert({
+    //                     where: { userId: id },
+    //                     update: { tagChannel: userData.tagChannel },
+    //                     create: { userId: id, tagChannel: userData.tagChannel },
+    //                 })
+    //                 : this.prisma.youtuber.delete({ where: { userId: id } }),
+    //             userData.is_Professional
+    //                 ? this.prisma.professional.upsert({
+    //                     where: { userId: id },
+    //                     update: { urlLinkedin: userData.urlLikendin, recommandationLinkedin: {} },
+    //                     create: { userId: id, urlLinkedin: userData.urlLikendin, recommandationLinkedin: {} },
+    //                 })
+    //                 : this.prisma.professional.delete({ where: { userId: id } }),
+    //         ]);
+
+    //     return {
+    //         ...updatedUser,
+    //         youtuber: youtuberUpdate,
+    //         professional: professionalUpdate,
+    //     };
+    // }
 
     async deleteUser(id: number): Promise<any> {
         const deletedUser = await this.prisma.user.delete({
@@ -97,10 +152,11 @@ export class UserService {
             include: {
                 youtuber: true,
                 professional: true,
+                subscriptions: true,
+                followers: true,
+                likes: true
             },
         });
-        return deletedUser;
+        ;
     }
-
-
 }
