@@ -71,3 +71,22 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+## Prisma command
+
+```bash
+# init schema.prisma
+npx prisma init
+
+# create migration 
+npx prisma migrate dev \--name \<migration name\>
+
+# generate client to interact with database
+npx prisme generate
+
+# pull db model data
+npx prisma db pull
+
+# reset data base and apply all migration
+npx prisma migrate reset
+```

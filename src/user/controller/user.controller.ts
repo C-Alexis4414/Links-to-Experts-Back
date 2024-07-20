@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { UserService } from '../service/user.service';
 import { YoutuberService } from '../service/youtuber.service';
 import { ProfessionalService } from '../service/professional.service';
-import { UserDataDto, CreateUserDto, UserIsProfessional, UserIsYoutuber } from '../dto/userData.dto';
+import { UserDataDto, CreateUserDto} from '../dto/userData.dto';
 import { ApiSecurity } from '@nestjs/swagger';
 import { UserType } from '../type/user.type';
 import { YoutuberType } from '../type/youtuber.type';
