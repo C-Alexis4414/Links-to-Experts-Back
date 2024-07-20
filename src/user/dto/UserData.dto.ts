@@ -25,12 +25,12 @@ export class CreateUserDto {
     @ApiProperty()
     @IsString()
     @IsOptional()
-    tagChannel?: string;
+    tagChannel: string;
 
     @ApiProperty()
     @IsString()
     @IsOptional()
-    urlLikendin?: string;
+    urlLikendin: string;
 }
 
 export class UserDataDto {

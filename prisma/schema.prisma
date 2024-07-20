@@ -18,8 +18,8 @@ model User {
   userName        String         @unique
   password        String
   email           String         @unique
-  is_Youtuber     Boolean        @default(true)
-  is_Professional Boolean        @default(true)
+  is_Youtuber     Boolean        @default(false)
+  is_Professional Boolean        @default(false)
   subscriptions   Subscription[] @relation("subscription") // Utilisateurs que cet utilisateur suit
   followers       Subscription[] @relation("follow") // Utilisateurs qui suivent cet utilisateur
   likes           Liked[]
