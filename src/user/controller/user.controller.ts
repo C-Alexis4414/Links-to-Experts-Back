@@ -36,13 +36,13 @@ export class UserController {
         return await this.userService.createUser(userData);
     }
 
-    @Put('update/:id')
-    async update(
-        @Param('id', ParseIntPipe) id: number,
-        @Body() updateUserData: UserDataDto
-    ): Promise<UserType> {
-        return await this.userService.updateUser(id, updateUserData);
-    }
+    // @Put('update/:id')
+    // async update(
+    //     @Param('id', ParseIntPipe) id: number,
+    //     @Body() updateUserData: UserDataDto
+    // ): Promise<UserType> {
+    //     return await this.userService.updateUser(id, updateUserData);
+    // }
 
     @Delete('delete/:id')
     async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
