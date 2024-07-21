@@ -36,6 +36,17 @@ export class UserController {
         return await this.userService.createUser(userData);
     }
 
+    @Delete('deleteByName/:name')
+    async deleteUserByName(@Param('name') userName: string): Promise<void> {
+        await this.userService.deleteUserByName(userName);
+    }
+
+    @Delete('deleteById/:id')
+    async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        await this.userService.deleteUserById(id);
+    }
+
+
     // @Put('update/:id')
     // async update(
     //     @Param('id', ParseIntPipe) id: number,
@@ -43,11 +54,6 @@ export class UserController {
     // ): Promise<UserType> {
     //     return await this.userService.updateUser(id, updateUserData);
     // }
-
-    @Delete('delete/:id')
-    async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        await this.userService.deleteUser(id);
-    }
 
     // @Get('testyoutube/:id')
     // async testYoutube(@Param('id') id: number): Promise<YoutuberType> {
