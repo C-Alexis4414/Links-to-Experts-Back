@@ -73,7 +73,7 @@ export class UserService {
     }
 
     // delete user and all datas associate
-    async deleteUser(id: number): Promise<void> {
+    async deleteUserById(id: number): Promise<void> {
         await this.prisma.user.delete({
             where: { id },
             include: {
@@ -85,6 +85,19 @@ export class UserService {
             },
         });
         ;
+    }
+
+    async deleteUserByName(userName: string): Promise<void> {
+        await this.prisma.user.delete({
+            where: { userName },
+            include: {
+                youtuber: true,
+                professional: true,
+                subscriptions: true,
+                followers: true,
+                likes: true
+            },
+        });
     }
 
 
