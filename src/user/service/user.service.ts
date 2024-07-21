@@ -69,6 +69,23 @@ export class UserService {
         });
         return newUser;
     }
+
+    // delete user and all datas associate
+    async deleteUser(id: number): Promise<void> {
+        await this.prisma.user.delete({
+            where: { id },
+            include: {
+                youtuber: true,
+                professional: true,
+                subscriptions: true,
+                followers: true,
+                likes: true
+            },
+        });
+        ;
+    }
+
+
     // TODO: gérer la modifications des données et les relations queries
     async updateUser(id: number, userData: UserDataDto): Promise<UserType> {
         if (!userData.is_Youtuber && !userData.is_Professional) {
@@ -156,17 +173,5 @@ export class UserService {
     //     };
     // }
 
-    async deleteUser(id: number): Promise<void> {
-        const deletedUser = await this.prisma.user.delete({
-            where: { id },
-            include: {
-                youtuber: true,
-                professional: true,
-                subscriptions: true,
-                followers: true,
-                likes: true
-            },
-        });
-        ;
-    }
+
 }
