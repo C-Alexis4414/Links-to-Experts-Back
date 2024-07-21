@@ -37,9 +37,6 @@ export class TagService {
         const newTag = await this.prisma.tags.create({
             data: {
                 ...tagData
-            },
-            include: {
-                category: true
             }
         })
         return newTag
@@ -48,6 +45,20 @@ export class TagService {
     async deleteTagById(tagId: number): Promise<void> {
         await this.prisma.tags.delete({
             where: { id: tagId },
+            include: {
+                category: true
+            }
+        })
+    }
+
+    async deleteTagByName(tagName: string): Promise<void> {
+        const existingCategory = await this.prisma.tags.findUnique({ where: { name: tagName } })
+        if (!existingCategory) {
+            throw new BadRequestException(`Category ${tagName} does not exist.`);
+        }
+
+        await this.prisma.tags.delete({
+            where: { name: tagName },
             include: {
                 category: true
             }

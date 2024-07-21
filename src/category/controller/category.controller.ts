@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { CategoryService } from '../service/category.service';
 import { TagService } from '../service/tags.service';
 import { CategoryType } from '../type/category.type';
@@ -14,13 +14,13 @@ export class CategoryController {
     ) { }
 
     @Get('id/:id')
-    async getCategory(@Param('id') id: number): Promise<CategoryType> {
-        return await this.categoryService.getCategoryById(Number(id))
+    async getCategory(@Param('id', ParseIntPipe) id: number): Promise<CategoryType> {
+        return await this.categoryService.getCategoryById(id)
     }
 
     @Get('name/:name')
-    async getCategoryName(@Param('name') name: string): Promise<CategoryType> {
-        return await this.categoryService.getCategoryByName(name)
+    async getCategoryByName(@Param('name') categoryName: string): Promise<CategoryType> {
+        return await this.categoryService.getCategoryByName(categoryName)
     }
 
     @Get('allCategory')
@@ -34,13 +34,13 @@ export class CategoryController {
     }
 
     @Delete('deleteCategorybyName/:categoryName')
-    async deleteCategoryByName(@Param() categoryName: CategoryDto): Promise<void> {
-        return await this.categoryService.deleteCategoryByName(categoryName);
+    async deleteCategoryByName(@Param('categoryName') categoryName: string): Promise<void> {
+        await this.categoryService.deleteCategoryByName(categoryName);
     }
 
     @Delete('deleteCategoryById/:id')
-    async deleteCategoryById(@Param('id') id: number): Promise<void> {
-        return await this.categoryService.deleteCategoryById(Number(id))
+    async deleteCategoryById(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        return await this.categoryService.deleteCategoryById(id)
     }
 
     /** 
@@ -49,8 +49,8 @@ export class CategoryController {
     */
 
     @Get('getTagById/:id')
-    async getTagById(@Param('id') id: number): Promise<TagType> {
-        return await this.tagService.getTagById(Number(id))
+    async getTagById(@Param('id', ParseIntPipe) id: number): Promise<TagType> {
+        return await this.tagService.getTagById(id)
     }
 
     @Get('getTagByName/:tagName')
@@ -68,11 +68,14 @@ export class CategoryController {
         return await this.tagService.createTag(tagName)
     }
 
-    @Delete('deleteTagById/:id')
-    async deleteTagById(@Param('id') id: number): Promise<void> {
-        return await this.tagService.deleteTagById(Number(id))
+    @Delete('deleteTagByName/:tagName')
+    async deleteTagByName(@Param('tagName') tagName: string): Promise<void> {
+        return await this.tagService.deleteTagByName(tagName)
     }
 
-
+    @Delete('deleteTagById/:id')
+    async deleteTagById(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        return await this.tagService.deleteTagById(id)
+    }
 
 }

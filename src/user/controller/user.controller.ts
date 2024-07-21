@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { UserService } from '../service/user.service';
 import { YoutuberService } from '../service/youtuber.service';
 import { ProfessionalService } from '../service/professional.service';
@@ -17,8 +17,8 @@ export class UserController {
     ) { }
 
     @Get('id/:id')
-    async getUser(@Param('id') id: number): Promise<UserType> {
-        return this.userService.getUser(Number(id));
+    async getUser(@Param('id', ParseIntPipe) id: number): Promise<UserType> {
+        return this.userService.getUser(id);
     }
 
     @Get('name/:name')
@@ -38,15 +38,15 @@ export class UserController {
 
     @Put('update/:id')
     async update(
-        @Param('id') id: string,
+        @Param('id', ParseIntPipe) id: number,
         @Body() updateUserData: UserDataDto
     ): Promise<UserType> {
-        return await this.userService.updateUser(Number(id), updateUserData);
+        return await this.userService.updateUser(id, updateUserData);
     }
 
     @Delete('delete/:id')
-    async deleteUser(@Param('id') id: number): Promise<void> {
-        await this.userService.deleteUser(Number(id));
+    async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        await this.userService.deleteUser(id);
     }
 
     // @Get('testyoutube/:id')
