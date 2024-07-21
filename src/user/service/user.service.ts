@@ -13,6 +13,8 @@ export class UserService {
     sign in
     password hash
     verify user
+
+    encours : modifications de update afin de gerer les creations modifications ou suppression dans les tables youtuber,professional ...
     */
 
 

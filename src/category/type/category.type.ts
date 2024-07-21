@@ -3,8 +3,3 @@ export type CategoryType = {
     name: String;
 }
 
-export type TagType = {
-    id: number;
-    name: String;
-    categoryId: number;
-}
