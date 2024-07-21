@@ -14,7 +14,7 @@ export class CategoryService {
     updateCategory
   
 
-    encours:   createCategory (gerer les relations query) +   DeleteCategory ( gerer les relations queries)
+    encours:   DeleteCategorybyName ( gerer les relations queries)
     
     relations: tags et likes
      get category by tags
@@ -34,10 +34,10 @@ export class CategoryService {
         return await this.prisma.category.findMany();
     }
 
-    async createCategory(CategoryData: CategoryDto): Promise<CategoryType> {
+    async createCategory(CategoryName: CategoryDto): Promise<CategoryType> {
         const newCategory = await this.prisma.category.create({
             data: {
-                ...CategoryData
+                ...CategoryName
             },
             include: {
                 likes: true,
@@ -47,10 +47,11 @@ export class CategoryService {
         return newCategory;
     }
 
-    async deleteCategoryByName(categoryName: CategoryDto): Promise<void> {
-        const existingCategory = await this.prisma.category.findUnique({ where: { name: categoryName.name } })
+    async deleteCategoryByName(categoryName: string): Promise<void> {
+
+        const existingCategory = await this.prisma.category.findUnique({ where: { name: categoryName } })
         if (!existingCategory) {
-            throw new BadRequestException(`Category ${categoryName.name} does not exist.`);
+            throw new BadRequestException(`Category ${categoryName} does not exist.`);
         }
 
         await this.prisma.category.delete({
@@ -62,7 +63,6 @@ export class CategoryService {
         })
     }
 
-
     async deleteCategoryById(id: number): Promise<void> {
         await this.prisma.category.delete({
             where: { id },
@@ -72,4 +72,7 @@ export class CategoryService {
             }
         })
     }
+
+    
+
 }
