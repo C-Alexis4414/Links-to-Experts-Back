@@ -89,38 +89,38 @@ export class UserService {
 
 
     // TODO: gérer la modifications des données et les relations queries
-    async updateUser(id: number, userData: UserDataDto): Promise<UserType> {
-        if (!userData.is_Youtuber && !userData.is_Professional) {
-            throw new BadRequestException('User must be either a Youtuber or a Professional');
-        }
-        // comment gerer les mofdifications de channel youtube (api)
-        const youtuberData = userData.is_Youtuber
-            ? { update: { tagChannel: userData.tagChannel } }
-            : { delete: true };
+    // async updateUser(id: number, userData: UserDataDto): Promise<UserType> {
+    //     if (!userData.is_Youtuber && !userData.is_Professional) {
+    //         throw new BadRequestException('User must be either a Youtuber or a Professional');
+    //     }
+    //     // comment gerer les mofdifications de channel youtube (api)
+    //     const youtuberData = userData.is_Youtuber
+    //         ? { update: { tagChannel: userData.tagChannel } }
+    //         : { delete: true };
 
-        //TODO comment gérer les recommandations linkedins pendant la créations?
-        const professionalData = userData.is_Professional
-            ? { update: { urlLinkedin: userData.urlLikendin, recommandationLinkedin: {} } }
-            : { delete: true };
+    //     //TODO comment gérer les recommandations linkedins pendant la créations?
+    //     const professionalData = userData.is_Professional
+    //         ? { update: { urlLinkedin: userData.urlLikendin, recommandationLinkedin: {} } }
+    //         : { delete: true };
 
-        const updatedUser = await this.prisma.user.update({
-            where: { id },
-            data: {
-                userName: userData.userName,
-                password: userData.password,
-                email: userData.email,
-                is_Youtuber: userData.is_Youtuber,
-                is_Professional: userData.is_Professional,
-                youtuber: youtuberData,
-                professional: professionalData,
-            },
-            // include: {
-            //     youtuber: true,
-            //     professional: true,
-            // },
-        });
-        return updatedUser;
-    }
+    //     const updatedUser = await this.prisma.user.update({
+    //         where: { id },
+    //         data: {
+    //             userName: userData.userName,
+    //             password: userData.password,
+    //             email: userData.email,
+    //             is_Youtuber: userData.is_Youtuber,
+    //             is_Professional: userData.is_Professional,
+    //             youtuber: youtuberData,
+    //             professional: professionalData,
+    //         },
+    //         // include: {
+    //         //     youtuber: true,
+    //         //     professional: true,
+    //         // },
+    //     });
+    //     return updatedUser;
+    // }
 
     //exemple code  generer =>
     // async updateUser(id: number, userData: UserDataDto): Promise<any> {
