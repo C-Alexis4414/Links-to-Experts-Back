@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { UserService } from '../service/user.service';
 import { YoutuberService } from '../service/youtuber.service';
 import { ProfessionalService } from '../service/professional.service';
-import { UserDataDto, CreateUserDto} from '../dto/userData.dto';
+import { UserDataDto, CreateUserDto } from '../dto/userData.dto';
 import { ApiSecurity } from '@nestjs/swagger';
 import { UserType } from '../type/user.type';
 import { YoutuberType } from '../type/youtuber.type';
@@ -15,6 +15,12 @@ export class UserController {
         private readonly youtuberService: YoutuberService,
         private readonly professionalService: ProfessionalService,
     ) { }
+
+    // TODO @query
+    // @Get('password/:password')
+    // async hashage(@Param('password') password: string): Promise<string> {
+    //     return await this.userService.hash(password);
+    // }
 
     @Get('id/:id')
     async getUser(@Param('id') id: number): Promise<UserType> {
@@ -30,7 +36,7 @@ export class UserController {
     async getAllUsers(): Promise<UserType[]> {
         return await this.userService.getAllUser()
     }
-
+    
     @Post('create')
     async createUser(@Body() userData: CreateUserDto,): Promise<UserType> {
         return await this.userService.createUser(userData);
