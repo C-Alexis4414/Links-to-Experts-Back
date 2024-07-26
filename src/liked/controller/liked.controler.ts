@@ -1,6 +1,8 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { LikedService } from '../service/liked.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('LIKED')
 @Controller('liked')
 export class LikedController {
     constructor(
@@ -13,7 +15,7 @@ export class LikedController {
     }
 
     @Get('CategoriesLikedByUserId/:userId')
-    async findCategoriesLikedByUser(@Param('uerId', ParseIntPipe) userId: number): Promise<any> {
+    async findCategoriesLikedByUser(@Param('userId', ParseIntPipe) userId: number): Promise<any> {
         return await this.likedService.findCategoriesLikedByUserId(userId);
     }
 
