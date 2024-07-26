@@ -14,6 +14,9 @@ export class UserService {
     password hash
     verify user
 
+    utilisé le selecte ou include pour recuperer uniquemet la donnée necessaire
+
+
     encours : modifications de update afin de gerer les creations modifications ou suppression dans les tables youtuber,professional ...
     */
 
@@ -64,9 +67,7 @@ export class UserService {
             include: {
                 youtuber: true,
                 professional: true,
-                subscriptions: true,
                 likes: true,
-                followers: true
             },
         });
         return newUser;
@@ -79,8 +80,6 @@ export class UserService {
             include: {
                 youtuber: true,
                 professional: true,
-                subscriptions: true,
-                followers: true,
                 likes: true
             },
         });
@@ -93,8 +92,6 @@ export class UserService {
             include: {
                 youtuber: true,
                 professional: true,
-                subscriptions: true,
-                followers: true,
                 likes: true
             },
         });

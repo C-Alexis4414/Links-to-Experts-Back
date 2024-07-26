@@ -9,7 +9,7 @@ import { CategoryModule } from 'src/category/category.module';
 @Module({
     providers: [PrismaService, LikedService],
     controllers: [LikedController],
-    exports: [],
+    exports: [LikedService],
     imports: [UserModule, CategoryModule]
 })
-export class LikesModule { }
+export class LikedModule { }
