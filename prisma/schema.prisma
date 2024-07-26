@@ -25,6 +25,7 @@ model User {
   likes           Liked[]
   professional    Professional?
   youtuber        Youtuber?
+  Tags            Tags[]
 }
 
 model Category {
@@ -46,8 +47,10 @@ model Liked {
 model Tags {
   id         Int      @id @default(autoincrement())
   name       String   @unique
+  userId     Int
   categoryId Int
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Subscription {
