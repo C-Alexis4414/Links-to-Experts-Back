@@ -5,7 +5,7 @@
  * Learn more about the Seed Client by following our guide: https://docs.snaplet.dev/seed/getting-started
  */
 
-import { Subscription } from "rxjs";
+
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
@@ -13,13 +13,13 @@ const prisma = new PrismaClient();
 async function main() {
 
   // Delete all records from each table
-  // await prisma.liked.deleteMany({});
-  // await prisma.tags.deleteMany({});
-  // await prisma.subscription.deleteMany({});
-  // await prisma.youtuber.deleteMany({});
-  // await prisma.professional.deleteMany({});
-  // await prisma.category.deleteMany({});
-  // await prisma.user.deleteMany({});
+  await prisma.liked.deleteMany({});
+  await prisma.tags.deleteMany({});
+  await prisma.subscription.deleteMany({});
+  await prisma.youtuber.deleteMany({});
+  await prisma.professional.deleteMany({});
+  await prisma.category.deleteMany({});
+  await prisma.user.deleteMany({});
 
 
   // Créer des utilisateurs
@@ -79,25 +79,13 @@ async function main() {
   const category1 = await prisma.category.create({
     data: {
       name: 'Technology',
-      tags: {
-        create: [
-          { name: 'AI' },
-          { name: 'Blockchain' }
-        ]
-      }
-    }
+    },
   });
 
   const category2 = await prisma.category.create({
     data: {
-      name: 'Health',
-      tags: {
-        create: [
-          { name: 'Fitness' },
-          { name: 'Nutrition' }
-        ]
-      }
-    }
+      name: 'Sports',
+    },
   });
 
   // Créer des likes
@@ -120,6 +108,22 @@ async function main() {
       userId: user3.id,
       categoryId: category1.id
     }
+  });
+
+  await prisma.tags.create({
+    data: {
+      name: 'AI',
+      categoryId: category1.id,
+      userId: user1.id,
+    },
+  });
+
+  await prisma.tags.create({
+    data: {
+      name: 'Football',
+      categoryId: category2.id,
+      userId: user2.id,
+    },
   });
 
   // // Créer des abonnements

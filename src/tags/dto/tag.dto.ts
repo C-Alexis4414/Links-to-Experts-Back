@@ -11,4 +11,8 @@ export class TagDto {
     @IsInt()
     categoryId: number;
 
+    @ApiProperty()
+    @IsInt()
+    userId: number;
+
 }
