@@ -22,7 +22,7 @@ export class LikedService {
      */
 
     async findUsersWhoLikedCategoryById(categoryId: number) {
-        return this.prisma.liked.findMany({
+        return await this.prisma.liked.findMany({
             where: {
                 categoryId,
             },
@@ -33,7 +33,7 @@ export class LikedService {
     }
 
     async findCategoriesLikedByUserId(userId: number) {
-        return this.prisma.liked.findMany({
+        return await this.prisma.liked.findMany({
             where: {
                 userId,
             },
@@ -48,7 +48,7 @@ export class LikedService {
         if (!user) {
             throw new BadRequestException('User not found');
         }
-        return this.prisma.liked.findMany({
+        return await this.prisma.liked.findMany({
             where: {
                 userId: user.id,
             },
@@ -63,7 +63,7 @@ export class LikedService {
         if (!category) {
             throw new BadRequestException('Category not found');
         }
-        return this.prisma.liked.findMany({
+        return await this.prisma.liked.findMany({
             where: {
                 categoryId: category.id,
             },
@@ -101,7 +101,7 @@ export class LikedService {
         });
 
         if (existingLike) {
-            return this.prisma.liked.delete({
+            return await this.prisma.liked.delete({
                 where: {
                     likedId: {
                         userId,
@@ -110,7 +110,7 @@ export class LikedService {
                 },
             });
         } else {
-            return this.prisma.liked.create({
+            return await this.prisma.liked.create({
                 data: {
                     userId,
                     categoryId,

@@ -1,19 +1,31 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PrismaService } from 'src/prisma.service';
+import { SubscriptionService } from '../service/subscription.service';
 
 
 @ApiTags('SUBCRIPTION')
 @Controller('subscription')
 export class SubscriptionController {
-    constructor(private readonly prismaService: PrismaService) { }
+    constructor(private readonly prisma: PrismaService,
+        private readonly subcriptionService: SubscriptionService
+    ) { }
 
-
+    @Get('getall')
+    async test() {
+        return await this.subcriptionService.getAll()
+    }
 
     async getSubscriptionByUsername(username: string) { }
 
-    async subscribe() { }
-    async unsubscribe() { }
-    async validateSubscription() { }
+    @Post('SubscribeToUser/:userId/:followedId')
+    async subscribe(@Param('userId', ParseIntPipe) userId: number, @Param('followedId', ParseIntPipe) followedId: number) {
+        return await this.subcriptionService.subscribe(userId, followedId)
+    }
+
+    @Get('getFollowedUserByUserName/:userName')
+    async getFollowedUserByUserName(@Param('userName') userName: string) {
+        return await this.subcriptionService.getFollowedUserByUserName(userName)
+    }
 
 }
