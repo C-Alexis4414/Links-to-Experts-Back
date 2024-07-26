@@ -3,12 +3,13 @@ import { UserService } from '../service/user.service';
 import { YoutuberService } from '../service/youtuber.service';
 import { ProfessionalService } from '../service/professional.service';
 import { UserDataDto, CreateUserDto } from '../dto/userData.dto';
-import { ApiSecurity } from '@nestjs/swagger';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { UserType } from '../type/user.type';
 import { YoutuberType } from '../type/youtuber.type';
 import { ProfessionalType } from '../type/professional.type';
 
-@ApiSecurity('basic')
+// @ApiSecurity('basic')
+@ApiTags('USER')
 @Controller('user')
 export class UserController {
     constructor(private readonly userService: UserService,
