@@ -8,6 +8,12 @@ export class SubscriptionService {
     private readonly prisma = new PrismaService();
     constructor() { }
 
+    /**
+     * 
+     * TODO:
+     *  valider les return des fonctions subscribe et getfollowedUser
+     */
+
     async getAll() {
         const toto = await this.prisma.subscription.findMany()
         return toto;
@@ -47,15 +53,24 @@ export class SubscriptionService {
             where: {
                 userName: userName
             }
-        })
+        });
+
         if (!user) {
-            return user
-        } else {
-            return await this.prisma.subscription.findMany({
-                where: {
-                    subscribeUserId: user.id
-                }
-            })
+            return null;
         }
+
+        return await this.prisma.subscription.findMany({
+            where: {
+                subscribeUserId: user.id
+            },
+            select: {
+                followedUser: {
+                    select: {
+                        id: true,
+                        userName: true
+                    }
+                }
+            }
+        });
     }
 }
