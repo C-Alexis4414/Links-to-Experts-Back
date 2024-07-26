@@ -6,9 +6,9 @@ import { UserModule } from 'src/user/user.module';
 
 
 @Module({
-    providers: [ PrismaService,SubscriptionService],
+    providers: [SubscriptionService, PrismaService,],
     controllers: [SubscriptionController],
     exports: [],
-    imports:[UserModule]
+    imports: [UserModule]
 })
 export class SubscriptionModule { }
