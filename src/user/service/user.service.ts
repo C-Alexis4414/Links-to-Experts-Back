@@ -15,6 +15,8 @@ export class UserService {
     verify user
 
     encours : modifications de update afin de gerer les creations modifications ou suppression dans les tables youtuber,professional ...
+
+    bug: creation d'un user qui est juste professionnale ou youtuber, un bug s'affiche dans la console mais les données sont quand meme creer
     */
 
 

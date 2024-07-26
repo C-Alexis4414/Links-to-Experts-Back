@@ -17,6 +17,7 @@ export class LikedService {
      * TODO: refactoriser en utilisant les outils nest et prisma
      *       faire les dto
      *       faire les type/interface
+     *  
      *      
      */
 
@@ -67,7 +68,12 @@ export class LikedService {
                 categoryId: category.id,
             },
             select: {
-                user: true,
+                user: {
+                    select: {
+                        userName: true
+                    }
+
+                }
             },
         });
     }
