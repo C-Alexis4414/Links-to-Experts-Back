@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
-import { CategoryService } from '../service/category.service';
-import { TagService } from '../service/tags.service';
-import { CategoryType } from '../type/category.type';
+import { CategoryService } from '../../category/service/category.service';
+import { TagService } from '../../tags/service/tags.service';
+import { CategoryType } from '../../category/type/category.type';
 import { TagType } from '../type/tag.type';
-import { CategoryDto } from '../dto/category.dto';
+import { CategoryDto } from '../../category/dto/category.dto';
 import { TagDto } from '../dto/tag.dto';
 import { ApiTags } from '@nestjs/swagger';
 

@@ -1,10 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { CategoryService } from '../service/category.service';
-import { TagService } from '../service/tags.service';
 import { CategoryType } from '../type/category.type';
-import { TagType } from '../type/tag.type';
 import { CategoryDto } from '../dto/category.dto';
-import { TagDto } from '../dto/tag.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 
@@ -13,7 +10,6 @@ import { ApiTags } from '@nestjs/swagger';
 export class CategoryController {
     constructor(
         private readonly categoryService: CategoryService,
-        private readonly tagService: TagService
     ) { }
 
     @Get('id/:id')
@@ -46,10 +42,6 @@ export class CategoryController {
         return await this.categoryService.deleteCategoryById(id)
     }
 
-    /** 
-     * tag controller 
-     * 
-    */
 
 
 

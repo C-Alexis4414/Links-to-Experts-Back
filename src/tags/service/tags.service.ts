@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
-import { TagDto } from '../dto/tag.dto';
+import { TagDto } from '../../tags/dto/tag.dto';
 import { TagType } from '../type/tag.type';
 
 @Injectable()
