@@ -79,10 +79,12 @@ export class LikedService {
     }
 
     async toggleCategoryLike(userId: number, categoryId: number) {
-        const existingLike = await this.prisma.liked.findFirst({
+        const existingLike = await this.prisma.liked.findUnique({
             where: {
-                userId,
-                categoryId,
+                likedId: {
+                    userId,
+                    categoryId,
+                }
             },
             select: {
                 user: {
@@ -101,7 +103,7 @@ export class LikedService {
         if (existingLike) {
             return this.prisma.liked.delete({
                 where: {
-                    userId_categoryId: {
+                    likedId: {
                         userId,
                         categoryId,
                     },

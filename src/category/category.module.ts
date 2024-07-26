@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { CategoryService } from './service/category.service';
-import { TagService } from './service/tags.service';
 import { CategoryController } from './controller/category.controller';
-import { TagController } from './controller/tags.controller';
 import { PrismaService } from 'src/prisma.service';
+import { TagsModule } from 'src/tags/tag.module';
 
 @Module({
-    providers: [CategoryService, TagService, PrismaService],
-    controllers: [CategoryController, TagController],
-    exports: [CategoryModule]
+    providers: [CategoryService, PrismaService],
+    controllers: [CategoryController],
+    exports: [CategoryModule],
+    imports: [TagsModule]
 })
 export class CategoryModule { }
