@@ -8,6 +8,6 @@ import { ProfessionalService } from './service/professional.service';
 @Module({
     providers: [UserService, PrismaService, ProfessionalService, YoutuberService],
     controllers: [UserController],
-    exports: [UserService],
+    exports: [],
 })
 export class UserModule { }

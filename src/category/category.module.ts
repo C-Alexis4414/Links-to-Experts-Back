@@ -7,7 +7,7 @@ import { TagsModule } from 'src/tags/tag.module';
 @Module({
     providers: [CategoryService, PrismaService],
     controllers: [CategoryController],
-    exports: [CategoryModule],
-    imports: [TagsModule]
+    exports: [],
+    imports: []
 })
 export class CategoryModule { }
