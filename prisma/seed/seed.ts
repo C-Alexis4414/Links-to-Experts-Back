@@ -26,7 +26,7 @@ async function main() {
   const user1 = await prisma.user.create({
     data: {
       userName: 'JohnDoe',
-      password: 'password123',
+      password: '$2b$10$ALC9krzGRuzSGlverg4ZSOIpoeCcYL6vQslolFwwTZrhGVhIGlFUu',
       email: 'john@example.com',
       is_Youtuber: true,
       is_Professional: true,
@@ -47,7 +47,7 @@ async function main() {
   const user2 = await prisma.user.create({
     data: {
       userName: 'JaneSmith',
-      password: 'password123',
+      password: '$2b$10$ALC9krzGRuzSGlverg4ZSOIpoeCcYL6vQslolFwwTZrhGVhIGlFUu',
       email: 'jane@example.com',
       is_Youtuber: false,
       is_Professional: true,
@@ -63,7 +63,7 @@ async function main() {
   const user3 = await prisma.user.create({
     data: {
       userName: 'AliceJohnson',
-      password: 'password123',
+      password: '$2b$10$ALC9krzGRuzSGlverg4ZSOIpoeCcYL6vQslolFwwTZrhGVhIGlFUu',
       email: 'alice@example.com',
       is_Youtuber: true,
       is_Professional: false,

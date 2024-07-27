@@ -35,6 +35,11 @@ export class UserService {
         return getName;
     }
 
+    async getByEmail(email: string): Promise<UserType> {
+        const getUserByEmail = await this.prisma.user.findUnique({ where: { email: email } });
+        return getUserByEmail;
+    }
+
     // find all users
     async getAllUser(): Promise<UserType[]> {
         return await this.prisma.user.findMany();

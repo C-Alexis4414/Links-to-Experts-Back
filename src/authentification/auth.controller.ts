@@ -6,9 +6,10 @@ import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 
 // DTO
-import { signInDto } from './auth.dto';
-
-@Controller('auth')
+import { AuthDto } from './auth.dto';
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('AUTHENTICATION')
+@Controller('authentication')
 export class AuthController {
     constructor(private authService: AuthService) { }
 
@@ -23,4 +24,14 @@ export class AuthController {
     // async getProfile(@Request() req) {
     //     return await req.user;
     // }
+    @Get('profile')
+    async getUser() {
+        return await this.authService.getUser();
+    }
+
+    @Post('login')
+    async login(@Body() authData: AuthDto) {
+        return await this.authService.login(authData);
+
+    }
 }
