@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 
-export class signInDto {
+export class AuthDto {
     @ApiProperty()
     @Expose()
-    First_name: string;
+    email: string;
 
     // Exclude password from being returned
     @ApiProperty()
     @Exclude({ toPlainOnly: true })
-    Password: string;
+    password: string;
 }
 
