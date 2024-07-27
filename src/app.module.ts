@@ -11,7 +11,7 @@ import { TagsModule } from './tags/tag.module';
 import { SubscriptionModule } from './subscription/subcription.module';
 
 @Module({
-  imports: [UserModule, CategoryModule, LikedModule, TagsModule, SubscriptionModule],
+  imports: [UserModule, CategoryModule, LikedModule, TagsModule, SubscriptionModule, AuthModule],
   controllers: [],
   providers: [],
 

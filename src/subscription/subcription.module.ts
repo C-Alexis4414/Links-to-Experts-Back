@@ -9,6 +9,6 @@ import { UserModule } from 'src/user/user.module';
     providers: [SubscriptionService, PrismaService,],
     controllers: [SubscriptionController],
     exports: [],
-    imports: [UserModule]
+    imports: []
 })
 export class SubscriptionModule { }
