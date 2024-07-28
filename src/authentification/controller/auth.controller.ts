@@ -10,23 +10,13 @@ import { AuthLoginDto, AuthPayloadDto } from '../dto/auth.dto';
 
 
 import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../jwt-auth.guard';
+import { RequestWithUserPayload } from '../type/auth.type';
 @ApiTags('AUTHENTICATION')
+
 @Controller('authentication')
 export class AuthController {
     constructor(private authService: AuthService) { }
-
-    // @HttpCode(HttpStatus.OK)
-    // @Post('login')
-    // async signIn(@Body() signInDto: signInDto) {
-    //     return await this.authService.signInAuth(signInDto.First_name, signInDto.Password);
-    // }
-
-    // @UseGuards(AuthGuard)
-    // @Get('profile')
-    // async getProfile(@Request() req) {
-    //     return await req.user;
-    // }
-
 
     //1. envoie un mot de passe et un email
     //2. l'api renvoie un token sécurisé avec le bon mot de passe
@@ -36,9 +26,12 @@ export class AuthController {
     }
 
     //3. on renvoie le token securise qui correspond à l'utilisateur qui a été identifier precedement  
+    @UseGuards(JwtAuthGuard)
     @Get()
-    async authenticate() {
+    async authenticate(@Request() request: RequestWithUserPayload) {
+        console.log(request.user);
 
+        return 'a'
     }
 
 }

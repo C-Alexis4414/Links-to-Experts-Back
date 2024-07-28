@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma.service';
 import { AuthLoginDto, AuthPayloadDto } from '../dto/auth.dto';
 import * as bcrypt from 'bcrypt';
+import { UserPayloadType } from '../type/auth.type';
 
 
 @Injectable()
@@ -47,8 +48,8 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new Error('something where wrong during authentication')
     }
-    const payload = { id: user.id, userName: user.userName, sub: user.id}
-
+    
+    const payload: UserPayloadType = { id: user.id, userName: user.userName }
     return await this.authenticateUser(payload)
   }
 
