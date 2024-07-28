@@ -1,7 +1,15 @@
+// NEST
 import { BadRequestException, Injectable } from '@nestjs/common';
+
+// SERVICE
 import { PrismaService } from 'src/prisma.service';
+
+// TYPE
 import { CategoryType } from '../type/category.type';
+
+// DTO
 import { CategoryDto } from '../dto/category.dto';
+
 
 @Injectable()
 export class CategoryService {
@@ -73,6 +81,6 @@ export class CategoryService {
         })
     }
 
-    
+
 
 }

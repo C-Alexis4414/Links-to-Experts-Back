@@ -1,6 +1,9 @@
-import { Injectable } from "@nestjs/common";
-import { IsNumber } from "class-validator";
-import { PrismaService } from "src/prisma.service";
+// NEST
+import { Injectable } from '@nestjs/common';
+
+// SERVICE
+import { PrismaService } from 'src/prisma.service';
+
 
 
 @Injectable()
