@@ -1,49 +1,83 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { UserService } from '../service/user.service';
-import { UserDto } from '../dto/getUser.dto';
-import { UpdateUserDto } from '../dto/updateUer.dto';
-import { CreateUserDto } from '../dto/createUser.dto';
+import { YoutuberService } from '../service/youtuber.service';
+import { ProfessionalService } from '../service/professional.service';
+import { UserDataDto, CreateUserDto } from '../dto/userData.dto';
 import { ApiSecurity } from '@nestjs/swagger';
+import { UserType } from '../type/user.type';
+import { YoutuberType } from '../type/youtuber.type';
+import { ProfessionalType } from '../type/professional.type';
 
 @ApiSecurity('basic')
-@Controller('users')
+@Controller('user')
 export class UserController {
-    constructor(private readonly userService: UserService) { }
+    constructor(private readonly userService: UserService,
+        private readonly youtuberService: YoutuberService,
+        private readonly professionalService: ProfessionalService,
+    ) { }
 
-    @Get('getUsers')
-    async getUsers(): Promise<UserDto[]> {
-        return this.userService.getUsers();
+    // TODO @query
+    // @Get('password/:password')
+    // async hashage(@Param('password') password: string): Promise<string> {
+    //     return await this.userService.hash(password);
+    // }
+
+    @Get('id/:id')
+    async getUser(@Param('id') id: number): Promise<UserType> {
+        return this.userService.getUser(Number(id));
     }
 
-    @Get(':id')
-    async getUser(@Param('id') id: number): Promise<UserDto> {
-        return this.userService.getUser(id);
+    @Get('name/:name')
+    async getUserByName(@Param('name') name: string): Promise<UserType> {
+        return await this.userService.getByUserName(name);
     }
 
+    @Get('allUsers')
+    async getAllUsers(): Promise<UserType[]> {
+        return await this.userService.getAllUser()
+    }
+    
     @Post('create')
-    async createUser(@Body() createUserDto: CreateUserDto): Promise<CreateUserDto> {
-        const newUser = await this.userService.createUser(createUserDto);
-        return newUser;
+    async createUser(@Body() userData: CreateUserDto,): Promise<UserType> {
+        return await this.userService.createUser(userData);
     }
 
     @Put('update/:id')
     async update(
         @Param('id') id: string,
-        @Body() updateUserDto: UpdateUserDto
-    ): Promise<UpdateUserDto> {
-        return this.userService.updateUser(Number(id), updateUserDto);
+        @Body() updateUserData: UserDataDto
+    ): Promise<UserType> {
+        return await this.userService.updateUser(Number(id), updateUserData);
     }
 
     @Delete('delete/:id')
-    async deleteUser(@Param('id') id: number): Promise<any> {
-        const deleteUser = await this.userService.deleteUser(Number(id));
-        return deleteUser;
+    async deleteUser(@Param('id') id: number): Promise<void> {
+        await this.userService.deleteUser(Number(id));
     }
 
-    @Get('getName/:name')
-    async getName(@Param('name') name: string): Promise<UserDto> {
-        const getName = await this.userService.getName(name);
-        return getName;
+    @Get('testyoutube/:id')
+    async testYoutube(@Param('id') id: number): Promise<YoutuberType> {
+        return await this.youtuberService.getTagChannelById(Number(id));
     }
+
+    @Get('testprofessional/:id')
+    async testProfessional(@Param('id') id: number): Promise<ProfessionalType> {
+        return await this.professionalService.getUrlLinkedinById(Number(id));
+    }
+    // recupère toutes les infos d'un utilisateur --- ne marche pas vraiment
+    @Get('getAllUserInfo/:id')
+    async getAllInfo(@Param('id') id: number): Promise<{ user: UserType, youtuber?: YoutuberType, professional?: ProfessionalType }> {
+        const user = await this.userService.getUser(Number(id));
+        let youtuber: YoutuberType;
+        let professional: ProfessionalType;
+        if (user.is_Youtuber) {
+            youtuber = await this.youtuberService.getTagChannelById(Number(id));
+        }
+        if (user.is_Professional) {
+            professional = await this.professionalService.getUrlLinkedinById(Number(id));
+        }
+        return { user, youtuber, professional };
+    }
+
 }
 
