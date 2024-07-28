@@ -1,6 +1,10 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
-import { LikedService } from '../service/liked.service';
+// TOOLS
+import { Controller, Get, Put, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+
+// SERVICES
+import { LikedService } from '../service/liked.service';
+
 
 @ApiTags('LIKED')
 @Controller('liked')

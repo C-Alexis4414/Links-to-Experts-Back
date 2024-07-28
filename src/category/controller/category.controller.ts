@@ -1,8 +1,15 @@
+// TOOLS
 import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
-import { CategoryService } from '../service/category.service';
-import { CategoryType } from '../type/category.type';
-import { CategoryDto } from '../dto/category.dto';
 import { ApiTags } from '@nestjs/swagger';
+
+// SERVICES
+import { CategoryService } from '../service/category.service';
+
+// TYPE
+import { CategoryType } from '../type/category.type';
+
+// DTO
+import { CategoryDto } from '../dto/category.dto';
 
 
 @ApiTags('CATEGORY')

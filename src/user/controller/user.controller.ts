@@ -1,12 +1,19 @@
+// TOOLS
 import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+
+// SERVICES
 import { UserService } from '../service/user.service';
 import { YoutuberService } from '../service/youtuber.service';
 import { ProfessionalService } from '../service/professional.service';
-import {  CreateUserDto } from '../dto/userData.dto';
-import {  ApiTags } from '@nestjs/swagger';
+
+// DTO
+import { CreateUserDto } from '../dto/userData.dto';
+
+// TYPE
 import { UserType } from '../type/user.type';
 
-// @ApiSecurity('basic')
+
 @ApiTags('USER')
 @Controller('user')
 export class UserController {
@@ -30,11 +37,10 @@ export class UserController {
         return await this.userService.getAllUser()
     }
 
-    // create method is private so we can't use in a controller, only user service can use create function => will besome register in auth service
-    // @Post('create')
-    // async createUser(@Body() userData: CreateUserDto,): Promise<UserType> {
-    //     return await this.userService.createUser(userData);
-    // }
+    @Post('create')
+    async createUser(@Body() userData: CreateUserDto,): Promise<UserType> {
+        return await this.userService.createUser(userData);
+    }
 
     @Delete('deleteByName/:name')
     async deleteUserByName(@Param('name') userName: string): Promise<void> {
