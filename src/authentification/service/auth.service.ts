@@ -1,15 +1,14 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/service/user.service';
-import { AuthDto } from './auth.dto';
+import { PrismaService } from 'src/prisma.service';
+import { AuthLoginDto, AuthPayloadDto } from '../dto/auth.dto';
 import * as bcrypt from 'bcrypt';
-import { UserDataDto } from 'src/user/dto/userData.dto';
 
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UserService,
+    private readonly prisma: PrismaService,
     private readonly jwtService: JwtService
   ) { }
 
@@ -22,31 +21,35 @@ export class AuthService {
    * fct login: revoir authenticate pour plus de securite avec le payload
    * 
    */
-  async getUser() {
-    return await this.userService.getAllUser()
-  }
 
   // validate user password and email
-  async login(authData: AuthDto): Promise<any> {
-    const user = await this.userService.getByEmail(authData.email)
+  async login(authData: AuthLoginDto): Promise<any> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: authData.email
+      },
+      select: {
+        id: true,
+        userName: true,
+        password: true
+      }
+    })
 
     if (!user) {
       throw new Error('something was wrong during login user dosen\'t exist')
-    }  
+    }
 
     // on crypte l'input de l'utilisateur
     // const hashPassword = await this.hashPassword(authData.password)
     // on vérifie que le mdp est valide
     const isPasswordValid = await this.isPasswordValid(authData.password, user.password)
-    console.log(authData.password, user.password);
-
-    console.log(isPasswordValid);
 
     if (!isPasswordValid) {
       throw new Error('something where wrong during authentication')
     }
+    const payload = { id: user.id, userName: user.userName, sub: user.id}
 
-    return await this.authenticateUser(user)
+    return await this.authenticateUser(payload)
   }
 
   // private because we use this function only in auth service
@@ -63,14 +66,9 @@ export class AuthService {
   }
 
   // create jwt token
-  private async authenticateUser(userData: UserDataDto) {
+  private async authenticateUser(userPayload: AuthPayloadDto) {
     // payload = data how can identify user (@unique)
-    const payload = { userData }
-    console.log(payload);
-    return { accessToken: await this.jwtService.signAsync(payload) }
+    return { accessToken: await this.jwtService.signAsync(userPayload) }
   }
-
-
-
 }
 

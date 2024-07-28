@@ -5,7 +5,7 @@ import { LikedModule } from './liked/liked.module';
 import { AuthModule } from './authentification/auth.module';
 import { TagsModule } from './tags/tag.module';
 import { SubscriptionModule } from './subscription/subcription.module';
-import { ConfigModule } from '@nestjs/config';
+// import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
