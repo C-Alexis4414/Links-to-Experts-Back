@@ -7,6 +7,7 @@ import { AuthController } from './controller/auth.controller';
 //SERVICES
 import { AuthService } from './service/auth.service';
 import { PrismaService } from 'src/prisma.service';
+import { UserService } from 'src/user/service/user.service';
 
 //MODULES
 import { UserModule } from 'src/user/user.module';
@@ -14,8 +15,6 @@ import { UserModule } from 'src/user/user.module';
 //JWT
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
-import { UserService } from 'src/user/service/user.service';
-
 
 
 @Module({

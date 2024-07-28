@@ -30,10 +30,11 @@ export class UserController {
         return await this.userService.getAllUser()
     }
 
-    @Post('create')
-    async createUser(@Body() userData: CreateUserDto,): Promise<UserType> {
-        return await this.userService.createUser(userData);
-    }
+    // create method is private so we can't use in a controller, only user service can use create function => will besome register in auth service
+    // @Post('create')
+    // async createUser(@Body() userData: CreateUserDto,): Promise<UserType> {
+    //     return await this.userService.createUser(userData);
+    // }
 
     @Delete('deleteByName/:name')
     async deleteUserByName(@Param('name') userName: string): Promise<void> {

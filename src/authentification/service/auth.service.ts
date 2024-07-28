@@ -4,7 +4,7 @@ import { PrismaService } from 'src/prisma.service';
 import { AuthLoginDto, AuthPayloadDto } from '../dto/auth.dto';
 import * as bcrypt from 'bcrypt';
 import { UserPayloadType } from '../type/auth.type';
-import { CreateUserDto, UserDataDto } from 'src/user/dto/userData.dto';
+import { CreateUserDto} from 'src/user/dto/userData.dto';
 import { UserService } from 'src/user/service/user.service';
 
 
@@ -22,11 +22,10 @@ export class AuthService {
    * se renseigner sur le cryptage du mdp ??
    * se mettre d'accord sur les format de retour des fonctions
    * 
-   * fct login: revoir authenticate pour plus de securite avec le payload
+   * JWT AUTH regarder a quoi sert vraiment ce fichier 
    * 
    */
 
-  // validate user password and email
   async login(authData: AuthLoginDto): Promise<any> {
     const user = await this.prisma.user.findUnique({
       where: {

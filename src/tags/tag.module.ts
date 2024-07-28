@@ -1,5 +1,10 @@
+// TOOLS
 import { Module } from '@nestjs/common';
+
+// CONTROLLERS
 import { TagController } from './controller/tags.controller';
+
+// SERVICES
 import { TagService } from './service/tags.service';
 import { PrismaService } from 'src/prisma.service';
 
