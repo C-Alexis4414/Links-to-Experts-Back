@@ -1,11 +1,22 @@
+// NEST
 import { Injectable } from '@nestjs/common';
+
+// JWT
 import { JwtService } from '@nestjs/jwt';
+
+// SERVICE
 import { PrismaService } from 'src/prisma.service';
-import { AuthLoginDto, AuthPayloadDto } from '../dto/auth.dto';
-import * as bcrypt from 'bcrypt';
-import { UserPayloadType } from '../type/auth.type';
-import { CreateUserDto} from 'src/user/dto/userData.dto';
 import { UserService } from 'src/user/service/user.service';
+
+// DTO
+import { AuthLoginDto, AuthPayloadDto } from '../dto/auth.dto';
+import { CreateUserDto } from 'src/user/dto/userData.dto';
+
+// TYPE
+import { UserPayloadType } from '../type/auth.type';
+
+// OTHER
+import * as bcrypt from 'bcrypt';
 
 
 @Injectable()
