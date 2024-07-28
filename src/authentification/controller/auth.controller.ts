@@ -1,20 +1,23 @@
 // TOOLS
-import { Body, Controller, Post, Get, Request, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Get, Request, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+
+// GUARDS
+import { JwtAuthGuard } from '../jwt-auth.guard';
 
 // SERVICES
 import { AuthService } from '../service/auth.service';
 import { UserService } from 'src/user/service/user.service';
 
 // DTO
-import { AuthLoginDto, AuthPayloadDto } from '../dto/auth.dto';
-
-
-import { ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../jwt-auth.guard';
-import { RequestWithUserPayload } from '../type/auth.type';
+import { AuthLoginDto} from '../dto/auth.dto';
 import { CreateUserDto } from 'src/user/dto/userData.dto';
-@ApiTags('AUTHENTICATION')
 
+// TYPE
+import { RequestWithUserPayload } from '../type/auth.type';
+
+
+@ApiTags('AUTHENTICATION')
 @Controller('authentication')
 export class AuthController {
     constructor(private authService: AuthService, private readonly userService: UserService
