@@ -14,11 +14,63 @@ datasource db {
 }
 
 model User {
-  id            Int     @id @default(autoincrement())
-  First_name    String
-  Last_Name     String
-  Password      String
-  Email_address String  @unique
-  Is_Youtuber   Boolean
-  Is_Pro        Boolean
+  id              Int            @id @default(autoincrement())
+  userName        String         @unique
+  password        String
+  email           String         @unique
+  is_Youtuber     Boolean        @default(false)
+  is_Professional Boolean        @default(false)
+  subscriptions   Subscription[] @relation("subscription") // Utilisateurs que cet utilisateur suit
+  followers       Subscription[] @relation("follow") // Utilisateurs qui suivent cet utilisateur
+  likes           Liked[]
+  professional    Professional?
+  youtuber        Youtuber?
+}
+
+model Category {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  likes Liked[]
+  tags  Tags[]
+}
+
+model Liked {
+  userId     Int
+  categoryId Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([userId, categoryId])
+}
+
+model Tags {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model Subscription {
+  subscribeUserId Int // Identifiant de l'utilisateur qui s'abonne (qui suit)
+  followedUserId  Int // Identifiant de l'utilisateur qui est suivi
+  subscribeUser   User @relation("subscription", fields: [subscribeUserId], references: [id], onDelete: Cascade)
+  followedUser    User @relation("follow", fields: [followedUserId], references: [id], onDelete: Cascade)
+
+  @@id([subscribeUserId, followedUserId])
+}
+
+model Youtuber {
+  id         Int    @id @default(autoincrement())
+  userId     Int    @unique
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tagChannel String //@default("@")
+}
+
+model Professional {
+  id                     Int    @id @default(autoincrement())
+  userId                 Int    @unique
+  user                   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  urlLinkedin            String @unique
+  // format des recommandationsà valider
+  recommandationLinkedin Json
 }
