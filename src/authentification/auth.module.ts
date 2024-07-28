@@ -14,12 +14,14 @@ import { UserModule } from 'src/user/user.module';
 //JWT
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
+import { UserService } from 'src/user/service/user.service';
+
 
 
 @Module({
 
   controllers: [AuthController],
-  providers: [AuthService, PrismaService, JwtStrategy],
+  providers: [AuthService, PrismaService, JwtStrategy, UserService],
   imports: [
     JwtModule.register({
       global: true,

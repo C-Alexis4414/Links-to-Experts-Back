@@ -10,9 +10,9 @@ export class AuthPayloadDto {
     @IsString()
     userName: string;
 
-    @ApiProperty()
-    @IsInt()
-    id: number
+    // @ApiProperty()
+    // @IsInt()
+    // id: number
 }
 
 export class AuthLoginDto {

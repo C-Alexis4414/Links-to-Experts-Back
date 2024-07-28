@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UserType } from '../type/user.type';
+import { UserType, UserTypeTest } from '../type/user.type';
 import { PrismaService } from 'src/prisma.service';
 import { UserDataDto, CreateUserDto } from '../dto/userData.dto';
 
@@ -46,7 +46,7 @@ export class UserService {
     }
 
     // create a user with relations queries
-    async createUser(userData: CreateUserDto): Promise<UserType> {
+    async createUser(userData: CreateUserDto): Promise<UserTypeTest> {
 
         if (!userData.is_Youtuber && !userData.is_Professional) {
             throw new BadRequestException('User must be either a Youtuber or a Professional');
