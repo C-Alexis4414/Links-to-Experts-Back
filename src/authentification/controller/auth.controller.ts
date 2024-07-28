@@ -1,12 +1,14 @@
 // TOOLS
 import { Body, Controller, Post, Get, Request, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
-import { AuthGuard } from './auth.guard';
+import { AuthGuard } from '../auth.guard';
 
 // SERVICES
-import { AuthService } from './auth.service';
+import { AuthService } from '../service/auth.service';
 
 // DTO
-import { AuthDto } from './auth.dto';
+import { AuthLoginDto, AuthPayloadDto } from '../dto/auth.dto';
+
+
 import { ApiTags } from '@nestjs/swagger';
 @ApiTags('AUTHENTICATION')
 @Controller('authentication')
@@ -24,14 +26,19 @@ export class AuthController {
     // async getProfile(@Request() req) {
     //     return await req.user;
     // }
-    @Get('profile')
-    async getUser() {
-        return await this.authService.getUser();
-    }
 
+
+    //1. envoie un mot de passe et un email
+    //2. l'api renvoie un token sécurisé avec le bon mot de passe
     @Post('login')
-    async login(@Body() authData: AuthDto) {
-        return await this.authService.login(authData);
+    async login(@Body() authLogin: AuthLoginDto) {
+        return await this.authService.login(authLogin);
+    }
+
+    //3. on renvoie le token securise qui correspond à l'utilisateur qui a été identifier precedement  
+    @Get()
+    async authenticate() {
 
     }
+
 }
