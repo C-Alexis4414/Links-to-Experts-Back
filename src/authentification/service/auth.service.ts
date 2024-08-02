@@ -50,7 +50,7 @@ export class AuthService {
     })
 
     if (!user) {
-      throw new Error('something was wrong during login user dosen\'t exist')
+      throw new Error('something was wrong during login')
     }
 
     const isPasswordValid = await this.isPasswordValid(authData.password, user.password)
