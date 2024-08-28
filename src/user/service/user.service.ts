@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
 import { UserType } from '../type/user.type';
 import { PrismaService } from 'src/prisma.service';
 import { UserDataDto, CreateUserDto } from '../dto/userData.dto';
 import * as bcrypt from 'bcrypt';
+import axios from 'axios';
 
 // interface SignupParams {
 //     email: string;
@@ -12,11 +13,6 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UserService {
     private readonly prisma = new PrismaService();
-
-    // async hash(password: string): Promise<string> {
-    //     const salt = await bcrypt.genSalt(10);
-    //     return await bcrypt.hash(password, salt);
-    // }
 
     // find a user by id
     async getUser(id: number): Promise<UserType> {
@@ -45,20 +41,40 @@ export class UserService {
     //     if (userExists) {
     //         throw new ConflictException();
     //     }
-
-    //     const hashedPassword = await bcrypt.hash(password, 10);
-
-    //     console.log(hashedPassword);
     // }
+    async verifyYTChannel(tagChannel: string): Promise<boolean> {
+        const apiKey = process.env.YOUTUBE_API_KEY;
+        const channelId = extractChannelId(tagChannel);
+        // 
+        if (!channelId) {
+            throw new HttpException('Invalid Youtube Channel', HttpStatus.BAD_REQUEST);
+        }
+        const url = "https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=" + channelId + "&key=" + apiKey;
+        try {
+            const response = await axios.get(url);
+            const channels = response.data.items;
+            console.log(response.data);
+            console.log(channels);
+            return channels && channels.length > 0;
+        } catch (error) {
+            return false; // in case of error, the string is not valid
+        }
+    }
+
     async createUser(userData: CreateUserDto): Promise<UserType> { //dto pour youtube et pro
         if (!userData.is_Youtuber && !userData.is_Professional) {
             throw new BadRequestException('User must be either a Youtuber or a Professional');
         }
         console.log(userData);
 
-        const hashedPassword = await bcrypt.hash(userData.password, 10);
+        if (userData.is_Youtuber) {
+            const isValidChannel = await this.verifyYTChannel(userData.tagChannel);
+            if (!isValidChannel) {
+                throw new BadRequestException('Invalid Youtube Channel');
+            }
+        }
 
-        console.log(hashedPassword);
+        const hashedPassword = await bcrypt.hash(userData.password, 10);
 
         const newUser = await this.prisma.user.create({
             data: {
@@ -70,17 +86,15 @@ export class UserService {
                 // if isYoutube ou isPro est vrai alors => create la dépandance
             },
         });
-        // if (userData.is_Youtuber) {
+        if (userData.is_Youtuber) {
 
-        //     // call youtube api to check tag channel
-
-        //     await this.prisma.youtuber.create({
-        //         data: {
-        //             userId: newUser.id,
-        //             tagChannel: userData.tagChannel,
-        //         },
-        //     });
-        // }
+            await this.prisma.youtuber.create({
+                data: {
+                    userId: newUser.id,
+                    tagChannel: userData.tagChannel,
+                },
+            });
+        }
 
         // if (userData.is_Professional) {
         //     await this.prisma.professional.create({
@@ -194,3 +208,10 @@ export class UserService {
         ;
     }
 }
+function extractChannelId(tagChannel: string): string {
+    // Extraction of the id by handle of the string from the url
+    const regex = /@([a-zA-Z0-9_-]+)/;
+    const match = tagChannel.match(regex);
+    console.log(match);
+    return match ? match[1] : null;
+  }
