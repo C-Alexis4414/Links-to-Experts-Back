@@ -6,7 +6,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { UserService } from '../service/user.service';
 import { YoutuberService } from '../service/youtuber.service';
 import { ProfessionalService } from '../service/professional.service';
-import { UserDataDto, CreateUserDto } from '../dto/userData.dto';
+import { UserDataDto, CreateUserDto, LinkedinDto } from '../dto/userData.dto';
 import { ApiSecurity } from '@nestjs/swagger';
 import { UserType } from '../type/user.type';
 
@@ -24,6 +24,16 @@ export class UserController {
     // async hashage(@Param('password') password: string): Promise<string> {
     //     return await this.userService.hash(password);
     // }
+    /*methode1
+        @Get('testCallApi/:userName')
+         async testCallApi(@Param('userName') userName: string): Promise<any> { 
+          return await this.userService.verifyLinkedinSkills(userName);
+         */
+
+    @Post('testCallApi/:userName')
+    async testCallApi(@Body() userName: LinkedinDto): Promise<any> {
+        return await this.userService.verifyLinkedinSkills(userName);
+    }
 
     @Get('id/:id')
     async getUser(@Param('id', ParseIntPipe) id: number): Promise<UserType> {
@@ -39,7 +49,7 @@ export class UserController {
     async getAllUsers(): Promise<UserType[]> {
         return await this.userService.getAllUser()
     }
-    
+
     @Post('create')
     async createUser(@Body() userData: CreateUserDto): Promise<UserType> {
         return await this.userService.createUser(userData);

@@ -67,6 +67,13 @@ export class UserIsYoutuber {
     tagChannel?: string;
 }
 
+export class LinkedinDto {
+    @ApiProperty()
+    @IsString()
+    userName: string;
+
+}
+
 // export class UserIsProfessional {
 //     @ApiProperty()
 //     @IsString()
