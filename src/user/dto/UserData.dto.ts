@@ -22,10 +22,10 @@ export class CreateUserDto {
     @IsBoolean()
     is_Professional: boolean;
 
-    // @ApiProperty()
-    // @IsString()
-    // @IsOptional()
-    // tagChannel?: string;
+    @ApiProperty()
+    @IsString()
+    @IsOptional()
+    tagChannel?: string;
 
     // @ApiProperty()
     // @IsString()
@@ -58,13 +58,14 @@ export class UserDataDto {
     @IsBoolean()
     @IsOptional()
     is_Professional?: boolean;
+}
 
-// export class UserIsYoutuber {
-//     @ApiProperty()
-//     @IsString()
-//     @IsOptional()
-//     tagChannel?: string;
-// }
+export class UserIsYoutuber {
+    @ApiProperty()
+    @IsString()
+    @IsOptional()
+    tagChannel?: string;
+}
 
 // export class UserIsProfessional {
 //     @ApiProperty()
@@ -72,5 +73,5 @@ export class UserDataDto {
 //     @IsOptional()
 //     urlLikendin: string;
 // }
-}
+
 
