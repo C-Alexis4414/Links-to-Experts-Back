@@ -6,11 +6,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { UserService } from '../service/user.service';
 import { YoutuberService } from '../service/youtuber.service';
 import { ProfessionalService } from '../service/professional.service';
-
-// DTO
-import { CreateUserDto } from '../dto/userData.dto';
-
-// TYPE
+import { UserDataDto, CreateUserDto } from '../dto/userData.dto';
+import { ApiSecurity } from '@nestjs/swagger';
 import { UserType } from '../type/user.type';
 
 
@@ -21,6 +18,12 @@ export class UserController {
         private readonly youtuberService: YoutuberService,
         private readonly professionalService: ProfessionalService,
     ) { }
+
+    // TODO @query
+    // @Get('password/:password')
+    // async hashage(@Param('password') password: string): Promise<string> {
+    //     return await this.userService.hash(password);
+    // }
 
     @Get('id/:id')
     async getUser(@Param('id', ParseIntPipe) id: number): Promise<UserType> {
@@ -36,15 +39,19 @@ export class UserController {
     async getAllUsers(): Promise<UserType[]> {
         return await this.userService.getAllUser()
     }
-
+    
     @Post('create')
-    async createUser(@Body() userData: CreateUserDto,): Promise<UserType> {
+    async createUser(@Body() userData: CreateUserDto): Promise<UserType> {
         return await this.userService.createUser(userData);
     }
 
-    @Delete('deleteByName/:name')
-    async deleteUserByName(@Param('name') userName: string): Promise<void> {
-        await this.userService.deleteUserByName(userName);
+
+    @Put('update/:id')
+    async update(
+        @Param('id') id: string,
+        @Body() updateUserData: UserDataDto
+    ): Promise<UserType> {
+        return await this.userService.updateUser(Number(id), updateUserData);
     }
 
     @Delete('deleteById/:id')
