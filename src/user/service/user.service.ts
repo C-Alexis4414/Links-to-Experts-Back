@@ -8,7 +8,7 @@ import { UserType, } from '../type/user.type';
 import { PrismaService } from 'src/prisma.service';
 
 //DTO
-import { CreateUserDto, UserDataDto } from '../dto/userData.dto';
+import { CreateUserDto, UserDataDto, LinkedinDto } from '../dto/userData.dto';
 import axios from 'axios';
 
 // interface SignupParams {
@@ -42,31 +42,10 @@ export class UserService {
         return getName;
     }
 
-    // async getByEmail(email: string): Promise<UserType> {
-    //     const getUserByEmail = await this.prisma.user.findUnique({ where: { email: email } });
-    //     return getUserByEmail;
-    // }
-
     // find all users
     async getAllUser(): Promise<UserType[]> {
         return await this.prisma.user.findMany();
-
     }
-
-    //TODO gérer la creation des entités youtuber et professional pendant la création
-    // async signup({ email, password }: SignupParams) {
-    //     const userExists = await this.prisma.user.findUnique({
-    //         where: {
-    //             email,
-    //         },
-    //     });
-
-    //     if (userExists) {
-    //         throw new ConflictException();
-    //     }
-    // }
-
-    // }
 
     async extractChannelId(tagChannel: string): Promise<string> {
         // Extraction of the id by handle of the string from the url
@@ -79,7 +58,7 @@ export class UserService {
     async verifyYTChannel(tagChannel: string): Promise<boolean> {
         const apiKey = process.env.YOUTUBE_API_KEY;
         const channelId = await this.extractChannelId(tagChannel);
-        // 
+
         if (!channelId) {
             throw new HttpException('Invalid Youtube Channel', HttpStatus.BAD_REQUEST);
         }
@@ -87,11 +66,83 @@ export class UserService {
         try {
             const response = await axios.get(url);
             const channels = response.data.items;
-            // console.log(response.data);
-            // console.log(channels);
             return channels && channels.length > 0;
         } catch (error) {
-            return false; // in case of error, the string is not valid
+            return false;
+        }
+    }
+
+    /* methode 1
+    ne renvoie pas toutes les données
+    doit gérer regex 
+    nb d'appel/mois : 10
+    
+    async verifyLinkedinSkills(userName: string): Promise<any> {
+        const options = {
+            method: 'GET',
+            url: 'https://linkedin-data-api.p.rapidapi.com/all-profile-data',
+            params: {
+                username: userName
+            },
+            headers: {
+                'x-rapidapi-key': process.env.RAPID_API_KEY,
+                'x-rapidapi-host': process.env.REQUEST_API_HOST
+            }
+        };
+
+        try {
+            const response = await axios.request(options);
+            const skills = response.data.data.skills;
+            // Filtrer les compétences ayant la propriété endorsementsCount et récupérer les noms
+            const endorsedSkills = skills
+                .filter((skill: any) => skill.endorsementsCount)
+                .map((skill: any) => skill.name);
+
+            return [skills, endorsedSkills]
+        } catch (error) {
+            console.error(error);
+        }
+    }
+        */
+
+    /*
+    methode 2
+    ne recupere pas toute les compétences 
+    nb d'appel/mois :50
+    */
+    async verifyLinkedinSkills(userName: LinkedinDto): Promise<any> {
+        console.log(userName);
+
+        const options = {
+            method: 'POST',
+            url: 'https://linkedin-data-scraper.p.rapidapi.com/person',
+            headers: {
+                'x-rapidapi-key': process.env.RAPID_API_KEY,
+                'x-rapidapi-host': process.env.REQUEST_API_HOST_2,
+                'Content-Type': 'application/json'
+            },
+            data: {
+                link: `http://www.linkedin.com/in/ludovicviaud/`
+            }
+        };
+
+        try {
+            const response = await axios.request(options);
+            const skills = response.data.data.skills;
+            // Filtrer les sous-composants qui ont un text qui commence par un chiffre
+            // Retourner le titre des compétences qui remplissent les critères
+            const endorsedSkills = skills.filter((skill: any) =>
+                skill.subComponents.some((subComponent: any) =>
+                    subComponent.description.some((desc: any) =>
+                        desc.text && /^[0-9]/.test(desc.text)
+                    )
+                ))
+                .map((skill: any) => skill.title);
+            return {
+                endorsedSkills: endorsedSkills,
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
 
@@ -101,12 +152,14 @@ export class UserService {
             throw new BadRequestException('User must be either a Youtuber or a Professional');
         }
 
-        // if (userData.is_Youtuber) {
-        //     const isValidChannel = await this.verifyYTChannel(userData.tagChannel);
-        //     if (!isValidChannel) {
-        //         throw new BadRequestException('Invalid Youtube Channel');
-        //     }
-        // }
+        if (userData.is_Youtuber) {
+            const isValidChannel = await this.verifyYTChannel(userData.tagChannel);
+            if (!isValidChannel) {
+                throw new BadRequestException('Invalid Youtube Channel');
+            }
+        }
+
+
 
         const youtuberData = userData.is_Youtuber
             ? { create: { tagChannel: userData.tagChannel } }
