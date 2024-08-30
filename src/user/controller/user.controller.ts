@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, BadRequestException } from '@nestjs/common';
 import { UserService } from '../service/user.service';
 import { YoutuberService } from '../service/youtuber.service';
 import { ProfessionalService } from '../service/professional.service';
@@ -38,9 +38,10 @@ export class UserController {
     }
     
     @Post('create')
-    async createUser(@Body() userData: CreateUserDto,): Promise<UserType> {
+    async createUser(@Body() userData: CreateUserDto): Promise<UserType> {
         return await this.userService.createUser(userData);
     }
+
 
     @Put('update/:id')
     async update(
