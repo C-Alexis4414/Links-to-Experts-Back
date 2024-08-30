@@ -15,10 +15,10 @@ model User {
   is_Professional Boolean        @default(true)
   is_Youtuber     Boolean        @default(true)
   likes           Liked[]
-  professional    Professional?
   followers       Subscription[] @relation("follow")
   subscriptions   Subscription[] @relation("subscription")
   youtuber        Youtuber?
+  professional    Professional?
   Tags            Tags[]
 }
 
