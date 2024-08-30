@@ -81,7 +81,6 @@ export class AuthService {
     const hashedPassword = await this.hashPassword(userData.password)
     userData.password = hashedPassword
     const newUser = await this.userService.createUser(userData)
-
     const payload: UserPayloadType = { userName: newUser.userName }
     return await this.authenticateUser(payload)
   }
@@ -95,7 +94,6 @@ export class AuthService {
   //compare password User DB and input user password
   private async isPasswordValid(password: string, hashedPassword: string): Promise<any> {
     return await bcrypt.compare(password, hashedPassword)
-
   }
 
   // create jwt token
