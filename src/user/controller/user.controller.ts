@@ -24,16 +24,19 @@ export class UserController {
     // async hashage(@Param('password') password: string): Promise<string> {
     //     return await this.userService.hash(password);
     // }
-    /*methode1
-        @Get('testCallApi/:userName')
-         async testCallApi(@Param('userName') userName: string): Promise<any> { 
-          return await this.userService.verifyLinkedinSkills(userName);
-         */
 
+    /*   scrap linkedin methode 1
+            @Get('testCallApi/:userName')
+            async testCallApi(@Param('userName') userName: string): Promise<any> { 
+            return await this.userService.verifyLinkedinSkills(userName);
+             */
+
+    /*   scrap linkedin methode 2 LinkedIn data API
     @Post('testCallApi/:userName')
     async testCallApi(@Body() userName: LinkedinDto): Promise<any> {
-        return await this.userService.verifyLinkedinSkills(userName);
+    return await this.userService.verifyLinkedinSkills(userName);
     }
+      */
 
     @Get('id/:id')
     async getUser(@Param('id', ParseIntPipe) id: number): Promise<UserType> {

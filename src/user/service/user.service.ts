@@ -73,6 +73,7 @@ export class UserService {
     }
 
     /* methode 1
+    Real-Time LinkedIn Scraper API
     ne renvoie pas toutes les données
     doit gérer regex 
     nb d'appel/mois : 10
@@ -80,13 +81,13 @@ export class UserService {
     async verifyLinkedinSkills(userName: string): Promise<any> {
         const options = {
             method: 'GET',
-            url: 'https://linkedin-data-api.p.rapidapi.com/all-profile-data',
+            url: process.env.URL_LINKEDIN_SCRAPER_API,
             params: {
                 username: userName
             },
             headers: {
                 'x-rapidapi-key': process.env.RAPID_API_KEY,
-                'x-rapidapi-host': process.env.REQUEST_API_HOST
+                'x-rapidapi-host': process.env.REQUEST_LINKEDIN_SCRAPER_API_HOST
             }
         };
 
@@ -106,13 +107,12 @@ export class UserService {
         */
 
     /*
-    methode 2
+    methode 2 LinkedIn data API
     ne recupere pas toute les compétences 
+    doit gérer regex 
     nb d'appel/mois :50
-    */
+    
     async verifyLinkedinSkills(userName: LinkedinDto): Promise<any> {
-        console.log(userName);
-
         const options = {
             method: 'POST',
             url: 'https://linkedin-data-scraper.p.rapidapi.com/person',
@@ -122,7 +122,7 @@ export class UserService {
                 'Content-Type': 'application/json'
             },
             data: {
-                link: `http://www.linkedin.com/in/ludovicviaud/`
+                link: `http://www.linkedin.com/in/${userName.userName}/`
             }
         };
 
@@ -145,7 +145,12 @@ export class UserService {
             console.error(error);
         }
     }
+        */
 
+    /*
+    methode 3
+    nb d'appel/mois
+    */
     async createUser(userData: CreateUserDto): Promise<UserType> { //dto pour youtube et pro
 
         if (!userData.is_Youtuber && !userData.is_Professional) {
@@ -158,9 +163,6 @@ export class UserService {
                 throw new BadRequestException('Invalid Youtube Channel');
             }
         }
-
-
-
         const youtuberData = userData.is_Youtuber
             ? { create: { tagChannel: userData.tagChannel } }
             : undefined;
