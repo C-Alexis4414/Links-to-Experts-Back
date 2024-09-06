@@ -13,6 +13,6 @@ import { PrismaService } from 'src/prisma.service'
 @Module({
     providers: [UserService, PrismaService, ProfessionalService, YoutuberService],
     controllers: [UserController],
-    exports: [UserService],
+    exports: [UserService], // Vérifier l'utilité
 })
 export class UserModule { }

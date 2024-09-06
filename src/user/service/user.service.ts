@@ -11,25 +11,9 @@ import { PrismaService } from 'src/prisma.service';
 import { CreateUserDto, UserDataDto, LinkedinDto } from '../dto/userData.dto';
 import axios from 'axios';
 
-// interface SignupParams {
-//     email: string;
-//     password: string;
-// }
-
 @Injectable()
 export class UserService {
     private readonly prisma = new PrismaService();
-
-    /*
-    TODO
-    log in logout
-    sign in
-    password hash
-    verify user
-    utilisé le selecte ou include pour recuperer uniquemet la donnée necessaire
-    encours : modifications de update afin de gerer les creations modifications ou suppression dans les tables youtuber,professional ...
-    bug: creation d'un user qui est juste professionnale ou youtuber, un bug s'affiche dans la console mais les données sont quand meme creer
-    */
 
     // find a user by id
     async getUser(id: number): Promise<UserType> {
@@ -77,23 +61,24 @@ export class UserService {
     ne renvoie pas toutes les données
     doit gérer regex 
     nb d'appel/mois : 10
+    */
     
     async verifyLinkedinSkills(userName: string): Promise<any> {
         const options = {
             method: 'GET',
-            url: process.env.URL_LINKEDIN_SCRAPER_API,
+            url: process.env.URL_LINKEDIN_SCRAPER,
             params: {
                 username: userName
             },
             headers: {
                 'x-rapidapi-key': process.env.RAPID_API_KEY,
-                'x-rapidapi-host': process.env.REQUEST_LINKEDIN_SCRAPER_API_HOST
+                'x-rapidapi-host': process.env.REQUEST_LINKEDIN_SCRAPER_HOST
             }
         };
 
         try {
             const response = await axios.request(options);
-            const skills = response.data.data.skills;
+            const skills = response.data.skills;
             // Filtrer les compétences ayant la propriété endorsementsCount et récupérer les noms
             const endorsedSkills = skills
                 .filter((skill: any) => skill.endorsementsCount)
@@ -104,7 +89,6 @@ export class UserService {
             console.error(error);
         }
     }
-        */
 
     /*
     methode 2 LinkedIn data API
@@ -146,11 +130,7 @@ export class UserService {
         }
     }
         */
-
-    /*
-    methode 3
-    nb d'appel/mois
-    */
+    
     async createUser(userData: CreateUserDto): Promise<UserType> { //dto pour youtube et pro
 
         if (!userData.is_Youtuber && !userData.is_Professional) {
@@ -185,7 +165,7 @@ export class UserService {
             include: {
                 youtuber: true,
                 professional: true,
-                likes: true,
+                // likes: true, à vérifier l'utilité de cet argument
             },
         });
 
@@ -239,4 +219,3 @@ export class UserService {
         ;
     }
 }
-

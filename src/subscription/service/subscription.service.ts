@@ -17,13 +17,8 @@ export class SubscriptionService {
      *  valider les return des fonctions subscribe et getfollowedUser
      */
 
-    async getAll() {
-        const toto = await this.prisma.subscription.findMany()
-        return toto;
-    }
-
     async subscribe(subscribeUserId: number, followedUserId: number): Promise<any> {
-        const exitingSubscription = await this.prisma.subscription.findUnique({
+        const existingSubscription = await this.prisma.subscription.findUnique({
             where: {
                 subscriptionId: {
                     subscribeUserId,
@@ -32,7 +27,7 @@ export class SubscriptionService {
             },
         })
 
-        if (!exitingSubscription) {
+        if (!existingSubscription) {
             return await this.prisma.subscription.create({
                 data: {
                     subscribeUserId,

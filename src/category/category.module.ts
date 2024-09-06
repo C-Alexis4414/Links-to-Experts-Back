@@ -8,10 +8,6 @@ import { CategoryController } from './controller/category.controller';
 import { CategoryService } from './service/category.service';
 import { PrismaService } from 'src/prisma.service';
 
-// MODULES
-import { TagsModule } from 'src/tags/tag.module';
-
-
 @Module({
     providers: [CategoryService, PrismaService],
     controllers: [CategoryController],
