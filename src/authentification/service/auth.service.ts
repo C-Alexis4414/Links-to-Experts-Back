@@ -55,7 +55,7 @@ export class AuthService {
 
     const isPasswordValid = await this.isPasswordValid(authData.password, user.password)
     if (!isPasswordValid) {
-      throw new Error('something where wrong during authentication')
+      throw new Error('something were wrong during authentication')
     }
 
     const payload: UserPayloadType = { userName: user.userName }

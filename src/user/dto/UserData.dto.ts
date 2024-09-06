@@ -73,12 +73,3 @@ export class LinkedinDto {
     userName: string;
 
 }
-
-// export class UserIsProfessional {
-//     @ApiProperty()
-//     @IsString()
-//     @IsOptional()
-//     urlLikendin: string;
-// }
-
-

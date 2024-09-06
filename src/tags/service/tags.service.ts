@@ -15,14 +15,6 @@ import { TagDto } from '../../tags/dto/tag.dto';
 export class TagService {
     private readonly prisma = new PrismaService();
 
-
-
-    /*
-    TODO/:
-    update
-
-     encours: cratete and delete
-     */
     async getTagById(id: number): Promise<TagType> {
         return await this.prisma.tags.findUnique({ where: { id } })
     }
