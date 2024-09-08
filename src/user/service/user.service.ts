@@ -89,47 +89,6 @@ export class UserService {
             console.error(error);
         }
     }
-
-    /*
-    methode 2 LinkedIn data API
-    ne recupere pas toute les compétences 
-    doit gérer regex 
-    nb d'appel/mois :50
-    
-    async verifyLinkedinSkills(userName: LinkedinDto): Promise<any> {
-        const options = {
-            method: 'POST',
-            url: 'https://linkedin-data-scraper.p.rapidapi.com/person',
-            headers: {
-                'x-rapidapi-key': process.env.RAPID_API_KEY,
-                'x-rapidapi-host': process.env.REQUEST_API_HOST_2,
-                'Content-Type': 'application/json'
-            },
-            data: {
-                link: `http://www.linkedin.com/in/${userName.userName}/`
-            }
-        };
-
-        try {
-            const response = await axios.request(options);
-            const skills = response.data.data.skills;
-            // Filtrer les sous-composants qui ont un text qui commence par un chiffre
-            // Retourner le titre des compétences qui remplissent les critères
-            const endorsedSkills = skills.filter((skill: any) =>
-                skill.subComponents.some((subComponent: any) =>
-                    subComponent.description.some((desc: any) =>
-                        desc.text && /^[0-9]/.test(desc.text)
-                    )
-                ))
-                .map((skill: any) => skill.title);
-            return {
-                endorsedSkills: endorsedSkills,
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    }
-        */
     
     async createUser(userData: CreateUserDto): Promise<UserType> { //dto pour youtube et pro
 
