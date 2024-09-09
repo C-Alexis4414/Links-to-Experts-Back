@@ -15,10 +15,11 @@ model User {
   is_Professional Boolean        @default(true)
   is_Youtuber     Boolean        @default(true)
   likes           Liked[]
-  professional    Professional?
   followers       Subscription[] @relation("follow")
   subscriptions   Subscription[] @relation("subscription")
   youtuber        Youtuber?
+  professional    Professional?
+  Tags            Tags[]
 }
 
 model Category {
@@ -34,14 +35,16 @@ model Liked {
   category   Category @relation(fields: [categoryId], references: [id])
   user       User     @relation(fields: [userId], references: [id])
 
-  @@id([userId, categoryId])
+  @@id(name: "likedId", [userId, categoryId])
 }
 
 model Tags {
   id         Int      @id @default(autoincrement())
   name       String   @unique
+  userId     Int
   categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Subscription {
@@ -50,7 +53,7 @@ model Subscription {
   followedUser    User @relation("follow", fields: [followedUserId], references: [id])
   subscribeUser   User @relation("subscription", fields: [subscribeUserId], references: [id])
 
-  @@id([subscribeUserId, followedUserId])
+  @@id(name: "subscriptionId", [subscribeUserId, followedUserId])
 }
 
 model Youtuber {

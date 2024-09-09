@@ -27,10 +27,10 @@ export class CreateUserDto {
     @IsOptional()
     tagChannel?: string;
 
-    // @ApiProperty()
-    // @IsString()
-    // @IsOptional()
-    // urlLikendin?: string;
+    @ApiProperty()
+    @IsString()
+    @IsOptional()
+    urlLikendin?: string;
 }
 
 export class UserDataDto {
@@ -67,11 +67,9 @@ export class UserIsYoutuber {
     tagChannel?: string;
 }
 
-// export class UserIsProfessional {
-//     @ApiProperty()
-//     @IsString()
-//     @IsOptional()
-//     urlLikendin: string;
-// }
+export class LinkedinDto {
+    @ApiProperty()
+    @IsString()
+    userName: string;
 
-
+}

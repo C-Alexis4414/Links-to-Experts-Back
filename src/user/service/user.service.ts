@@ -1,14 +1,15 @@
-import { BadRequestException, Injectable, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
-import { UserType } from '../type/user.type';
-import { PrismaService } from 'src/prisma.service';
-import { UserDataDto, CreateUserDto } from '../dto/userData.dto';
-import * as bcrypt from 'bcrypt';
-import axios from 'axios';
+// NEST
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
-// interface SignupParams {
-//     email: string;
-//     password: string;
-// }
+// TYPE
+import { UserType, } from '../type/user.type';
+
+// SERVICE
+import { PrismaService } from 'src/prisma.service';
+
+//DTO
+import { CreateUserDto, UserDataDto, LinkedinDto } from '../dto/userData.dto';
+import axios from 'axios';
 
 @Injectable()
 export class UserService {
@@ -28,24 +29,20 @@ export class UserService {
     // find all users
     async getAllUser(): Promise<UserType[]> {
         return await this.prisma.user.findMany();
-
     }
-    //TODO gérer la creation des entités youtuber et professional pendant la création
-    // async signup({ email, password }: SignupParams) {
-    //     const userExists = await this.prisma.user.findUnique({
-    //         where: {
-    //             email,
-    //         },
-    //     });
 
-    //     if (userExists) {
-    //         throw new ConflictException();
-    //     }
-    // }
+    async extractChannelId(tagChannel: string): Promise<string> {
+        // Extraction of the id by handle of the string from the url
+        const regex = /@([a-zA-Z0-9_-]+)/;
+        const match = tagChannel.match(regex);
+        console.log(match);
+        return match ? match[1] : null;
+    }
+
     async verifyYTChannel(tagChannel: string): Promise<boolean> {
         const apiKey = process.env.YOUTUBE_API_KEY;
-        const channelId = extractChannelId(tagChannel);
-        // 
+        const channelId = await this.extractChannelId(tagChannel);
+
         if (!channelId) {
             throw new HttpException('Invalid Youtube Channel', HttpStatus.BAD_REQUEST);
         }
@@ -53,19 +50,51 @@ export class UserService {
         try {
             const response = await axios.get(url);
             const channels = response.data.items;
-            console.log(response.data);
-            console.log(channels);
             return channels && channels.length > 0;
         } catch (error) {
-            return false; // in case of error, the string is not valid
+            return false;
         }
     }
 
+    /* methode 1
+    Real-Time LinkedIn Scraper API
+    ne renvoie pas toutes les données
+    doit gérer regex 
+    nb d'appel/mois : 10
+    */
+    
+    async verifyLinkedinSkills(userName: string): Promise<any> {
+        const options = {
+            method: 'GET',
+            url: process.env.URL_LINKEDIN_SCRAPER,
+            params: {
+                username: userName
+            },
+            headers: {
+                'x-rapidapi-key': process.env.RAPID_API_KEY,
+                'x-rapidapi-host': process.env.REQUEST_LINKEDIN_SCRAPER_HOST
+            }
+        };
+
+        try {
+            const response = await axios.request(options);
+            const skills = response.data.skills;
+            // Filtrer les compétences ayant la propriété endorsementsCount et récupérer les noms
+            const endorsedSkills = skills
+                .filter((skill: any) => skill.endorsementsCount)
+                .map((skill: any) => skill.name);
+
+            return [skills, endorsedSkills]
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    
     async createUser(userData: CreateUserDto): Promise<UserType> { //dto pour youtube et pro
+
         if (!userData.is_Youtuber && !userData.is_Professional) {
             throw new BadRequestException('User must be either a Youtuber or a Professional');
         }
-        console.log(userData);
 
         if (userData.is_Youtuber) {
             const isValidChannel = await this.verifyYTChannel(userData.tagChannel);
@@ -73,38 +102,32 @@ export class UserService {
                 throw new BadRequestException('Invalid Youtube Channel');
             }
         }
+        const youtuberData = userData.is_Youtuber
+            ? { create: { tagChannel: userData.tagChannel } }
+            : undefined;
 
-        const hashedPassword = await bcrypt.hash(userData.password, 10);
+        //TODO comment gérer les recommandations linkedins pendant la créations?
+        const professionalData = userData.is_Professional
+            ? { create: { urlLinkedin: userData.urlLikendin, recommandationLinkedin: {} } }
+            : undefined;
 
         const newUser = await this.prisma.user.create({
             data: {
-                password: hashedPassword,
                 userName: userData.userName,
+                password: userData.password,
                 email: userData.email,
                 is_Youtuber: userData.is_Youtuber,
-                is_Professional: userData.is_Professional
-                // if isYoutube ou isPro est vrai alors => create la dépandance
+                is_Professional: userData.is_Professional,
+                youtuber: youtuberData,
+                professional: professionalData,
+            },
+            include: {
+                youtuber: true,
+                professional: true,
+                // likes: true, à vérifier l'utilité de cet argument
             },
         });
-        if (userData.is_Youtuber) {
 
-            await this.prisma.youtuber.create({
-                data: {
-                    userId: newUser.id,
-                    tagChannel: userData.tagChannel,
-                },
-            });
-        }
-
-        // if (userData.is_Professional) {
-        //     await this.prisma.professional.create({
-        //         data: {
-        //             userId: newUser.id,
-        //             urlLinkedin: userData.urlLikendin,
-        //             recommandationLinkedin: '{}', // Ajoutez les autres champs nécessaires
-        //         },
-        //     });
-        // }
         return newUser;
     }
     // TODO: gérer la modifications des données et les relations queries
@@ -133,66 +156,13 @@ export class UserService {
                 // youtuber: youtuberData,
                 // professional: professionalData,
             },
-            // include: {
-            //     youtuber: true,
-            //     professional: true,
-            // },
+            include: {
+                youtuber: true,
+                professional: true,
+            },
         });
         return updatedUser;
     }
-
-    //exemple code  generer =>
-    // async updateUser(id: number, userData: UserDataDto): Promise<any> {
-    //     const user = await this.prisma.user.findUnique({
-    //         where: { id },
-    //         include: {
-    //             youtuber: true,
-    //             professional: true,
-    //         },
-    //     });
-
-    //     if (!user) {
-    //         throw new NotFoundException('User not found');
-    //     }
-
-    //     if (!userData.is_Youtuber && !userData.is_Professional) {
-    //         throw new BadRequestException('User must be either a Youtuber or a Professional');
-    //     }
-
-    //     const [updatedUser, youtuberUpdate, professionalUpdate] =
-    //         await this.prisma.$transaction([
-    //             this.prisma.user.update({
-    //                 where: { id },
-    //                 data: {
-    //                     userName: userData.userName,
-    //                     password: userData.password,
-    //                     email: userData.email,
-    //                     is_Youtuber: userData.is_Youtuber,
-    //                     is_Professional: userData.is_Professional,
-    //                 },
-    //             }),
-    //             userData.is_Youtuber
-    //                 ? this.prisma.youtuber.upsert({
-    //                     where: { userId: id },
-    //                     update: { tagChannel: userData.tagChannel },
-    //                     create: { userId: id, tagChannel: userData.tagChannel },
-    //                 })
-    //                 : this.prisma.youtuber.delete({ where: { userId: id } }),
-    //             userData.is_Professional
-    //                 ? this.prisma.professional.upsert({
-    //                     where: { userId: id },
-    //                     update: { urlLinkedin: userData.urlLikendin, recommandationLinkedin: {} },
-    //                     create: { userId: id, urlLinkedin: userData.urlLikendin, recommandationLinkedin: {} },
-    //                 })
-    //                 : this.prisma.professional.delete({ where: { userId: id } }),
-    //         ]);
-
-    //     return {
-    //         ...updatedUser,
-    //         youtuber: youtuberUpdate,
-    //         professional: professionalUpdate,
-    //     };
-    // }
 
     async deleteUser(id: number): Promise<any> {
         const deletedUser = await this.prisma.user.delete({
@@ -208,10 +178,3 @@ export class UserService {
         ;
     }
 }
-function extractChannelId(tagChannel: string): string {
-    // Extraction of the id by handle of the string from the url
-    const regex = /@([a-zA-Z0-9_-]+)/;
-    const match = tagChannel.match(regex);
-    console.log(match);
-    return match ? match[1] : null;
-  }
