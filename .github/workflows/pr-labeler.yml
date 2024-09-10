@@ -1,0 +1,50 @@
+name: "Pull Request Labeler"
+
+on: 
+- pull_request_target
+
+jobs:
+  label:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+    - uses: actions/labeler@v4
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
+  size-label:
+
+      runs-on: ubuntu-latest
+      permissions:
+        contents: read
+        pull-requests: write
+
+      outputs:
+        label: ${{ steps.label.outputs.sizeLabel }}
+
+      steps:
+        - name: size-label
+          id: label
+          uses: "pascalgn/size-label-action@v0.5.4"
+          env:
+            GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          with:
+            sizes: >
+              {
+                "0": "XS",
+                "33": "S",
+                "50": "M",
+                "100": "L",
+                "250": "XL"
+              }
+
+  comment:
+    runs-on: ubuntu-latest
+    needs: size-label
+    if: ${{ contains(needs.size-label.outputs.label, 'XS') }}
+    steps:
+      - run: echo "Too short PR"    

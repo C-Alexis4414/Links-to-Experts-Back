@@ -1,0 +1,15 @@
+ci/cd:
+- changed-files:
+  - any-glob-to-any-files: .github/*
+
+tables:
+- changed-files:
+  - any-glob-to-any-files: prisma/*
+
+crud:
+- changed-files:
+  - any-glob-to-any-files: src/*
+
+tests:
+- changed-files:
+  - any-glob-to-any-files: test/*
