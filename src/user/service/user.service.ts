@@ -8,7 +8,7 @@ import { UserType, } from '../type/user.type';
 import { PrismaService } from 'src/prisma.service';
 
 //DTO
-import { CreateUserDto} from '../dto/userData.dto';
+import { CreateUserDto } from '../dto/userData.dto';
 import axios from 'axios';
 
 @Injectable()
