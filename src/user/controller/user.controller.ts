@@ -6,7 +6,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { UserService } from '../service/user.service';
 import { YoutuberService } from '../service/youtuber.service';
 import { ProfessionalService } from '../service/professional.service';
-import {  CreateUserDto  } from '../dto/userData.dto';
+import { CreateUserDto } from '../dto/userData.dto';
 import { ApiSecurity } from '@nestjs/swagger';
 import { UserType } from '../type/user.type';
 

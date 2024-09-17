@@ -12,5 +12,3 @@ export class YoutuberService {
     }
 
 }
-
-// L'import du service youtuberService n'est pas nécessaire pour le moment

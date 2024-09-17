@@ -30,13 +30,6 @@ jobs:
       run: node --version
     - name: Install dependancies
       run: npm ci
-    - name: Cache node_modules
-      uses: actions/cache@v4
-      with:
-        path: node_modules
-        key: ${{ runner.os }}-node_modules-${{ hashFiles('package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node_modules
     - name: Build project
       run: npm run build --if-present
     - name: Build with success
@@ -45,7 +38,7 @@ jobs:
       run: |
         mkdir ${{ runner.temp }}/build_logs
         echo "Logs from building" > ${{ runner.temp }}/build_logs/build.logs
-        exit 1
+      # TODO: Simulation of build failed logs
     - name: Upload logs on fail
       if: ${{ failure() }}
       uses: actions/upload-artifact@v4
