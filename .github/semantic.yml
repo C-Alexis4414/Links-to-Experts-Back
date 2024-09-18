@@ -1,5 +1,8 @@
 # Validate the PR title and all commit messages
 titleAndCommits: true
+# If commitsOnly or titleAndCommits is set to true, then only a single commit needs to pass validation instead of every commit
+# If neither of those options are set to true then this option is ignored
+anyCommit: true
 # By default types specified in commitizen/conventional-commit-types is used.
 # See: https://github.com/commitizen/conventional-commit-types/blob/v3.0.0/index.json
 # You can override the valid types
@@ -15,3 +18,4 @@ types:
   - ci
   - chore
   - revert
+  - gitWorkflow
