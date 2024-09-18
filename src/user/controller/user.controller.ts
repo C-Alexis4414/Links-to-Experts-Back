@@ -6,7 +6,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { UserService } from '../service/user.service';
 import { YoutuberService } from '../service/youtuber.service';
 import { ProfessionalService } from '../service/professional.service';
-import { UserDataDto, CreateUserDto, LinkedinDto } from '../dto/userData.dto';
+import { CreateUserDto } from '../dto/userData.dto';
 import { ApiSecurity } from '@nestjs/swagger';
 import { UserType } from '../type/user.type';
 
@@ -45,13 +45,13 @@ export class UserController {
     }
 
 
-    @Put('update/:id')
-    async update(
-        @Param('id') id: string,
-        @Body() updateUserData: UserDataDto
-    ): Promise<UserType> {
-        return await this.userService.updateUser(Number(id), updateUserData);
-    }
+    // @Put('update/:id')
+    // async update(
+    //     @Param('id') id: string,
+    //     @Body() updateUserData: UserDataDto
+    // ): Promise<UserType> {
+    //     return await this.userService.updateUser(Number(id), updateUserData);
+    // }
 
     @Delete('deleteById/:id')
     async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {

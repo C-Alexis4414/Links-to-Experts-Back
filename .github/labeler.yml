@@ -1,6 +1,7 @@
 ci/cd:
 - changed-files:
   - any-glob-to-any-files: .github/*
+  - all-globs-to-all-files: ['!.github/PULL_REQUEST_TEMPLATE.md', '!.github/semantic.yml', '!.github/labeler.yml', '!.github/workflows/pr-labeler.yml', '!.github/workflows/pr-semantic.yml']
 
 tables:
 - changed-files:
@@ -13,3 +14,7 @@ crud:
 tests:
 - changed-files:
   - any-glob-to-any-files: test/*
+
+gitWorkflow:
+- changed-files:
+  - all-globs-to-all-files: ['.github/PULL_REQUEST_TEMPLATE.md', '.github/semantic.yml', '.github/labeler.yml', '.github/workflows/pr-labeler.yml', '.github/workflows/pr-semantic.yml']
