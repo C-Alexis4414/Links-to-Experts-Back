@@ -6,7 +6,7 @@ anyCommit: true
 # By default types specified in commitizen/conventional-commit-types is used.
 # See: https://github.com/commitizen/conventional-commit-types/blob/v3.0.0/index.json
 # You can override the valid types
-types:
+types: # default: feat | fix | docs | style | refactor | perf | test | build | ci | chore | revert
   - feat
   - fix
   - docs
@@ -19,4 +19,6 @@ types:
   - cd
   - chore
   - revert
+# The values allowed for the "scope" part of the PR title/commit message. e.g. for a PR title/commit message of "feat(awesome-feature): add some stuff", the type would be "awesome-feature"
+scopes: # default: any value
   - gitWorkflow
