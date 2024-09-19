@@ -2,11 +2,15 @@
 
 # Remember blank line between title and body.
 
-# Body: Explain WHAT and WHY (not HOW). Include Github issue
+# Body: Explain WHAT and WHY (not HOW)
 # Example: Github issue #14
-# (Max 72 char)
+# (Max 72 char by line for adjust margin manually)
 # - WHAT
 # - WHY
+
+# Footer
+# Reviewed by: <name>
+# Include Github issue
 
 # ---COMMIT END---
 # Type can be
