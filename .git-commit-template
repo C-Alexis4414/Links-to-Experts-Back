@@ -1,5 +1,5 @@
 # <type>: <YL-number> (Just copy the key of the Jira ticket) <subject> (Max 50 char)
-body
+
 # Remember blank line between title and body.
 
 # Body: Explain WHAT and WHY (not HOW). Include Github issue
