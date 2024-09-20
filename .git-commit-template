@@ -8,7 +8,9 @@
 # - WHAT
 # - WHY
 
-# Footer
+# Remember blank line between body and footer.
+
+# Footer:
 # Reviewed by: <name>
 # Include Github issue
 
