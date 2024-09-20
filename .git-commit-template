@@ -1,0 +1,31 @@
+# <type>: <YL-number> (Just copy the key of the Jira ticket) <subject> (Max 50 char)
+
+# Remember blank line between title and body.
+
+# Body: Explain WHAT and WHY (not HOW)
+# Example: Github issue #14
+# (Max 72 char by line for adjust margin manually)
+# - WHAT
+# - WHY
+
+# Remember blank line between body and footer.
+
+# Footer:
+# Reviewed by: <name>
+# Include Github issue
+
+# ---COMMIT END---
+# Type can be
+#    feat        (new feature)
+#    fix         (bug fix)
+#    refactor    (refactoring production code)
+#    style       (formatting, missing semi colons, etc; no code change)
+#    docs        (changes to documentation)
+#    test        (adding or refactoring tests; no production code change)
+#    chore       (updating grunt tasks etc; no production code change)
+#    revert      (annulation of a commit)
+#    perf        (improvement of performance in code)
+#    build       (compilation or bundling)
+#    ci          (continuous integration)
+#    cd          (continuous delivery)
+#    gitWorkflow (collaboration)
