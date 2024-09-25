@@ -4,7 +4,7 @@ on:
 - pull_request_target
 
 jobs:
-  label:
+  labeler:
 
     runs-on: ubuntu-latest
     permissions:
@@ -12,9 +12,9 @@ jobs:
       pull-requests: write
 
     steps:
-    - uses: actions/labeler@v4
+    - uses: actions/labeler@v5
       with:
-        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        repo-token: "${{ secrets.YLB_ACSEC }}"
 
   size-label:
 
@@ -31,7 +31,7 @@ jobs:
           id: label
           uses: "pascalgn/size-label-action@v0.5.4"
           env:
-            GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+            GITHUB_TOKEN: "${{ secrets.YLB_ACSEC }}"
           with:
             sizes: >
               {
