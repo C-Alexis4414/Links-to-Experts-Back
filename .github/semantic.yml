@@ -20,3 +20,4 @@ types: # default: feat | fix | docs | style | refactor | perf | test | build | c
   - chore
   - revert
   - gitWorkflow
+  - security
