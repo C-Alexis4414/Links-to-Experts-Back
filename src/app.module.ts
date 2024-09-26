@@ -6,6 +6,7 @@ import { AuthModule } from './authentification/auth.module';
 import { TagsModule } from './tags/tag.module';
 import { SubscriptionModule } from './subscription/subcription.module';
 // import { ConfigModule } from '@nestjs/config';
+import { SecurityModule } from './security/security.module';
 
 @Module({
   imports: [
@@ -15,8 +16,8 @@ import { SubscriptionModule } from './subscription/subcription.module';
     TagsModule,
     SubscriptionModule,
     AuthModule,
+    SecurityModule,
   ],
-  controllers: [],
   providers: [],
 
 })
