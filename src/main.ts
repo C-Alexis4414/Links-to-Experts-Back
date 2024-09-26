@@ -1,6 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import * as csurf from 'csurf';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,5 +23,11 @@ async function bootstrap() {
 
   app.enableCors();
   await app.listen(3000);
+
+  // Use cookie-parser to analyze cookies
+  app.use(cookieParser());
+
+  // Apply CSRF protection middleware
+  app.use(csurf({ cookie: true }));
 }
 bootstrap()
