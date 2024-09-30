@@ -39,11 +39,6 @@ export class UserController {
         return await this.userService.getAllUser()
     }
 
-    @ApiHeader({
-        name: 'X-CSRF-Token',
-        description: 'CSRF token',
-    })
-
     @Post('create')
     async createUser(@Body() userData: CreateUserDto): Promise<UserType> {
         return await this.userService.createUser(userData);
