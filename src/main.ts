@@ -1,8 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import * as csurf from 'csurf';
-import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +10,18 @@ async function bootstrap() {
     .setDescription('testing API address')
     .setVersion('1.0')
     .addTag('links')
+    .addBearerAuth()
+    .addCookieAuth('csrf-token', {
+      type: 'apiKey',
+      in: 'cookie',
+      name: 'X-CSRF-TOKEN',
+      description: 'CSRF token for protection',
+    })
+    .addApiKey({
+      type: 'apiKey',
+      name: 'X-CSRF-TOKEN',
+      in: 'header',
+    }, 'csrf-token')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
@@ -21,13 +31,11 @@ async function bootstrap() {
   //   scheme: 'basic',
   // });
 
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  });
   await app.listen(3000);
 
-  // Use cookie-parser to analyze cookies
-  app.use(cookieParser());
-
-  // Apply CSRF protection middleware
-  app.use(csurf({ cookie: true }));
 }
 bootstrap()
