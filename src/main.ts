@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { CsrfExceptionFilter } from './csrf-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,7 +11,14 @@ async function bootstrap() {
     .setDescription('testing API address')
     .setVersion('1.0')
     .addTag('links')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+      'authorization'
+    )
     .addCookieAuth('csrf-token', {
       type: 'apiKey',
       in: 'cookie',
@@ -21,6 +29,7 @@ async function bootstrap() {
       type: 'apiKey',
       name: 'X-CSRF-TOKEN',
       in: 'header',
+      description: 'CSRF protection token',
     }, 'csrf-token')
     .build();
   const document = SwaggerModule.createDocument(app, config);
@@ -35,6 +44,10 @@ async function bootstrap() {
     origin: 'http://localhost:3000',
     credentials: true,
   });
+
+  // Save global filter for csrf errors
+  app.useGlobalFilters(new CsrfExceptionFilter());
+
   await app.listen(3000);
 
 }
