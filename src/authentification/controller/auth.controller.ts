@@ -1,6 +1,6 @@
 // TOOLS
 import { Body, Controller, Post, Get, Request, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiHeader } from '@nestjs/swagger';
 
 // GUARDS
 import { JwtAuthGuard } from '../jwt-auth.guard';
@@ -30,6 +30,11 @@ export class AuthController {
     async login(@Body() authLogin: AuthLoginDto) {
         return await this.authService.login(authLogin);
     }
+
+    @ApiHeader({
+        name: 'X-CSRF-Token',
+        description: 'CSRF token',
+    })
 
     @Post('register')
     async register(@Body() userData: CreateUserDto) {
