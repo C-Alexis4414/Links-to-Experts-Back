@@ -1,13 +1,13 @@
 // TOOLS
 import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiHeader } from '@nestjs/swagger';
 
 // SERVICES
 import { UserService } from '../service/user.service';
 import { YoutuberService } from '../service/youtuber.service';
 import { ProfessionalService } from '../service/professional.service';
 import { CreateUserDto } from '../dto/userData.dto';
-import { ApiSecurity } from '@nestjs/swagger';
+// import { ApiSecurity } from '@nestjs/swagger';
 import { UserType } from '../type/user.type';
 
 
