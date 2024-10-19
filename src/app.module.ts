@@ -5,24 +5,35 @@ import { LikedModule } from './liked/liked.module';
 import { AuthModule } from './authentification/auth.module';
 import { TagsModule } from './tags/tag.module';
 import { SubscriptionModule } from './subscription/subcription.module';
-import { SecurityModule } from './security/security.module';
-// import { ConfigModule } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
+import { validate } from 'class-validator';
+import { PrismaService } from './prisma.service';
+import { AccessTokenStrategy } from './authentification/strategies/accessToken.strategy';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './authentification/guards/accessToken.guard';
 
 @Module({
   imports: [
-    // ConfigModule.forRoot({
-    //   isGlobal: true,
-    // }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+      validate
+    }),
     UserModule,
     CategoryModule,
     LikedModule,
     TagsModule,
     SubscriptionModule,
     AuthModule,
-    SecurityModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [PrismaService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard
+    },
+    AccessTokenStrategy
+  ],
 
 })
 export class AppModule { }
