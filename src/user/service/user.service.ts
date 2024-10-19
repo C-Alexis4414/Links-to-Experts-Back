@@ -6,6 +6,7 @@ import { UserType, } from '../type/user.type';
 
 // SERVICE
 import { PrismaService } from 'src/prisma.service';
+import { User } from '@prisma/client';
 
 //DTO
 import { CreateUserDto } from '../dto/userData.dto';
@@ -90,7 +91,7 @@ export class UserService {
         }
     }
     
-    async createUser(userData: CreateUserDto): Promise<UserType> { //dto pour youtube et pro
+    async createUser(userData: CreateUserDto): Promise<User> { //dto pour youtube et pro
 
         if (!userData.is_Youtuber && !userData.is_Professional) {
             throw new BadRequestException('User must be either a Youtuber or a Professional');
