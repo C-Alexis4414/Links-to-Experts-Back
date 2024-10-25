@@ -1,6 +1,6 @@
 // TOOLS
 import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
-import { ApiTags, ApiHeader } from '@nestjs/swagger';
+import { ApiTags, ApiHeader, ApiBody } from '@nestjs/swagger';
 
 // SERVICES
 import { UserService } from '../service/user.service';

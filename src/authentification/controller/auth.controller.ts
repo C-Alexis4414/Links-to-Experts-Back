@@ -1,51 +1,128 @@
 // TOOLS
-import { Body, Controller, Post, Get, Request, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiHeader } from '@nestjs/swagger';
+import { Controller, Post, Get, UseGuards, Req, Res, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiBody } from '@nestjs/swagger';
+import { Request, Response } from 'express';
+import { AuthGuard } from '@nestjs/passport';
+import { Public } from '../decorator/public.decorator';
 
 // GUARDS
-import { JwtAuthGuard } from '../jwt-auth.guard';
+import { RefreshAccessTokenGuard } from '../guards/refreshAcces.guard';
 
 // SERVICES
 import { AuthService } from '../service/auth.service';
-import { UserService } from 'src/user/service/user.service';
 
 // DTO
-import { AuthLoginDto} from '../dto/auth.dto';
 import { CreateUserDto } from 'src/user/dto/userData.dto';
 
 // TYPE
-import { RequestWithUserPayload } from '../type/auth.type';
-
+import { AccessTokenPayload } from '../type/accessTokenPayload.type';
 
 @ApiTags('AUTHENTICATION')
 @Controller('authentication')
 export class AuthController {
-    constructor(private authService: AuthService, private readonly userService: UserService
-
+    constructor(
+      private authService: AuthService, 
     ) { }
 
-    //1. envoie un mot de passe et un email
-    //2. l'api renvoie un token sécurisé avec le bon mot de passe
-    @Post('login')
-    async login(@Body() authLogin: AuthLoginDto) {
-        return await this.authService.login(authLogin);
-    }
-
-    @ApiHeader({
-        name: 'X-CSRF-Token',
-        description: 'CSRF token',
+    @Public()
+    @Post('signUp')
+    @HttpCode(HttpStatus.CREATED)
+    @ApiBody({
+      description: 'Créer un nouvel utilisateur en fournissant les détails comme le nom, l\'email et d\'autres informations.',
+      examples: {
+          exemple: {
+              value: {
+                  userName: 'TotoUser',
+                  password: '12345678',
+                  email: 'toto@toto.com',
+                  is_Youtuber: false,
+                  is_Professional: true,
+                  tagChannel: '@totoChannel',
+                  urlLikendin: 'https://linkedin.com/in/toto'
+              }
+          }
+      }
     })
-
-    @Post('register')
-    async register(@Body() userData: CreateUserDto) {
-        return await this.authService.register(userData);
+      async signUp(@Req() req: Request & { user?: CreateUserDto } ,@Res({passthrough: true}) res: Response) {
+        const token = await this.authService.register(req.body);
+        res.cookie(
+          'accessToken',
+          token.accessToken,
+          {
+            httpOnly: true,
+            secure: false,
+            sameSite: 'lax',
+            expires: new Date(Date.now() + 15 * 60 * 1000) // <= 15minutes
+          }
+        );
+         res.send({ status: 'user connect' });
+        return token
     }
 
-    //3. on renvoie le token securise qui correspond à l'utilisateur qui a été identifier precedement  
-    @UseGuards(JwtAuthGuard)
-    @Get()
-    async authenticate(@Request() request: RequestWithUserPayload) {
-        return await this.userService.getByUserName(request.user.userName)
+    @Public()
+    @UseGuards(AuthGuard('login'))
+    @Post('login')
+    @HttpCode(HttpStatus.OK)
+    @ApiBody({
+        description: 'test pour générer un JWT si l\'utilisateur existe dans la base de donnée et creer un Cookie avec token d\acces (http only)',
+        examples: {
+          exemple: {
+            value: {
+              email: 'toto@toto.com',
+              password: '12345678'
+            }
+          }
+        }
+      })
+    async login(@Req() req: Request & { user?: AccessTokenPayload },
+                @Res({ passthrough: true }) res: Response) {
+        const token = await this.authService.getToken(req.user)
+        res.cookie(
+            'accessToken',
+            token.accessToken,
+            {
+              httpOnly: true,
+              secure: false,
+              sameSite: 'lax',
+              expires: new Date(Date.now() + 15 * 60 * 1000) // <= 15minutes
+            }
+          );
+         
+          
+          res.send({ status: 'user connect' });
+          return token
     }
 
+  @Public()
+  @UseGuards(RefreshAccessTokenGuard)
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async getRefreshTokens(@Req() req:Request,@Res({ passthrough: true }) res:Response) {
+  const token = await this.authService.refreshToken(req.cookies.accessToken)
+    res.cookie(
+      'accessToken',
+      token.accessToken,
+      {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax',
+        expires: new Date(Date.now() + 15 * 60 * 1000) // <= 15minutes
+      }
+    );
+}
+
+ 
+ @Get('protected')
+ @HttpCode(HttpStatus.OK)
+ getProtected() {
+   return { message: 'This is a protected route.' };
+ }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@Req() req:Request ,@Res({ passthrough: true }) res:Response) {
+    await this.authService.logout(req.cookies.accessToken)
+    res.clearCookie('accessToken');
+    return { message: `user  has been logged out` }
+}
 }

@@ -1,105 +1,153 @@
 // NEST
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 // JWT
 import { JwtService } from '@nestjs/jwt';
 
 // SERVICE
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService, } from 'src/prisma.service';
 import { UserService } from 'src/user/service/user.service';
+import { ConfigService } from '@nestjs/config';
 
 // DTO
-import { AuthLoginDto, AuthPayloadDto } from '../dto/auth.dto';
 import { CreateUserDto } from 'src/user/dto/userData.dto';
 
 // TYPE
-import { UserPayloadType } from '../type/auth.type';
+import { AccessTokenPayload } from '../type/accessTokenPayload.type';
+import { JwtToken } from '../type/jwtToken.type';
 
-// OTHER
+// TOOLS
 import * as bcrypt from 'bcrypt';
-
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly configService: ConfigService,
   ) { }
-
-  /**
-   * 
-   * TODO:
-   * se renseigner sur le cryptage du mdp ??
-   * se mettre d'accord sur les format de retour des fonctions
-   * 
-   * JWT AUTH regarder a quoi sert vraiment ce fichier 
-   * 
-   */
-
-  async login(authData: AuthLoginDto): Promise<any> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        email: authData.email
-      },
-      select: {
-        id: true,
-        userName: true,
-        password: true
-      }
+ 
+  // register a new user and save Jwt Token
+  async register (userData: CreateUserDto):Promise<JwtToken>{
+    const existingUser = await this.prisma.user.findUnique({
+          where: {
+            email: userData.email
+          }
     })
-
-    if (!user) {
-      throw new Error('something was wrong during login')
+    if (existingUser) {
+      // change the exeption error    
+      throw new BadRequestException('user Already exist');
     }
-
-    const isPasswordValid = await this.isPasswordValid(authData.password, user.password)
-    if (!isPasswordValid) {
-      throw new Error('something were wrong during authentication')
-    }
-
-    const payload: UserPayloadType = { userName: user.userName }
-    return await this.authenticateUser(payload)
+    const hashedPassword = await bcrypt.hash(userData.password, 10)
+    const newUser = await this.userService.createUser({...userData, password: hashedPassword})
+    const payload: AccessTokenPayload = { userName: newUser.userName, email: newUser.email, userId: newUser.id }
+    const getToken= await this.getToken(payload)
+    const token : JwtToken = {accessToken:getToken.accessToken}
+    return token
   }
 
-  async register(userData: CreateUserDto): Promise<any> {
-    const user = await this.prisma.user.findUnique({
-      where: {
-        email: userData.email
-      },
-      select: {
-        id: true,
-        userName: true,
-        password: true
-      }
+
+  // create, hash and save JWT tokens
+  async getToken(user:AccessTokenPayload):Promise<JwtToken>{
+    const refreshToken =  await this.jwtService.signAsync({
+      userName: user.userName,
+      userId: user.userId
+    }, {
+      secret: this.configService.get<string>('JWT_REFRESH_TOKEN'),
+      expiresIn: '1m'
     })
-
-    if (user) {
-      throw new Error('User already exist')
+    const decodedToken = this.jwtService.decode(refreshToken) as { exp: number };
+    const timeExp = decodedToken?.exp ? new Date(decodedToken.exp * 1000) : null;
+  const hashToken = await bcrypt.hashSync(refreshToken,10)
+  const accessToken= await  this.jwtService.signAsync({
+    userName: user.userName,
+    userId: user.userId,
+    rt : hashToken
+  }, 
+      {
+      secret: this.configService.get<string>('JWT_SECRET'),
+      expiresIn: '30s'
     }
-
-    const hashedPassword = await this.hashPassword(userData.password)
-    userData.password = hashedPassword
-    const newUser = await this.userService.createUser(userData)
-    const payload: UserPayloadType = { userName: newUser.userName }
-    return await this.authenticateUser(payload)
-  }
-
-  // private because we use this function only in auth service
-  private async hashPassword(password: string): Promise<any> {
-    const hashedPassword = await bcrypt.hash(password, 10)
-    return hashedPassword;
-  }
-
-  //compare password User DB and input user password
-  private async isPasswordValid(password: string, hashedPassword: string): Promise<any> {
-    return await bcrypt.compare(password, hashedPassword)
-  }
-
-  // create jwt token
-  private async authenticateUser(userPayload: AuthPayloadDto) {
-    // payload = data how can identify user (@unique)
-    return await this.jwtService.signAsync(userPayload)
-  }
+  )
+  const savedToken = await this.saveToken(user.userId, accessToken, hashToken, timeExp);
+  return { accessToken: savedToken.accessToken};
 }
 
+// update JWT tokens 
+async saveToken(userId:number, accessToken:string, refreshToken:string, timeExp : Date):Promise<JwtToken>{
+    await this.prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+      accessToken,
+      hashRefreshToken: refreshToken ,
+      refreshExpiresAt : timeExp
+      }
+    });
+    return { accessToken: accessToken,};
+  }
+
+  
+  async refreshToken(accessToken:string):Promise<JwtToken>{
+    const decodedAccesToken = await this.jwtService.decode(accessToken) as { userId?: number  }|  null;
+    if (!decodedAccesToken || !decodedAccesToken.userId) {
+      throw new BadRequestException('Invalid token'); // Gérer les cas où le token n'est pas valide
+    }
+    const user = await this.prisma.user.findUnique({where:{id: decodedAccesToken.userId}})
+    if (!user) {
+      throw new BadRequestException('User not found'); // Gérer les cas où l'utilisateur n'existe pas
+    }
+    const payload : AccessTokenPayload ={
+      email: user.email, userId: user.id, userName: user.userName
+    }
+    const token = await this.getToken(payload)
+    return token
+  }
+
+  // decode payload and delete JWT 
+  async logout( accessToken: string):Promise<void> {
+    const decodedAccessToken = await this.jwtService.decode(accessToken) as { userId?: number  }|  null;
+    if (!decodedAccessToken || !decodedAccessToken.userId) {
+      throw new BadRequestException('Invalid token'); // Gérer les cas où le token n'est pas valide
+  }
+    const user = await this.prisma.user.update({
+      where: {
+          id: decodedAccessToken.userId,
+          accessToken: {
+              not: null,
+          },
+          hashRefreshToken: {
+              not: null,
+          },
+      },
+      data: {
+          accessToken: null,
+          hashRefreshToken: null,
+          refreshExpiresAt: null,
+      },
+  });
+  }
+
+ //compare password User DB and input user password
+ private async isPasswordValid(password: string, hashedPassword: string): Promise<any> {
+  return await bcrypt.compare(password, hashedPassword)
+}
+
+// valide user input
+async validateUser( email: string, password: string): Promise<AccessTokenPayload>{
+  const user = await this.prisma.user.findUnique({where: {email: email}})
+  if (!user) {
+    // change the exeption error
+    throw new BadRequestException('User not found');
+  }
+  const isMatch : boolean = await this.isPasswordValid(password, user.password)
+  if (!isMatch) {
+    // change the exeption error
+    throw new BadRequestException('Password does not match');
+  }
+  const payload: AccessTokenPayload = {email: user.email, userId: user.id, userName: user.userName}
+  return payload
+ }
+}
