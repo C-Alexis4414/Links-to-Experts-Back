@@ -6,6 +6,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Public } from '../decorator/public.decorator';
 
 // GUARDS
+import { RefreshAccessTokenGuard } from '../guards/refreshAcces.guard';
 
 // SERVICES
 import { AuthService } from '../service/auth.service';
@@ -15,8 +16,6 @@ import { CreateUserDto } from 'src/user/dto/userData.dto';
 
 // TYPE
 import { AccessTokenPayload } from '../type/accessTokenPayload.type';
-
-
 
 @ApiTags('AUTHENTICATION')
 @Controller('authentication')
@@ -45,10 +44,10 @@ export class AuthController {
       }
     })
       async signUp(@Req() req: Request & { user?: CreateUserDto } ,@Res({passthrough: true}) res: Response) {
-        const tokens = await this.authService.register(req.body);
+        const token = await this.authService.register(req.body);
         res.cookie(
           'accessToken',
-          tokens.accessToken,
+          token.accessToken,
           {
             httpOnly: true,
             secure: false,
@@ -56,18 +55,8 @@ export class AuthController {
             expires: new Date(Date.now() + 15 * 60 * 1000) // <= 15minutes
           }
         );
-        res.cookie(
-          'refreshToken',
-          tokens.refreshToken,
-          {
-            httpOnly: true,
-            secure: false,
-            sameSite: 'lax',
-            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) //  cookie expire dans 7 jours
-          }
-        );
-         // res.send({ status: 'user connect' });
-        return tokens
+         res.send({ status: 'user connect' });
+        return token
     }
 
     @Public()
@@ -87,12 +76,10 @@ export class AuthController {
       })
     async login(@Req() req: Request & { user?: AccessTokenPayload },
                 @Res({ passthrough: true }) res: Response) {
-        const tokens = await this.authService.getToken(req.user)
+        const token = await this.authService.getToken(req.user)
         res.cookie(
             'accessToken',
-            tokens.accessToken,
-            //  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6IlRvdG9Vc2VyIiwidXNlcklkIjoyMCwiaWF0IjoxNzI5MzQ3MzUwLCJleHAiOjE3MjkzNDc0NzB9.IWBLYK8zjCOdUCz2fhaj_e12EpmUEWPh0rWUMeChtVY',
-            //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyTmFtZSI6IlRvdG9Vc2VyIiwidXNlcklkIjoyMCwiaWF0IjoxNzI5MzQ2NTg0LCJleHAiOjE3MjkzNDY2MjR9.rX-lv1_dIpZ4xR8hyI_iQAuVUKX5LCKGWNG3NdrJOx0
+            token.accessToken,
             {
               httpOnly: true,
               secure: false,
@@ -100,51 +87,31 @@ export class AuthController {
               expires: new Date(Date.now() + 15 * 60 * 1000) // <= 15minutes
             }
           );
-          res.cookie(
-            'refreshToken',
-            tokens.refreshToken,
-            {
-              httpOnly: true,
-              secure: false,
-              sameSite: 'lax',
-              expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) //  cookie expire dans 7 jours
-            }
-          );
-          // res.send({ status: 'user connect' });
-          return tokens
+         
+          
+          res.send({ status: 'user connect' });
+          return token
     }
 
   @Public()
-  @UseGuards(AuthGuard('rtStrategy'))
+  @UseGuards(RefreshAccessTokenGuard)
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async getRefreshTokens(@Req() req:Request,@Res({ passthrough: true }) res:Response) {
-  const tokens = await this.authService.refreshToken(req.cookies.refreshToken)
+  const token = await this.authService.refreshToken(req.cookies.accessToken)
     res.cookie(
       'accessToken',
-      tokens.accessToken,
+      token.accessToken,
       {
         httpOnly: true,
         secure: false,
         sameSite: 'lax',
-        // expires: new Date(Date.now() + 15 * 60 * 1000) // <= 15minutes
-        expires: new Date(Date.now() + 1 * 60 * 1000) // <= 1 minute
-      }
-    );
-    res.cookie(
-      'refreshToken',
-      tokens.refreshToken,
-      {
-        httpOnly: true,
-        secure: false,
-        sameSite: 'lax',
-        // expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) //  cookie expire dans 7 jours
-        expires: new Date(Date.now() + 2 * 60 * 1000) // <= 2 minutes
+        expires: new Date(Date.now() + 15 * 60 * 1000) // <= 15minutes
       }
     );
 }
 
- // this route is protected by accessToken guard deploy in app.module
+ 
  @Get('protected')
  @HttpCode(HttpStatus.OK)
  getProtected() {
@@ -156,7 +123,6 @@ export class AuthController {
   async logout(@Req() req:Request ,@Res({ passthrough: true }) res:Response) {
     await this.authService.logout(req.cookies.accessToken)
     res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
     return { message: `user  has been logged out` }
 }
 }
