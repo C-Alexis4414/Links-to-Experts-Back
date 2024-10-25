@@ -1,3 +1,7 @@
+//TOOLS
+import { validate } from 'class-validator';
+
+// MODULE
 import { Module } from '@nestjs/common';
 import { UserModule } from './user/user.module';
 import { CategoryModule } from './category/category.module';
@@ -6,11 +10,13 @@ import { AuthModule } from './authentification/auth.module';
 import { TagsModule } from './tags/tag.module';
 import { SubscriptionModule } from './subscription/subcription.module';
 import { ConfigModule } from '@nestjs/config';
-import { validate } from 'class-validator';
-import { PrismaService } from './prisma.service';
-import { AccessTokenStrategy } from './authentification/strategies/accessToken.strategy';
+
+// GUARDS
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './authentification/guards/accessToken.guard';
+// SERVICE
+import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from './prisma.service';
 
 @Module({
   imports: [
@@ -28,11 +34,12 @@ import { JwtAuthGuard } from './authentification/guards/accessToken.guard';
   ],
   controllers: [],
   providers: [PrismaService,
+    // use jwtAuthguard to protect all app
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard
     },
-    AccessTokenStrategy
+    JwtService
   ],
 
 })

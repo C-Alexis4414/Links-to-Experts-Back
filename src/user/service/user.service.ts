@@ -17,7 +17,7 @@ export class UserService {
     private readonly prisma = new PrismaService();
 
     // find a user by id
-    async getUser(id: number): Promise<UserType> {
+    async getUser(id: number): Promise<User> {
         return await this.prisma.user.findUnique({ where: { id: id } });
     }
 

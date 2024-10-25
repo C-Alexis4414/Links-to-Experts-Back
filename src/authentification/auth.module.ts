@@ -12,24 +12,27 @@ import { PrismaService } from 'src/prisma.service';
 import { UserService } from 'src/user/service/user.service';
 
 //STRATEGIES
-import { RefreshTokenStrategy } from './strategies/refreshToken.strategy';
 import { AccessTokenStrategy } from './strategies/accessToken.strategy';
 import { LocalStrategy } from './strategies/login.strategy';
+
+// GUARDS
+import { JwtAuthGuard } from './guards/accessToken.guard';
+import { RefreshAccessTokenGuard } from './guards/refreshAcces.guard';
 
 
 
 @Module({
 
   controllers: [AuthController],
-  
   providers: [
     AuthService,
      PrismaService , 
      UserService, 
      AccessTokenStrategy, 
-     LocalStrategy, 
-     RefreshTokenStrategy],
-     
+     LocalStrategy,
+     JwtAuthGuard,
+     RefreshAccessTokenGuard
+    ],
   imports: [
     PassportModule,
     JwtModule.register({ }),],

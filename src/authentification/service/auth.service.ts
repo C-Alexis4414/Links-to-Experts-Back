@@ -43,67 +43,67 @@ export class AuthService {
     const newUser = await this.userService.createUser({...userData, password: hashedPassword})
     const payload: AccessTokenPayload = { userName: newUser.userName, email: newUser.email, userId: newUser.id }
     const getToken= await this.getToken(payload)
-    const token : JwtToken = {accessToken:getToken.accessToken, refreshToken:getToken.refreshToken}
+    const token : JwtToken = {accessToken:getToken.accessToken}
     return token
   }
 
-  // valide user input
-   async validateUser( email: string, password: string): Promise<AccessTokenPayload>{
-    const user = await this.prisma.user.findUnique({where: {email: email}})
-    if (!user) {
-      // change the exeption error
-      throw new BadRequestException('User not found');
-    }
-    const isMatch : boolean = await this.isPasswordValid(password, user.password)
-    if (!isMatch) {
-      // change the exeption error
-      throw new BadRequestException('Password does not match');
-    }
-    const payload: AccessTokenPayload = {email: user.email, userId: user.id, userName: user.userName}
-    return payload
-   }
 
-  // create and save JWT tokens
+  // create, hash and save JWT tokens
   async getToken(user:AccessTokenPayload):Promise<JwtToken>{
-  const [accessToken, refreshToken] = await Promise.all([
-  await  this.jwtService.signAsync({
-    userName: user.userName,
-    userId: user.userId}, 
-      {
-      secret: this.configService.get<string>('JWT_SECRET'),
-      expiresIn: '2m'
-    }
-  ),
-   await this.jwtService.signAsync({
+    const refreshToken =  await this.jwtService.signAsync({
       userName: user.userName,
       userId: user.userId
     }, {
       secret: this.configService.get<string>('JWT_REFRESH_TOKEN'),
-      expiresIn: '2m'
+      expiresIn: '1m'
     })
-  ]);
-  const savedToken = await this.saveToken(user.userId, accessToken, refreshToken,);
-  return { accessToken: savedToken.accessToken , refreshToken : savedToken.refreshToken };
+    const decodedToken = this.jwtService.decode(refreshToken) as { exp: number };
+    const timeExp = decodedToken?.exp ? new Date(decodedToken.exp * 1000) : null;
+  const hashToken = await bcrypt.hashSync(refreshToken,10)
+  const accessToken= await  this.jwtService.signAsync({
+    userName: user.userName,
+    userId: user.userId,
+    rt : hashToken
+  }, 
+      {
+      secret: this.configService.get<string>('JWT_SECRET'),
+      expiresIn: '30s'
+    }
+  )
+  const savedToken = await this.saveToken(user.userId, accessToken, hashToken, timeExp);
+  return { accessToken: savedToken.accessToken};
 }
 
 // update JWT tokens 
-async saveToken(userId:number, accessToken:string, refreshToken:string):Promise<JwtToken>{
-  // const hashRefreshToken = await bcrypt.hash(refreshToken,10) => to hashed the refresh tokens to more security
-  const decodedRefreshToken = await this.jwtService.decode(refreshToken) as { exp?: number } | null ;
-    const refreshExpiresAt = decodedRefreshToken?.exp
-      ? new Date(decodedRefreshToken.exp * 1000) // => Convertir en millisecondes
-      : null;
+async saveToken(userId:number, accessToken:string, refreshToken:string, timeExp : Date):Promise<JwtToken>{
     await this.prisma.user.update({
       where: {
         id: userId
       },
       data: {
-       accessToken,
-       hashRefreshToken: refreshToken ,
-        refreshExpiresAt
+      accessToken,
+      hashRefreshToken: refreshToken ,
+      refreshExpiresAt : timeExp
       }
     });
-    return { accessToken: accessToken, refreshToken: refreshToken };
+    return { accessToken: accessToken,};
+  }
+
+  
+  async refreshToken(accessToken:string):Promise<JwtToken>{
+    const decodedAccesToken = await this.jwtService.decode(accessToken) as { userId?: number  }|  null;
+    if (!decodedAccesToken || !decodedAccesToken.userId) {
+      throw new BadRequestException('Invalid token'); // Gérer les cas où le token n'est pas valide
+    }
+    const user = await this.prisma.user.findUnique({where:{id: decodedAccesToken.userId}})
+    if (!user) {
+      throw new BadRequestException('User not found'); // Gérer les cas où l'utilisateur n'existe pas
+    }
+    const payload : AccessTokenPayload ={
+      email: user.email, userId: user.id, userName: user.userName
+    }
+    const token = await this.getToken(payload)
+    return token
   }
 
   // decode payload and delete JWT 
@@ -130,38 +130,24 @@ async saveToken(userId:number, accessToken:string, refreshToken:string):Promise<
   });
   }
 
-  async refreshToken(refreshToken:string):Promise<JwtToken>{
-    const decodedRefreshToken = await this.jwtService.decode(refreshToken) as { userId?: number  }|  null;
-    if (!decodedRefreshToken || !decodedRefreshToken.userId) {
-      throw new BadRequestException('Invalid token'); // Gérer les cas où le token n'est pas valide
-    }
-    const user = await this.prisma.user.findUnique({where:{id: decodedRefreshToken.userId}})
-    if (!user) {
-      throw new BadRequestException('User not found'); // Gérer les cas où l'utilisateur n'existe pas
-    }
-    const payload : AccessTokenPayload ={
-      email: user.email, userId: user.id, userName: user.userName
-    }
-    const token = await this.getToken(payload)
-    return token
-  }
-
-
  //compare password User DB and input user password
  private async isPasswordValid(password: string, hashedPassword: string): Promise<any> {
   return await bcrypt.compare(password, hashedPassword)
 }
 
+// valide user input
+async validateUser( email: string, password: string): Promise<AccessTokenPayload>{
+  const user = await this.prisma.user.findUnique({where: {email: email}})
+  if (!user) {
+    // change the exeption error
+    throw new BadRequestException('User not found');
+  }
+  const isMatch : boolean = await this.isPasswordValid(password, user.password)
+  if (!isMatch) {
+    // change the exeption error
+    throw new BadRequestException('Password does not match');
+  }
+  const payload: AccessTokenPayload = {email: user.email, userId: user.id, userName: user.userName}
+  return payload
+ }
 }
-
-// compare accessToken request to accessToken stock in database
-//  async validateAccessToken(token: string, userId: number): Promise<boolean>{
-//    const user = await this.prisma.user.findUnique({where: {id: userId}})
-//    if(!user){
-//     return false
-//    }
-//    if(token !== user.accessToken){
-//     return false
-//    }
-//     return true;
-//    }

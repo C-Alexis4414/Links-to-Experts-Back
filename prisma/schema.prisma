@@ -14,8 +14,8 @@ model User {
   userName        String         @unique
   is_Professional Boolean        @default(false)
   is_Youtuber     Boolean        @default(false)
-  accessToken     String?        @db.VarChar(200)
-  hashRefreshToken String?       @db.VarChar(200)
+  accessToken     String?        @db.VarChar(300)
+  hashRefreshToken String?       @db.VarChar(300)
   refreshExpiresAt DateTime?
   likes           Liked[]
   followers       Subscription[] @relation("follow")
