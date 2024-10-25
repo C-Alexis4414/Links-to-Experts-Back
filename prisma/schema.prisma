@@ -12,14 +12,18 @@ model User {
   email           String         @unique
   password        String
   userName        String         @unique
-  is_Professional Boolean        @default(true)
-  is_Youtuber     Boolean        @default(true)
+  is_Professional Boolean        @default(false)
+  is_Youtuber     Boolean        @default(false)
+  accessToken     String?        @db.VarChar(300)
+  hashRefreshToken String?       @db.VarChar(300)
+  refreshExpiresAt DateTime?
   likes           Liked[]
   followers       Subscription[] @relation("follow")
   subscriptions   Subscription[] @relation("subscription")
   youtuber        Youtuber?
   professional    Professional?
-  Tags            Tags[]
+  tags            Tags[]
+  access          Access[]
 }
 
 model Category {
@@ -32,8 +36,8 @@ model Category {
 model Liked {
   userId     Int
   categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id])
-  user       User     @relation(fields: [userId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id(name: "likedId", [userId, categoryId])
 }
@@ -60,7 +64,7 @@ model Youtuber {
   userId     Int    @unique
   tagChannel String
   id         Int    @id @default(autoincrement())
-  user       User   @relation(fields: [userId], references: [id])
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Professional {
@@ -68,5 +72,19 @@ model Professional {
   userId                 Int    @unique
   urlLinkedin            String @unique
   recommandationLinkedin Json
-  user                   User   @relation(fields: [userId], references: [id])
+  user                   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model Access{ // table a revoir si utile pour le csrf
+  id         Int   @id @default(autoincrement())
+  userId     Int  @unique
+  // vrerifier l'uitlité de champs suivant :
+  createdAt  DateTime? @default(now())
+  ipAdress String?
+  userAgent String?
+  user        User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // expiresAt  DateTime
+  // statut enume: actif ou revoqué ????
+  // lastUsedAt : DateTime 
+}
+
