@@ -1,22 +1,19 @@
-ci/cd:
-  - '.github/**'
-  - '! .github/PULL_REQUEST_TEMPLATE.md'
-  - '! .github/labeler.yml'
-  - '! .github/workflows/pr-labeler.yml'
+taskManagement/ci/cd:
+- changed-files:
+  - any-glob-to-any-file: '.github/**'
 
 tables:
-  - 'prisma/**'
+- changed-files:
+  - any-glob-to-any-file: 'prisma/**'
 
 crud:
-  - 'src/**'
+- changed-files:
+  - any-glob-to-any-file: 'src/**'
 
 tests:
-  - 'test/**'
-
-gitWorkflow:
-  - '.github/PULL_REQUEST_TEMPLATE.md'
-  - '.github/labeler.yml'
-  - '.github/workflows/pr-labeler.yml'
+- changed-files:
+  - any-glob-to-any-file: 'test/**'
 
 Documentation:
-  - '**/*.md'
+- changed-files:
+  - any-glob-to-any-file: '**/*.md'
