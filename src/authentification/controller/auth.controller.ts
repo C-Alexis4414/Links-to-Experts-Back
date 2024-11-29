@@ -44,19 +44,21 @@ export class AuthController {
       }
     })
       async signUp(@Req() req: Request & { user?: CreateUserDto } ,@Res({passthrough: true}) res: Response) {
-        const token = await this.authService.register(req.body);
+        console.log(req.body);
+        
+        const data = await this.authService.register(req.body);
         res.cookie(
           'accessToken',
-          token.accessToken,
+          data.token.accessToken,
           {
             httpOnly: true,
             secure: false,
             sameSite: 'lax',
-            expires: new Date(Date.now() + 15 * 60 * 1000) // <= 15minutes
+            expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
           }
         );
-         res.send({ status: 'user connect' });
-        return token
+         return {id:data.payload.userId, email:data.payload.email, userName:data.payload.userName}
+
     }
 
     @Public()
@@ -76,21 +78,20 @@ export class AuthController {
       })
     async login(@Req() req: Request & { user?: AccessTokenPayload },
                 @Res({ passthrough: true }) res: Response) {
-        const token = await this.authService.getToken(req.user)
+        const data = await this.authService.getToken(req.user)
         res.cookie(
             'accessToken',
-            token.accessToken,
+            data.accessToken,
             {
               httpOnly: true,
               secure: false,
               sameSite: 'lax',
-              expires: new Date(Date.now() + 15 * 60 * 1000) // <= 15minutes
+              expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
             }
           );
          
           
-          res.send({ status: 'user connect' });
-          return token
+         return{id:data.payload.userId, email:data.payload.email, userName:data.payload.userName  };
     }
 
   @Public()
@@ -106,7 +107,7 @@ export class AuthController {
         httpOnly: true,
         secure: false,
         sameSite: 'lax',
-        expires: new Date(Date.now() + 15 * 60 * 1000) // <= 15minutes
+        expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) 
       }
     );
 }
@@ -114,8 +115,9 @@ export class AuthController {
  
  @Get('protected')
  @HttpCode(HttpStatus.OK)
- getProtected() {
-   return { message: 'This is a protected route.' };
+ async getProtected(@Req() req: Request) {
+  const decodeCookie = await this.authService.decodeToken(req.cookies.accessToken);
+    return decodeCookie;
  }
 
   @Post('logout')
