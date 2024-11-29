@@ -29,7 +29,7 @@ export class AuthService {
   ) { }
  
   // register a new user and save Jwt Token
-  async register (userData: CreateUserDto):Promise<JwtToken>{
+  async register (userData: CreateUserDto){
     const existingUser = await this.prisma.user.findUnique({
           where: {
             email: userData.email
@@ -44,18 +44,22 @@ export class AuthService {
     const payload: AccessTokenPayload = { userName: newUser.userName, email: newUser.email, userId: newUser.id }
     const getToken= await this.getToken(payload)
     const token : JwtToken = {accessToken:getToken.accessToken}
-    return token
+    return { token,  payload}
   }
 
 
   // create, hash and save JWT tokens
-  async getToken(user:AccessTokenPayload):Promise<JwtToken>{
+  async getToken(user:AccessTokenPayload){
+    const existingUser= await this.prisma.user.findUnique({where:{email:user.email}})
+    if (!existingUser) {
+      throw new BadRequestException('User not found');
+    }
     const refreshToken =  await this.jwtService.signAsync({
       userName: user.userName,
       userId: user.userId
     }, {
       secret: this.configService.get<string>('JWT_REFRESH_TOKEN'),
-      expiresIn: '1m'
+      expiresIn: '7d'
     })
     const decodedToken = this.jwtService.decode(refreshToken) as { exp: number };
     const timeExp = decodedToken?.exp ? new Date(decodedToken.exp * 1000) : null;
@@ -67,11 +71,12 @@ export class AuthService {
   }, 
       {
       secret: this.configService.get<string>('JWT_SECRET'),
-      expiresIn: '30s'
+      expiresIn: '5m'
     }
   )
   const savedToken = await this.saveToken(user.userId, accessToken, hashToken, timeExp);
-  return { accessToken: savedToken.accessToken};
+  const payload = {userId:existingUser.id, userName: existingUser.userName, email: existingUser.email}
+  return { accessToken: savedToken.accessToken,payload};
 }
 
 // update JWT tokens 
@@ -150,4 +155,10 @@ async validateUser( email: string, password: string): Promise<AccessTokenPayload
   const payload: AccessTokenPayload = {email: user.email, userId: user.id, userName: user.userName}
   return payload
  }
+
+ async decodeToken(accessToken: string) {
+  const decode = (await this.jwtService.decode(accessToken)) as { userId: number };
+  const user = await this.prisma.user.findUnique({ where: { id: decode.userId } });
+  return { id: user.id, email: user.email, userName: user.userName };
+}
 }
