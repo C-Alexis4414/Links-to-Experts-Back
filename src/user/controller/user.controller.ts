@@ -1,5 +1,5 @@
 // TOOLS
-import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, Req, Res } from '@nestjs/common';
 import { ApiTags, ApiHeader, ApiBody } from '@nestjs/swagger';
 
 // SERVICES
@@ -9,6 +9,8 @@ import { ProfessionalService } from '../service/professional.service';
 import { CreateUserDto } from '../dto/userData.dto';
 // import { ApiSecurity } from '@nestjs/swagger';
 import { UserType } from '../type/user.type';
+import { Request, Response } from 'express';
+import { AccessTokenPayload } from 'src/authentification/type/accessTokenPayload.type';
 
 
 @ApiTags('USER')
@@ -29,9 +31,9 @@ export class UserController {
         return this.userService.getUser(id);
     }
 
-    @Get('name/:name')
-    async getUserByName(@Param('name') name: string): Promise<UserType> {
-        return await this.userService.getByUserName(name);
+    @Get('name')
+    async getUserByName(@Req()request:{user:AccessTokenPayload}): Promise<UserType> {
+        return await this.userService.getByUserName(request.user.userName);
     }
 
     @Get('allUsers')
@@ -53,9 +55,11 @@ export class UserController {
     //     return await this.userService.updateUser(Number(id), updateUserData);
     // }
 
-    @Delete('deleteById/:id')
-    async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        await this.userService.deleteUser(id);
+    @Delete('deleteUser')
+    async deleteUser(@Req()request:{user:AccessTokenPayload},@Res({ passthrough: true }) res:Response) {
+        await this.userService.deleteUser(request.user.userId);
+        res.clearCookie('accessToken');
+        return { message: 'User deleted' };
     }
 }
 
