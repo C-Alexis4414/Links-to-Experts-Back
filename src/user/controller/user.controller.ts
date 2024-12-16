@@ -32,6 +32,11 @@ export class UserController {
         return this.userService.getUser(id);
     }
 
+    // @Get('name')
+    // async getUserByName(@Req()request:{user:AccessTokenPayload}): Promise<UserType> {
+    //     return await this.userService.getByUserName(request.user.userName);
+    // }
+
     @Get('info')
     async getUserInfo(@Req()request:{user:AccessTokenPayload}): Promise<any> {
         const user = await this.userService.getUserWithDetails(request.user.userId);
@@ -43,21 +48,6 @@ export class UserController {
             tagChannel: user.is_Youtuber ? user.youtuber.tagChannel : null,
             urlLinkedin: user.is_Professional ? user.professional.urlLinkedin : null
         };
-    }
-
-    @Get('tagChannel')
-    async getTagChannel(@Req()request:{user:AccessTokenPayload}): Promise<any> {
-        return await this.youtuberService.getTagChannelById(request.user.userId);
-    }
-
-    @UseGuards(AuthGuard('jwt'))
-    @Get('email')
-    async getUserByEmail(@Req()request:{user:AccessTokenPayload}): Promise<UserType> {
-        const email = request.user.email;
-        if (!email) {
-            throw new NotFoundException('Email not found');
-        }
-        return await this.userService.getByEmail(request.user.email);
     }
 
     @Get('allUsers')

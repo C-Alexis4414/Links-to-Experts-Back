@@ -40,14 +40,6 @@ export class UserService {
         });
     }
 
-    async getByEmail(email: string): Promise<UserType | null> {
-        const getEmail = await this.prisma.user.findUnique({ where: { email } });
-        if (!getEmail) {
-            throw new NotFoundException(`User with email ${email} not found`);
-        }
-        return getEmail;
-    }
-
     // find all users
     async getAllUser(): Promise<UserType[]> {
         return await this.prisma.user.findMany();
