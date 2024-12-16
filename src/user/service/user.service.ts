@@ -1,5 +1,5 @@
 // NEST
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 
 // TYPE
 import { UserType, } from '../type/user.type';
@@ -12,6 +12,8 @@ import { User } from '@prisma/client';
 import { CreateUserDto } from '../dto/userData.dto';
 import axios from 'axios';
 import { UpdateUserDataDto } from '../dto/updateUserData';
+import { YoutuberType } from '../type/youtuber.type';
+import { ProfessionalType } from '../type/professional.type';
 
 @Injectable()
 export class UserService {
@@ -26,6 +28,24 @@ export class UserService {
     async getByUserName(name: string): Promise<UserType> {
         const getName = await this.prisma.user.findUnique({ where: { userName: name } });
         return getName;
+    }
+
+    async getUserWithDetails(userId: number): Promise<User & { youtuber?: YoutuberType; professional?: ProfessionalType}> {
+        return await this.prisma.user.findUnique({
+            where: { id: userId },
+            include: {
+                youtuber: true,
+                professional: true,
+            },
+        });
+    }
+
+    async getByEmail(email: string): Promise<UserType | null> {
+        const getEmail = await this.prisma.user.findUnique({ where: { email } });
+        if (!getEmail) {
+            throw new NotFoundException(`User with email ${email} not found`);
+        }
+        return getEmail;
     }
 
     // find all users

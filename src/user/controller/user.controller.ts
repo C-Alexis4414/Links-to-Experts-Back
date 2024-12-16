@@ -1,5 +1,5 @@
 // TOOLS
-import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, Req, Res } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, Req, Res, UseGuards, NotFoundException } from '@nestjs/common';
 import { ApiTags, ApiHeader, ApiBody } from '@nestjs/swagger';
 
 // SERVICES
@@ -9,8 +9,9 @@ import { ProfessionalService } from '../service/professional.service';
 import { CreateUserDto } from '../dto/userData.dto';
 // import { ApiSecurity } from '@nestjs/swagger';
 import { UserType } from '../type/user.type';
-import { Request, Response } from 'express';
+import { request, Request, Response } from 'express';
 import { AccessTokenPayload } from 'src/authentification/type/accessTokenPayload.type';
+import { AuthGuard } from '@nestjs/passport';
 
 
 @ApiTags('USER')
@@ -31,9 +32,32 @@ export class UserController {
         return this.userService.getUser(id);
     }
 
-    @Get('name')
-    async getUserByName(@Req()request:{user:AccessTokenPayload}): Promise<UserType> {
-        return await this.userService.getByUserName(request.user.userName);
+    @Get('info')
+    async getUserInfo(@Req()request:{user:AccessTokenPayload}): Promise<any> {
+        const user = await this.userService.getUserWithDetails(request.user.userId);
+        return {
+            userName: user.userName,
+            email: user.email,
+            is_Youtuber: user.is_Youtuber,
+            is_Professional: user.is_Professional,
+            tagChannel: user.is_Youtuber ? user.youtuber.tagChannel : null,
+            urlLinkedin: user.is_Professional ? user.professional.urlLinkedin : null
+        };
+    }
+
+    @Get('tagChannel')
+    async getTagChannel(@Req()request:{user:AccessTokenPayload}): Promise<any> {
+        return await this.youtuberService.getTagChannelById(request.user.userId);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Get('email')
+    async getUserByEmail(@Req()request:{user:AccessTokenPayload}): Promise<UserType> {
+        const email = request.user.email;
+        if (!email) {
+            throw new NotFoundException('Email not found');
+        }
+        return await this.userService.getByEmail(request.user.email);
     }
 
     @Get('allUsers')
