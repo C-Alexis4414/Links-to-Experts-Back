@@ -12,7 +12,7 @@ import { UserType } from '../type/user.type';
 import { request, Request, Response } from 'express';
 import { AccessTokenPayload } from 'src/authentification/type/accessTokenPayload.type';
 import { AuthGuard } from '@nestjs/passport';
-
+import { Public } from 'src/authentification/decorator/public.decorator';
 
 @ApiTags('USER')
 @Controller('user')
