@@ -30,12 +30,23 @@ export class UserService {
         return getName;
     }
 
-    async getUserWithDetails(userId: number): Promise<User & { youtuber?: YoutuberType; professional?: ProfessionalType}> {
+    async getUserWithDetails(userId: number): Promise<any> { // User & { youtuber?: YoutuberType; professional?: ProfessionalType}>
         return await this.prisma.user.findUnique({
             where: { id: userId },
-            include: {
-                youtuber: true,
-                professional: true,
+            select: {
+                userName: true,
+                email: true,
+                is_Youtuber: true,
+                is_Professional: true,
+                youtuber: {
+                    select: {
+                        tagChannel: true
+                    }},
+                professional: {
+                    select: {
+                        urlLinkedin: true
+                    }
+                },
             },
         });
     }
