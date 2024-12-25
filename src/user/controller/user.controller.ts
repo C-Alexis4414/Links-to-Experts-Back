@@ -40,13 +40,16 @@ export class UserController {
     @Get('info')
     async getUserInfo(@Req()request:{user:AccessTokenPayload}): Promise<any> {
         const user = await this.userService.getUserWithDetails(request.user.userId);
+        
         return {
             userName: user.userName,
             email: user.email,
             is_Youtuber: user.is_Youtuber,
             is_Professional: user.is_Professional,
             tagChannel: user.is_Youtuber ? user.youtuber.tagChannel : null,
-            urlLinkedin: user.is_Professional ? user.professional.urlLinkedin : null
+            urlLinkedin: user.is_Professional ? user.professional.urlLinkedin : null,
+            followersCount: user._count.followers,
+            subscriptionsCount: user._count.subscriptions,
         };
     }
 

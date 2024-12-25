@@ -45,10 +45,16 @@ export class UserService {
                 professional: {
                     select: {
                         urlLinkedin: true
+                    }},
+                _count: {
+                    select: {
+                        followers: true,
+                        subscriptions: true,
+                        }
                     }
                 },
-            },
-        });
+            }
+        );
     }
 
     // find all users
