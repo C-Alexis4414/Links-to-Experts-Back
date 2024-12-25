@@ -41,6 +41,11 @@ export class UserController {
     async getUserInfo(@Req()request:{user:AccessTokenPayload}): Promise<any> {
         const user = await this.userService.getUserWithDetails(request.user.userId);
         
+        const likes = user.likes.map(like => ({
+            id: like.categoryId,
+            name: like.category.name
+        }));
+
         return {
             userName: user.userName,
             email: user.email,
@@ -50,6 +55,7 @@ export class UserController {
             urlLinkedin: user.is_Professional ? user.professional.urlLinkedin : null,
             followersCount: user._count.followers,
             subscriptionsCount: user._count.subscriptions,
+            likes
         };
     }
 

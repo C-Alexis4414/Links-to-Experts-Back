@@ -51,10 +51,20 @@ export class UserService {
                         followers: true,
                         subscriptions: true,
                         }
+                    },
+                likes: {
+                    take: 5,
+                    select: {
+                        categoryId: true,
+                        category: {
+                            select: {
+                                name: true
+                            },
+                        }
                     }
                 },
             }
-        );
+        });
     }
 
     // find all users
