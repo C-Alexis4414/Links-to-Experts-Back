@@ -41,7 +41,7 @@ export class AuthService {
     }
     const hashedPassword = await bcrypt.hash(userData.password, 10)
     const newUser = await this.userService.createUser({...userData, password: hashedPassword})
-    const payload: AccessTokenPayload = { userName: newUser.userName, email: newUser.email, userId: newUser.id }
+    const payload: AccessTokenPayload = { userName: newUser.userName, email: newUser.email, userId: newUser.id}
     const getToken= await this.getToken(payload)
     const token : JwtToken = {accessToken:getToken.accessToken}
     return { token,  payload}

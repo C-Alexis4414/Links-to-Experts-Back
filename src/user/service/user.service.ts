@@ -1,5 +1,5 @@
 // NEST
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 
 // TYPE
 import { UserType, } from '../type/user.type';
@@ -12,6 +12,8 @@ import { User } from '@prisma/client';
 import { CreateUserDto } from '../dto/userData.dto';
 import axios from 'axios';
 import { UpdateUserDataDto } from '../dto/updateUserData';
+import { YoutuberType } from '../type/youtuber.type';
+import { ProfessionalType } from '../type/professional.type';
 
 @Injectable()
 export class UserService {
@@ -26,6 +28,43 @@ export class UserService {
     async getByUserName(name: string): Promise<UserType> {
         const getName = await this.prisma.user.findUnique({ where: { userName: name } });
         return getName;
+    }
+
+    async getUserWithDetails(userId: number): Promise<any> { // User & { youtuber?: YoutuberType; professional?: ProfessionalType}>
+        return await this.prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                userName: true,
+                email: true,
+                is_Youtuber: true,
+                is_Professional: true,
+                youtuber: {
+                    select: {
+                        tagChannel: true
+                    }},
+                professional: {
+                    select: {
+                        urlLinkedin: true
+                    }},
+                _count: {
+                    select: {
+                        followers: true,
+                        subscriptions: true,
+                        }
+                    },
+                likes: {
+                    take: 5,
+                    select: {
+                        categoryId: true,
+                        category: {
+                            select: {
+                                name: true
+                            },
+                        }
+                    }
+                },
+            }
+        });
     }
 
     // find all users
