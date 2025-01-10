@@ -1,5 +1,5 @@
 // TOOLS
-import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, Req, Res, UseGuards, NotFoundException } from '@nestjs/common';
 import { ApiTags, ApiHeader, ApiBody } from '@nestjs/swagger';
 
 // SERVICES
@@ -9,7 +9,10 @@ import { ProfessionalService } from '../service/professional.service';
 import { CreateUserDto } from '../dto/userData.dto';
 // import { ApiSecurity } from '@nestjs/swagger';
 import { UserType } from '../type/user.type';
-
+import { request, Request, Response } from 'express';
+import { AccessTokenPayload } from 'src/authentification/type/accessTokenPayload.type';
+import { AuthGuard } from '@nestjs/passport';
+import { Public } from 'src/authentification/decorator/public.decorator';
 
 @ApiTags('USER')
 @Controller('user')
@@ -29,9 +32,31 @@ export class UserController {
         return this.userService.getUser(id);
     }
 
-    @Get('name/:name')
-    async getUserByName(@Param('name') name: string): Promise<UserType> {
-        return await this.userService.getByUserName(name);
+    // @Get('name')
+    // async getUserByName(@Req()request:{user:AccessTokenPayload}): Promise<UserType> {
+    //     return await this.userService.getByUserName(request.user.userName);
+    // }
+
+    @Get('info')
+    async getUserInfo(@Req()request:{user:AccessTokenPayload}): Promise<any> {
+        const user = await this.userService.getUserWithDetails(request.user.userId);
+        
+        const likes = user.likes.map(like => ({
+            id: like.categoryId,
+            name: like.category.name
+        }));
+
+        return {
+            userName: user.userName,
+            email: user.email,
+            is_Youtuber: user.is_Youtuber,
+            is_Professional: user.is_Professional,
+            tagChannel: user.is_Youtuber ? user.youtuber.tagChannel : null,
+            urlLinkedin: user.is_Professional ? user.professional.urlLinkedin : null,
+            followersCount: user._count.followers,
+            subscriptionsCount: user._count.subscriptions,
+            likes
+        };
     }
 
     @Get('allUsers')
@@ -53,9 +78,11 @@ export class UserController {
     //     return await this.userService.updateUser(Number(id), updateUserData);
     // }
 
-    @Delete('deleteById/:id')
-    async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
-        await this.userService.deleteUser(id);
+    @Delete('deleteUser')
+    async deleteUser(@Req()request:{user:AccessTokenPayload},@Res({ passthrough: true }) res:Response) {
+        await this.userService.deleteUser(request.user.userId);
+        res.clearCookie('accessToken');
+        return { message: 'User deleted' };
     }
 }
 

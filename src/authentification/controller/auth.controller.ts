@@ -115,9 +115,10 @@ export class AuthController {
  
  @Get('protected')
  @HttpCode(HttpStatus.OK)
- async getProtected(@Req() req: Request) {
-  const decodeCookie = await this.authService.decodeToken(req.cookies.accessToken);
-    return decodeCookie;
+ async getProtected(@Req()request:{user:AccessTokenPayload}) {
+  // const decodeCookie = await this.authService.decodeToken(req.cookies.accessToken);
+  //   return decodeCookie;
+  return {id:request.user.userId, email:request.user.email, userName:request.user.userName  };
  }
 
   @Post('logout')
