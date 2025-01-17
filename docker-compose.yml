@@ -1,8 +1,51 @@
 # docker-compose.yml 
 # configuration avec docker , vérifier les version de postgres et les user et mdp ( penser au variable d'environnement les cas échéant)
 
-# version: '3.8'
-# services:
+version: '3.8'
+services:
+  backend:
+    image: youlink-backend
+    command: npm run dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/code
+      - /code/node_modules
+    environment:
+      NODE_ENV: development
+      JWT_SECRET_FILE: /run/secrets/JWT_SECRET
+      JWT_REFRESH_TOKEN_FILE: /run/secrets/JWT_REFRESH_TOKEN
+      DATABASE_URL_FILE: /run/secrets/DATABASE_URL
+      YOUTUBE_API_KEY_FILE: /run/secrets/YOUTUBE_API_KEY
+      URL_LINKEDIN_SCRAPER_FILE: /run/secrets/URL_LINKEDIN_SCRAPER
+      REQUEST_LINKEDIN_SCRAPER_HOST_FILE: /run/secrets/REQUEST_LINKEDIN_SCRAPER_HOST
+      RAPID_API_KEY_FILE: /run/secrets/RAPID_API_KEY
+    secrets:
+      - JWT_SECRET
+      - JWT_REFRESH_TOKEN
+      - DATABASE_URL
+      - YOUTUBE_API_KEY
+      - URL_LINKEDIN_SCRAPER
+      - REQUEST_LINKEDIN_SCRAPER_HOST
+      - RAPID_API_KEY
+
+
+secrets:
+  JWT_SECRET:
+    external: true
+  JWT_REFRESH_TOKEN:
+    external: true
+  DATABASE_URL:
+    external: true
+  YOUTUBE_API_KEY:
+    external: true
+  URL_LINKEDIN_SCRAPER:
+    external: true
+  REQUEST_LINKEDIN_SCRAPER_HOST:
+    external: true
+  RAPID_API_KEY:
+    external: true
+
 
 #   postgres:
 #     image: postgres:13.5
@@ -17,5 +60,3 @@
 
 # volumes:
 #   postgres:
-
-
