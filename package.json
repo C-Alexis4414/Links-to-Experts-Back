@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "",
   "prisma": {
-    "seed": "tsx prisma/seed/seed.ts"
+    "seed": "tsx prisma/seed/seed.ts",
+    "schema": "prisma/schema.prisma"
   },
   "author": "",
   "private": true,
