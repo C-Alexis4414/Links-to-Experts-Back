@@ -1,62 +1,35 @@
-# docker-compose.yml 
-# configuration avec docker , vérifier les version de postgres et les user et mdp ( penser au variable d'environnement les cas échéant)
-
-version: '3.8'
 services:
-  backend:
-    image: youlink-backend
-    command: npm run dev
-    ports:
-      - "3000:3000"
-    volumes:
-      - .:/code
-      - /code/node_modules
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    # env_file:
+    #   - .env  # Charge toutes les variables du fichier .env
     environment:
-      NODE_ENV: development
-      JWT_SECRET_FILE: /run/secrets/JWT_SECRET
-      JWT_REFRESH_TOKEN_FILE: /run/secrets/JWT_REFRESH_TOKEN
-      DATABASE_URL_FILE: /run/secrets/DATABASE_URL
-      YOUTUBE_API_KEY_FILE: /run/secrets/YOUTUBE_API_KEY
-      URL_LINKEDIN_SCRAPER_FILE: /run/secrets/URL_LINKEDIN_SCRAPER
-      REQUEST_LINKEDIN_SCRAPER_HOST_FILE: /run/secrets/REQUEST_LINKEDIN_SCRAPER_HOST
-      RAPID_API_KEY_FILE: /run/secrets/RAPID_API_KEY
-    secrets:
-      - JWT_SECRET
-      - JWT_REFRESH_TOKEN
-      - DATABASE_URL
-      - YOUTUBE_API_KEY
-      - URL_LINKEDIN_SCRAPER
-      - REQUEST_LINKEDIN_SCRAPER_HOST
-      - RAPID_API_KEY
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PW}
+      - POSTGRES_DB=${POSTGRES_DB} #optional (specify default database instead of $POSTGRES_DB)
+    ports:
+      - "5432:5432"
+    restart: always
 
+  backend:
+    container_name: nestappcompose
+    build: .
+    ports:
+      - "3001:3000"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
 
-secrets:
-  JWT_SECRET:
-    external: true
-  JWT_REFRESH_TOKEN:
-    external: true
-  DATABASE_URL:
-    external: true
-  YOUTUBE_API_KEY:
-    external: true
-  URL_LINKEDIN_SCRAPER:
-    external: true
-  REQUEST_LINKEDIN_SCRAPER_HOST:
-    external: true
-  RAPID_API_KEY:
-    external: true
-
-
-#   postgres:
-#     image: postgres:13.5
-#     restart: always
-#     environment:
-#       - POSTGRES_USER=myuser
-#       - POSTGRES_PASSWORD=mypassword
-#     volumes:
-#       - postgres:/var/lib/postgresql/data
-#     ports:
-#       - '5432:5432'
-
-# volumes:
-#   postgres:
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    # env_file:
+    #   - .env  # Charge aussi les variables pour pgAdmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_MAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PW}
+    ports:
+      - "8080:80"  # Mappe le port 80 de pgAdmin au port 8080 de l'hôte
+    restart: always
