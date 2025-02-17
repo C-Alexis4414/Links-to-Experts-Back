@@ -30,7 +30,7 @@ export class CreateUserDto {
     @ApiProperty()
     @IsString()
     @IsOptional()
-    urlLikendin?: string;
+    urlLinkedin?: string;
 }
 
 export class UserIsYoutuber {
