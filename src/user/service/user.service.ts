@@ -149,7 +149,7 @@ export class UserService {
 
         //TODO comment gérer les recommandations linkedins pendant la créations?
         const professionalData = userData.is_Professional
-            ? { create: { urlLinkedin: userData.urlLikendin, recommandationLinkedin: {} } }
+            ? { create: { urlLinkedin: userData.urlLinkedin, recommandationLinkedin: {} } }
             : undefined;
 
         const newUser = await this.prisma.user.create({

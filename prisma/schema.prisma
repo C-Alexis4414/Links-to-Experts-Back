@@ -18,6 +18,7 @@ model User {
   hashRefreshToken String?       @db.VarChar(300)
   refreshExpiresAt DateTime?
   likes           Liked[]
+  likedTags       LikedTag[]
   followers       Subscription[] @relation("follow")
   subscriptions   Subscription[] @relation("subscription")
   youtuber        Youtuber?
@@ -42,12 +43,22 @@ model Liked {
   @@id(name: "likedId", [userId, categoryId])
 }
 
+model LikedTag {
+  userId Int
+  tagId  Int
+  tag    Tags @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id(name: "likedTagId", [userId, tagId])
+}
+
 model Tags {
   id         Int      @id @default(autoincrement())
   name       String   @unique
   userId     Int
   categoryId Int
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  likedTag   LikedTag[]
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
