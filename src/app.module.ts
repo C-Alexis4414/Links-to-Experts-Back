@@ -10,6 +10,7 @@ import { AuthModule } from './authentification/auth.module';
 import { TagsModule } from './tags/tag.module';
 import { SubscriptionModule } from './subscription/subcription.module';
 import { ConfigModule } from '@nestjs/config';
+import { LikedTagModule } from './likedTag/likedTag.module';
 
 // GUARDS
 import { APP_GUARD } from '@nestjs/core';
@@ -31,6 +32,7 @@ import { PrismaService } from './prisma.service';
     TagsModule,
     SubscriptionModule,
     AuthModule,
+    LikedTagModule
   ],
   controllers: [],
   providers: [PrismaService,

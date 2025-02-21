@@ -19,3 +19,7 @@ Documentation:
   - any-glob-to-any-file: 
     - '**/*.md'
     - 'docs/**'
+
+Root:
+- changed-files:
+  - any-glob-to-any-file: '*'
