@@ -10,17 +10,35 @@ services:
       - POSTGRES_DB=${POSTGRES_DB} #optional (specify default database instead of $POSTGRES_DB)
     ports:
       - "5432:5432"
-    restart: always
+    networks:
+        - youlink_network
+    restart: unless-stopped
+
+  migration:
+    image: node:lts-slim
+    working_dir: /app
+    volumes:
+      - .:/app
+    networks:
+      - youlink_network
+    depends_on:
+      - postgres
+    command: >
+      sh -c "npm install && npx prisma generate && npx prisma migrate deploy"
 
   backend:
     container_name: nestappcompose
     build: .
     ports:
       - "3000:3000"
+    networks:
+      - youlink_network
     env_file:
       - .env
     depends_on:
       - postgres
+      - migration
+    restart: on-failure
 
   pgadmin:
     container_name: pgadmin
@@ -32,4 +50,16 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PW}
     ports:
       - "8080:80"  # Mappe le port 80 de pgAdmin au port 8080 de l'hôte
-    restart: always
+    networks:
+        - youlink_network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    volumes:
+      - ./pgadmin/YoulinkServer.json:var/lib/pgadmin/YoulinkServer.json
+      - ./pgadmin/entrypoint.sh:/docker-entrypoint-initdb.d/entrypoint.sh
+      - ./pgadmin/pgpass:var/lib/pgadmin/pgpass
+
+networks:
+  youlink_network:
+    driver: bridge
