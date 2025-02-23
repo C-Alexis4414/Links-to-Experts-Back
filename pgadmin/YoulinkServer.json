@@ -7,12 +7,10 @@
             "Port": 5432,
             "MaintenanceDB": "postgres",
             "Username": "postgres",
-            "KerberosAuthentication": false,
-            "ConnectionParameters": {
-                "sslmode": "prefer",
-                "connect_timeout": 10
-            },
-            "PassFile": "/pgadmin/pgpass"
+            "SSLMode": "prefer",
+            "PassFile": "/pgadmin4/pgpass",
+            "tunnelPort": "",
+            "Comment": "Postgres Dockerized"
         }
     }
 }
