@@ -14,18 +14,6 @@ services:
         - youlink_network
     restart: unless-stopped
 
-  migration:
-    image: node:lts-slim
-    working_dir: /app
-    volumes:
-      - .:/app
-    networks:
-      - youlink_network
-    depends_on:
-      - postgres
-    command: >
-      sh -c "npm install && npx prisma generate && npx prisma migrate deploy"
-
   backend:
     container_name: nestappcompose
     build: .
@@ -37,7 +25,8 @@ services:
       - .env
     depends_on:
       - postgres
-      - migration
+    command: >
+      sh -c "apt-get update -y && apt-get install -y openssl && npm install && npx prisma generate && npx prisma migrate deploy && npm run dev"
     restart: on-failure
 
   pgadmin:
@@ -54,11 +43,12 @@ services:
         - youlink_network
     depends_on:
       - postgres
-    restart: unless-stopped
     volumes:
-      - ./pgadmin/YoulinkServer.json:var/lib/pgadmin/YoulinkServer.json
+      - ./pgadmin:/var/lib/pgadmin
+      - ./pgadmin/YoulinkServer.json:/pgadmin4/servers.json:ro
+      - ./pgadmin/pgpass:/pgadmin4/pgpass:ro
       - ./pgadmin/entrypoint.sh:/docker-entrypoint-initdb.d/entrypoint.sh
-      - ./pgadmin/pgpass:var/lib/pgadmin/pgpass
+    restart: unless-stopped
 
 networks:
   youlink_network:
