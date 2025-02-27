@@ -47,7 +47,9 @@ services:
       - ./pgadmin:/var/lib/pgadmin
       - ./pgadmin/YoulinkServer.json:/pgadmin4/servers.json:ro
       - ./pgadmin/pgpass:/pgadmin4/pgpass:ro
-      - ./pgadmin/entrypoint.sh:/docker-entrypoint-initdb.d/entrypoint.sh
+      - ./entrypoint.sh:/docker-entrypoint-initdb.d/entrypoint.sh
+    entrypoint: ["/docker-entrypoint-initdb.d/entrypoint.sh"]
+    command: ["pgadmin"]
     restart: unless-stopped
 
 networks:
