@@ -45,8 +45,8 @@ services:
       - postgres
     volumes:
       - ./pgadmin:/var/lib/pgadmin
-      - ./pgadmin/YoulinkServer.json:/pgadmin4/servers.json:ro
-      - ./pgadmin/pgpass:/pgadmin4/pgpass:ro
+      - ./pgadmin/YoulinkServer.json:/pgadmin4/servers.json:ro # Load the file with the server configuration
+      - ./pgadmin/pgpass:/pgadmin4/pgpass:ro # Flag read-only to prevent accidental modification
       - ./entrypoint.sh:/docker-entrypoint-initdb.d/entrypoint.sh
     entrypoint: ["/docker-entrypoint-initdb.d/entrypoint.sh"]
     command: ["pgadmin"]
