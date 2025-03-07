@@ -1,21 +1,57 @@
-# docker-compose.yml 
-# configuration avec docker , vérifier les version de postgres et les user et mdp ( penser au variable d'environnement les cas échéant)
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    # env_file:
+    #   - .env  # Charge toutes les variables du fichier .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PW}
+      - POSTGRES_DB=${POSTGRES_DB} #optional (specify default database instead of $POSTGRES_DB)
+    ports:
+      - "5432:5432"
+    networks:
+        - youlink_network
+    restart: unless-stopped
 
-# version: '3.8'
-# services:
+  backend:
+    container_name: nestappcompose
+    build: .
+    ports:
+      - "3000:3000"
+    networks:
+      - youlink_network
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    command: >
+      sh -c "apt-get update -y && apt-get install -y openssl && npm install && npx prisma generate && npx prisma migrate deploy && npm run dev"
+    restart: on-failure
 
-#   postgres:
-#     image: postgres:13.5
-#     restart: always
-#     environment:
-#       - POSTGRES_USER=myuser
-#       - POSTGRES_PASSWORD=mypassword
-#     volumes:
-#       - postgres:/var/lib/postgresql/data
-#     ports:
-#       - '5432:5432'
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    # env_file:
+    #   - .env  # Charge aussi les variables pour pgAdmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_MAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PW}
+    ports:
+      - "8080:80"  # Mappe le port 80 de pgAdmin au port 8080 de l'hôte
+    networks:
+        - youlink_network
+    depends_on:
+      - postgres
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
+      - ./pgadmin/YoulinkServer.json:/pgadmin4/servers.json:ro # Load the file with the server configuration
+      - ./pgadmin/pgpass:/pgadmin4/pgpass:ro # Flag read-only to prevent accidental modification
+      - ./entrypoint.sh:/docker-entrypoint-initdb.d/entrypoint.sh
+    entrypoint: ["/docker-entrypoint-initdb.d/entrypoint.sh"]
+    command: ["pgadmin"]
+    restart: unless-stopped
 
-# volumes:
-#   postgres:
-
-
+networks:
+  youlink_network:
+    driver: bridge

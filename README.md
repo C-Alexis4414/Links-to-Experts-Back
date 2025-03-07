@@ -95,4 +95,14 @@ npx prisma migrate reset
 
 # load seed
 npx prisma db seed
+
+#DOCKER
+#run a container with .env file
+docker run -p port:port --env-file .env name
+
+#exec terminal in container 
+docker exec -it onctainerId /bin/bash
+
+
+
 ```
