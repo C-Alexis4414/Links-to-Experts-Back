@@ -8,23 +8,23 @@ datasource db {
 }
 
 model User {
-  id              Int            @id @default(autoincrement())
-  email           String         @unique
-  password        String
-  userName        String         @unique
-  is_Professional Boolean        @default(false)
-  is_Youtuber     Boolean        @default(false)
-  accessToken     String?        @db.VarChar(300)
-  hashRefreshToken String?       @db.VarChar(300)
+  id               Int            @id @default(autoincrement())
+  email            String         @unique
+  password         String
+  userName         String         @unique
+  is_Professional  Boolean        @default(false)
+  is_Youtuber      Boolean        @default(false)
+  accessToken      String?        @db.VarChar(300)
+  hashRefreshToken String?        @db.VarChar(300)
   refreshExpiresAt DateTime?
-  likes           Liked[]
-  likedTags       LikedTag[]
-  followers       Subscription[] @relation("follow")
-  subscriptions   Subscription[] @relation("subscription")
-  youtuber        Youtuber?
-  professional    Professional?
-  tags            Tags[]
-  access          Access[]
+  access           Access?
+  likes            Liked[]
+  likedTags        LikedTag[]
+  professional     Professional?
+  followers        Subscription[] @relation("follow")
+  subscriptions    Subscription[] @relation("subscription")
+  tags             Tags[]
+  youtuber         Youtuber?
 }
 
 model Category {
@@ -40,7 +40,7 @@ model Liked {
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id(name: "likedId", [userId, categoryId])
+  @@id([userId, categoryId], name: "likedId")
 }
 
 model LikedTag {
@@ -49,17 +49,17 @@ model LikedTag {
   tag    Tags @relation(fields: [tagId], references: [id], onDelete: Cascade)
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id(name: "likedTagId", [userId, tagId])
+  @@id([userId, tagId], name: "likedTagId")
 }
 
 model Tags {
-  id         Int      @id @default(autoincrement())
-  name       String   @unique
-  userId     Int
+  id         Int        @id @default(autoincrement())
+  name       String     @unique
   categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  userId     Int
   likedTag   LikedTag[]
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category   Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Subscription {
@@ -68,7 +68,7 @@ model Subscription {
   followedUser    User @relation("follow", fields: [followedUserId], references: [id])
   subscribeUser   User @relation("subscription", fields: [subscribeUserId], references: [id])
 
-  @@id(name: "subscriptionId", [subscribeUserId, followedUserId])
+  @@id([subscribeUserId, followedUserId], name: "subscriptionId")
 }
 
 model Youtuber {
@@ -86,16 +86,11 @@ model Professional {
   user                   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model Access{ // table a revoir si utile pour le csrf
-  id         Int   @id @default(autoincrement())
-  userId     Int  @unique
-  // vrerifier l'uitlité de champs suivant :
-  createdAt  DateTime? @default(now())
-  ipAdress String?
+model Access {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @unique
+  createdAt DateTime? @default(now())
+  ipAdress  String?
   userAgent String?
-  user        User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  // expiresAt  DateTime
-  // statut enume: actif ou revoqué ????
-  // lastUsedAt : DateTime 
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
-
