@@ -171,11 +171,35 @@ export class UserService {
 
         return newUser;
     }
+
+    async searchUsersByName(name: string): Promise<any[]> {
+        return await this.prisma.user.findMany({
+            where: {
+                userName: {
+                    contains: name,
+                    mode: 'insensitive',
+                },
+            },
+            select: {
+                userName: true,
+                is_Youtuber: true,
+                is_Professional: true,
+                youtuber: {
+                    select: { tagChannel: true },
+                },
+                professional: {
+                    select: { urlLinkedin: true },
+                },
+            },
+            take: 10, // Pour éviter les grosses réponses
+        });
+    }
+    
     // TODO: gérer la modifications des données et les relations queries
     async updateUser(id: number, userData: UpdateUserDataDto): Promise<UserType> {
-        if (!userData.is_Youtuber && !userData.is_Professional) {
-            throw new BadRequestException('User must be either a Youtuber or a Professional');
-        }
+        // if (!userData.is_Youtuber && !userData.is_Professional) {
+        //     throw new BadRequestException('User must be either a Youtuber or a Professional');
+        // }
         // comment gerer les mofdifications de channel youtube (api)
         // const youtuberData = userData.is_Youtuber
         //     ? { update: { tagChannel: userData.tagChannel } }
@@ -190,17 +214,17 @@ export class UserService {
             where: { id },
             data: {
                 userName: userData.userName,
-                password: userData.password,
+                // password: userData.password,
                 email: userData.email,
-                is_Youtuber: userData.is_Youtuber,
-                is_Professional: userData.is_Professional,
+                // is_Youtuber: userData.is_Youtuber,
+                // is_Professional: userData.is_Professional,
                 // youtuber: youtuberData,
                 // professional: professionalData,
             },
-            include: {
-                youtuber: true,
-                professional: true,
-            },
+            // include: {
+            //     youtuber: true,
+            //     professional: true,
+            // },
         });
         return updatedUser;
     }

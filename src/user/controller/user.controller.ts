@@ -1,5 +1,5 @@
 // TOOLS
-import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, Req, Res, UseGuards, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, Req, Res, UseGuards, NotFoundException, Query } from '@nestjs/common';
 import { ApiTags, ApiHeader, ApiBody } from '@nestjs/swagger';
 
 // SERVICES
@@ -9,6 +9,7 @@ import { ProfessionalService } from '../service/professional.service';
 import { CreateUserDto } from '../dto/userData.dto';
 // import { ApiSecurity } from '@nestjs/swagger';
 import { UserType } from '../type/user.type';
+import { UpdateUserDataDto } from '../dto/updateUserData';
 import { request, Request, Response } from 'express';
 import { AccessTokenPayload } from 'src/authentification/type/accessTokenPayload.type';
 import { AuthGuard } from '@nestjs/passport';
@@ -59,6 +60,12 @@ export class UserController {
         };
     }
 
+    @Get('search')
+    async searchUsers(@Query('name') name: string): Promise<any[]> {
+        return this.userService.searchUsersByName(name);
+    }
+
+
     @Get('allUsers')
     async getAllUsers(): Promise<UserType[]> {
         return await this.userService.getAllUser()
@@ -70,13 +77,13 @@ export class UserController {
     }
 
 
-    // @Put('update/:id')
-    // async update(
-    //     @Param('id') id: string,
-    //     @Body() updateUserData: UserDataDto
-    // ): Promise<UserType> {
-    //     return await this.userService.updateUser(Number(id), updateUserData);
-    // }
+    @Put('update')
+    async update(
+        @Req() request: { user: AccessTokenPayload },
+        @Body() updateUserData: UpdateUserDataDto,
+    ): Promise<UserType> {
+        return await this.userService.updateUser(request.user.userId, updateUserData);
+    }
 
     @Delete('deleteUser')
     async deleteUser(@Req()request:{user:AccessTokenPayload},@Res({ passthrough: true }) res:Response) {
