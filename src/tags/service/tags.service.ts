@@ -36,7 +36,8 @@ export class TagService {
 
         const newTag = await this.prisma.tags.create({
             data: {
-                ...tagData
+                name: tagData.name,
+                categoryId: tagData.categoryId,
             }
         })
         return newTag
