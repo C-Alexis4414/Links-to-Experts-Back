@@ -172,15 +172,19 @@ export class UserService {
         return newUser;
     }
 
-    async searchUsersByName(name: string): Promise<any[]> {
-        return await this.prisma.user.findMany({
+    async searchUsersByName(name: string, currentUserId: number): Promise<any[]> {
+        const users = await this.prisma.user.findMany({
             where: {
                 userName: {
                     contains: name,
                     mode: 'insensitive',
                 },
+                id: {
+                    not: currentUserId,
+                },
             },
             select: {
+                id: true,
                 userName: true,
                 is_Youtuber: true,
                 is_Professional: true,
@@ -191,8 +195,21 @@ export class UserService {
                     select: { urlLinkedin: true },
                 },
             },
-            take: 10, // Pour éviter les grosses réponses
+            take: 10,
         });
+        const followedUsers = await this.prisma.subscription.findMany({
+            where: {
+                subscribeUserId: currentUserId,
+            },
+            select: {
+                followedUserId: true,
+            },
+        });
+        const followedIds = new Set(followedUsers.map((f) => f.followedUserId));
+        return users.map((user) => ({
+            ...user,
+            isFollowed: followedIds.has(user.id),
+        }));
     }
     
     // TODO: gérer la modifications des données et les relations queries

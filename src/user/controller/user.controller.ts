@@ -48,6 +48,7 @@ export class UserController {
         }));
 
         return {
+            id: user.id,
             userName: user.userName,
             email: user.email,
             is_Youtuber: user.is_Youtuber,
@@ -61,8 +62,12 @@ export class UserController {
     }
 
     @Get('search')
-    async searchUsers(@Query('name') name: string): Promise<any[]> {
-        return this.userService.searchUsersByName(name);
+    async searchUsers(
+        @Query('name') name: string,
+        @Req() request: { user: AccessTokenPayload }
+    ) {
+        const currentUserId = request.user.userId;
+        return this.userService.searchUsersByName(name, currentUserId);
     }
 
 

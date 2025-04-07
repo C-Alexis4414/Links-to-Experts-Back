@@ -1,5 +1,6 @@
 // NEST
 import { Injectable } from '@nestjs/common';
+import e from 'express';
 
 // SERVICE
 import { PrismaService } from 'src/prisma.service';
@@ -18,24 +19,8 @@ export class SubscriptionService {
      */
 
     async subscribe(subscribeUserId: number, followedUserId: number): Promise<any> {
-        const existingSubscription = await this.prisma.subscription.findUnique({
-            where: {
-                subscriptionId: {
-                    subscribeUserId,
-                    followedUserId
-                }
-            },
-        })
-
-        if (!existingSubscription) {
-            return await this.prisma.subscription.create({
-                data: {
-                    subscribeUserId,
-                    followedUserId
-                }
-            });
-        } else {
-            return await this.prisma.subscription.delete({
+        try {
+            const existingSubscription = await this.prisma.subscription.findUnique({
                 where: {
                     subscriptionId: {
                         subscribeUserId,
@@ -43,6 +28,27 @@ export class SubscriptionService {
                     }
                 },
             })
+
+            if (!existingSubscription) {
+                return await this.prisma.subscription.create({
+                    data: {
+                        subscribeUserId,
+                        followedUserId
+                    }
+                });
+            } else {
+                return await this.prisma.subscription.delete({
+                    where: {
+                        subscriptionId: {
+                            subscribeUserId,
+                            followedUserId
+                        }
+                    },
+                })
+            }
+        } catch (error) {
+            console.error('Error in subscribe:', error);
+            throw error;
         }
     }
 

@@ -1,11 +1,10 @@
 // TOOLS
-import { Controller, Get, Post, Put, Delete, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, ParseIntPipe, UseGuards, Req } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 // SERVICES
 import { SubscriptionService } from '../service/subscription.service';
-
-
+import { JwtAuthGuard } from '../../authentification/guards/accessToken.guard';
 
 @ApiTags('SUBSCRIPTION')
 @Controller('subscription')
@@ -14,9 +13,11 @@ export class SubscriptionController {
         private readonly subcriptionService: SubscriptionService
     ) { }
 
-    @Post('SubscribeToUser/:userId/:followedId')
-    async subscribe(@Param('userId', ParseIntPipe) userId: number, @Param('followedId', ParseIntPipe) followedId: number) {
-        return await this.subcriptionService.subscribe(userId, followedId)
+    @Post('SubscribeToUser/me/:followedId')
+    @UseGuards(JwtAuthGuard)
+    async subscribeFromSession(@Req() req: any, @Param('followedId', ParseIntPipe) followedId: number) {
+        const subscribeUserId = req.user?.userId;
+        return await this.subcriptionService.subscribe(subscribeUserId, followedId)
     }
 
     @Get('getFollowedUserByUserName/:userName')
