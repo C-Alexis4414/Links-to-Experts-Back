@@ -83,41 +83,13 @@ export class LikedService {
     }
 
     async toggleCategoryLike(userId: number, categoryId: number) {
-        const existingLike = await this.prisma.liked.findUnique({
-            where: {
-                likedId: {
-                    userId,
-                    categoryId,
-                }
-            },
-            select: {
-                user: {
-                    select: {
-                        userName: true
-                    }
-                },
-                category: {
-                    select: {
-                        name: true
-                    }
-                }
-            }
-        });
-
-        if (existingLike) {
-            return await this.prisma.liked.delete({
+        try {
+            const existingLike = await this.prisma.liked.findUnique({
                 where: {
                     likedId: {
                         userId,
                         categoryId,
-                    },
-                },
-            });
-        } else {
-            return await this.prisma.liked.create({
-                data: {
-                    userId,
-                    categoryId,
+                    }
                 },
                 select: {
                     user: {
@@ -132,6 +104,39 @@ export class LikedService {
                     }
                 }
             });
+
+            if (existingLike) {
+                return await this.prisma.liked.delete({
+                    where: {
+                        likedId: {
+                            userId,
+                            categoryId,
+                        },
+                    },
+                });
+            } else {
+                return await this.prisma.liked.create({
+                    data: {
+                        userId,
+                        categoryId,
+                    },
+                    select: {
+                        user: {
+                            select: {
+                                userName: true
+                            }
+                        },
+                        category: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error in like:', error);
+            throw error;
         }
     }
 }

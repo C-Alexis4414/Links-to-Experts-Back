@@ -1,5 +1,5 @@
 // TOOLS
-import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, UseGuards, Req, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 // SERVICES
@@ -10,6 +10,8 @@ import { TagType } from '../type/tag.type';
 
 // DTO
 import { TagDto } from '../dto/tag.dto';
+import { JwtAuthGuard } from 'src/authentification/guards/accessToken.guard';
+import { AccessTokenPayload } from 'src/authentification/type/accessTokenPayload.type';
 
 
 @ApiTags('TAGS')
@@ -47,5 +49,16 @@ export class TagController {
         return await this.tagService.deleteTagById(id)
     }
 
+    @Get('search')
+    async searchTags(@Query('name') name: string, @Req() req: { user: AccessTokenPayload }) {
+        const userId = req.user.userId;
+        return this.tagService.searchByName(name, userId);
+    }
 
+    // @UseGuards(JwtAuthGuard)
+    // @Get('latest')
+    // async getLatestTags(@Req() req): Promise<TagType[]> {
+    //     const userId = req.user.id;
+    //     return this.tagService.getLatestTagsWithLikeStatus(req.user.id);
+    // }
 }

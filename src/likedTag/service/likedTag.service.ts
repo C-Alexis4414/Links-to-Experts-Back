@@ -47,41 +47,13 @@ export class LikedTagService {
     }
 
     async toggleTagLike(userId: number, tagId: number) {
-        const existingLike = await this.prisma.likedTag.findUnique({
-            where: {
-                likedTagId: {
-                    userId,
-                    tagId,
-                }
-            },
-            select: {
-                user: {
-                    select: {
-                        userName: true
-                    }
-                },
-                tag: {
-                    select: {
-                        name: true
-                    }
-                }
-            }
-        });
-
-        if (existingLike) {
-            return await this.prisma.likedTag.delete({
+        try {
+            const existingLike = await this.prisma.likedTag.findUnique({
                 where: {
                     likedTagId: {
                         userId,
                         tagId,
-                    },
-                }
-            });
-        } else {
-            return await this.prisma.likedTag.create({
-                data: {
-                    userId,
-                    tagId,
+                    }
                 },
                 select: {
                     user: {
@@ -96,6 +68,39 @@ export class LikedTagService {
                     }
                 }
             });
+
+            if (existingLike) {
+                return await this.prisma.likedTag.delete({
+                    where: {
+                        likedTagId: {
+                            userId,
+                            tagId,
+                        },
+                    }
+                });
+            } else {
+                return await this.prisma.likedTag.create({
+                    data: {
+                        userId,
+                        tagId,
+                    },
+                    select: {
+                        user: {
+                            select: {
+                                userName: true
+                            }
+                        },
+                        tag: {
+                            select: {
+                                name: true
+                            }
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error in tag Like:', error);
+            throw error;
         }
     }
 

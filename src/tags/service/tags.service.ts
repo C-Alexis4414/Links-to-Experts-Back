@@ -65,4 +65,47 @@ export class TagService {
             }
         })
     }
+    
+    async searchByName(name: string, userId?: number) {
+        const tags = await this.prisma.tags.findMany({
+            where: {
+                name: {
+                    contains: name,
+                    mode: 'insensitive',
+                },
+            },
+            include: {
+                likedTag: userId ? {
+                    where: { userId: userId },
+                    select: { userId: true },
+                } : false,
+            },
+            take: 10,
+        });
+    
+        return tags.map((tag) => ({
+            ...tag,
+            isLikedByCurrentUser: tag.likedTag.length > 0,
+        }));
+    }
+
+    // async getLatestTagsWithLikeStatus(userId: number): Promise<TagType[]> {
+    //     const tags = await this.prisma.tags.findMany({
+    //         orderBy: { createdAt: 'desc' },
+    //         take: 5,
+    //         include: {
+    //             likedTag: {
+    //                 where: { userId },
+    //                 select: { userId: true },
+    //             },
+    //         },
+    //     });
+    
+    //     return tags.map(tag => ({
+    //         id: tag.id,
+    //         name: tag.name,
+    //         categoryId: tag.categoryId,
+    //         isLikedByCurrentUser: tag.likes.length > 0,
+    //     }));
+    // }
 }

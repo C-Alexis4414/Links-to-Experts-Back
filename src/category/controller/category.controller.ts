@@ -1,5 +1,5 @@
 // TOOLS
-import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, UseGuards, Req, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 // SERVICES
@@ -10,6 +10,8 @@ import { CategoryType } from '../type/category.type';
 
 // DTO
 import { CategoryDto } from '../dto/category.dto';
+import { JwtAuthGuard } from 'src/authentification/guards/accessToken.guard';
+import { AccessTokenPayload } from 'src/authentification/type/accessTokenPayload.type';
 
 
 @ApiTags('CATEGORY')
@@ -49,7 +51,15 @@ export class CategoryController {
         return await this.categoryService.deleteCategoryById(id)
     }
 
+    @Get('search')
+    async searchCategories(@Query('name') name: string, @Req() req: { user: AccessTokenPayload }) {
+        const userId = req.user.userId;
+        return this.categoryService.searchByName(name, userId);
+    }
 
-
-
+    // @UseGuards(JwtAuthGuard)
+    // @Get("latest")
+    // async getLatestCategories(@Req() req): Promise<CategoryType[]> {
+    //     return await this.categoryService.getLatestCategoriesWithLikeStatus(req.user.id);
+    // }
 }

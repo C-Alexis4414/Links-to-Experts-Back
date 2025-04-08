@@ -6,6 +6,7 @@ import { PrismaService } from 'src/prisma.service';
 
 // TYPE
 import { CategoryType } from '../type/category.type';
+import { CategoryWithLikeStatus } from '../type/CategoryWithLikeStatus.type';
 
 // DTO
 import { CategoryDto } from '../dto/category.dto';
@@ -81,6 +82,48 @@ export class CategoryService {
         })
     }
 
+    async searchByName(name: string, userId?: number) {
+        const categories = await this.prisma.category.findMany({
+            where: {
+                name: {
+                contains: name,
+                mode: 'insensitive',
+                },
+            },
+            include: {
+                likes: userId ? {
+                where: { userId: userId },
+                select: { userId: true },
+                } : false,
+            },
+            take: 10,
+        });
+    
+        return categories.map((category) => ({
+            ...category,
+            isLikedByCurrentUser: category.likes?.length > 0,
+        }));
+    }
 
-
+    // async getLatestCategoriesWithLikeStatus(userId: string): Promise<CategoryWithLikeStatus[]> {
+    //     const categories = await this.prisma.category.findMany({
+    //       orderBy: { createdAt: 'desc' },
+    //       take: 5,
+    //       include: {
+    //         likedBy: {
+    //           where: {
+    //             id: userId,
+    //           },
+    //           select: {
+    //             id: true, // On vérifie juste la présence
+    //           },
+    //         },
+    //       },
+    //     });
+    
+    //     return categories.map((category) => ({
+    //       ...category,
+    //       isLikedByCurrentUser: category.likedBy.length > 0,
+    //     }));
+    //   }
 }
