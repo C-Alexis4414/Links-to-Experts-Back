@@ -1,0 +1,61 @@
+@startuml Youlink MEA
+' Style for readability
+allow_mixing
+
+' Entités
+entity "User" as User {
+  🔑 id
+  userName
+  email
+}
+
+entity "Youtuber" as Youtuber {
+  🔑 userId
+  tagChannel
+}
+
+entity "Professional" as Professional {
+  🔑 userId
+  urlLinkedin
+}
+
+entity "Category" {
+  🔑 id
+  name
+}
+
+entity "Tag" {
+  🔑 id
+  name
+  categoryId
+}
+
+usecase "LikesCat"
+
+usecase "LikesTag"
+
+usecase "Subscribes"
+
+' Relations entre entités
+User -- Youtuber : "has"
+User -- Professional : "has"
+
+User -- LikesCat : "0,n"
+Category -- LikesCat : "0,n"
+
+User -- LikesTag : "0,n"
+Tag -- LikesTag : "0,n"
+
+User -- Subscribes : "0,n"
+Subscribes -- User : "0,n"
+
+Category -- Tag : "contains"
+
+' Contraintes
+note right of User
+* Must have at least one of:
+  - YoutuberProfile
+  - ProfessionalProfile
+end note
+
+@enduml
