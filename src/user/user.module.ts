@@ -8,7 +8,7 @@ import { UserController } from './controller/user.controller';
 import { UserService } from './service/user.service';
 import { YoutuberService } from './service/youtuber.service';
 import { ProfessionalService } from './service/professional.service';
-import { PrismaService } from 'src/prisma.service'
+import { PrismaService } from 'prisma/prisma.service'
 
 @Module({
     providers: [UserService, PrismaService, ProfessionalService, YoutuberService],

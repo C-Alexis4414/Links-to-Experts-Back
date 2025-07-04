@@ -17,7 +17,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './authentification/guards/accessToken.guard';
 // SERVICE
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from './prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Module({
   imports: [

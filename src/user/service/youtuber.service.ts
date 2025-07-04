@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from 'prisma/prisma.service';
 // import { UserIsYoutuber } from '../dto/userData.dto';
 import { YoutuberType } from '../type/youtuber.type';
 
