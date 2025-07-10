@@ -10,5 +10,6 @@ export default {
         "^.+\\.(t|j)s$": ["ts-jest", {
             "tsconfig": "tsconfig.json"
         }]
-    }
+    },
+    "verbose": true,
 }

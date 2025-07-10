@@ -219,6 +219,6 @@ export class UserService {
                 likes: true
             },
         });
-        ;
+        return deletedUser;
     }
 }

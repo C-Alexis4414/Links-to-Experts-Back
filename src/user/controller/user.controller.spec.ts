@@ -1,38 +1,70 @@
-
+import * as request from 'supertest';
+import { INestApplication, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from '../../app.controller';
-import { AppService } from '../../app.service';
+import { UserController } from './user.controller';
+import { UserService } from '../service/user.service';
+import { YoutuberService } from '../service/youtuber.service';
+import { ProfessionalService } from '../service/professional.service';
+import { AuthGuard } from '@nestjs/passport';
 
-describe('AppController', () => {
-  let appController: AppController;
-  let appService: AppService;
+describe('UserController (e2e with mock)', () => {
+  let app: INestApplication;
+  let allowGuard: boolean;
+  const mockGuard = {
+    canActivate: (context: ExecutionContext) => {
+      if (allowGuard) {
+        const req = context.switchToHttp().getRequest();
+        req.user = { userId: 1 };
+        return true;
+      }
+      throw new UnauthorizedException();
+    },
+  };
+  const mockUserService = {
+      deleteUser: jest.fn().mockResolvedValue({
+        userId: 1,
+      }),
+  };
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [AppController],
+  const createApp = async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      controllers: [UserController],
       providers: [
-        {
-          provide: AppService,
-          useValue: {
-            getHello: jest.fn(() => 'Hello World!'),
-          },
-        },
+        { provide: UserService, useValue: mockUserService },
+        { provide: YoutuberService, useValue: {} },
+        { provide: ProfessionalService, useValue: {} },
       ],
-    }).compile();
+    })
+    .overrideGuard(AuthGuard('delete'))
+    .useValue(mockGuard)
+    .compile();
 
-    appController = module.get<AppController>(AppController);
-    appService = module.get<AppService>(AppService);
+    const app = moduleFixture.createNestApplication();
+    await app.init();
+    return app;
+  };
+
+  afterEach(async () => {
+    if (app) await app.close();
   });
 
-  it('should be defined', () => {
-    expect(appController).toBeDefined();
+  it('should return 200 and delete user with mockedguard', async () => {
+    allowGuard = true;
+    app = await createApp();
+    const res = await request(app.getHttpServer())
+      .delete('/user/deleteUser')
+      .expect(200);
+    
+    expect(mockUserService.deleteUser).toHaveBeenCalledWith(1);
+    expect(res.body).toEqual({ message: 'User deleted' });
   });
 
-  describe('getHello', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
-    });
+  it('should return 401 if no guard allow access', async () => {
+    allowGuard = false;
+    app = await createApp();
+    await request(app.getHttpServer())
+      .delete('/user/deleteUser')
+      .set('Authorization', '')
+      .expect(401); 
   });
 });
-
-

@@ -78,11 +78,18 @@ export class UserController {
     //     return await this.userService.updateUser(Number(id), updateUserData);
     // }
 
+    @UseGuards(AuthGuard('delete'))
     @Delete('deleteUser')
     async deleteUser(@Req()request:{user:AccessTokenPayload},@Res({ passthrough: true }) res:Response) {
-        await this.userService.deleteUser(request.user.userId);
-        res.clearCookie('accessToken');
-        return { message: 'User deleted' };
+        try {
+            console.log('Request user:', request.user);
+            await this.userService.deleteUser(request.user.userId);
+            res.clearCookie('accessToken');
+            return { message: 'User deleted' };
+        } catch (error) {
+            console.error('Error in deleteUser controller:', error);
+            throw error;
+        }
     }
 }
 
