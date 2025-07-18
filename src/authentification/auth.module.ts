@@ -8,7 +8,7 @@ import { AuthController } from './controller/auth.controller';
 
 //SERVICES
 import { AuthService } from './service/auth.service';
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 import { UserService } from 'src/user/service/user.service';
 
 //STRATEGIES

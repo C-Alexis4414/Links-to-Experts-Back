@@ -6,7 +6,7 @@ import { SubscriptionController } from './controller/subscription.controller';
 
 // SERVICES
 import { SubscriptionService } from './service/subscription.service';
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 
 
 @Module({

@@ -6,7 +6,7 @@ import { TagController } from './controller/tags.controller';
 
 // SERVICES
 import { TagService } from './service/tags.service';
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Module({
     providers: [TagService, PrismaService],

@@ -1,15 +1,26 @@
-export default {
-    "moduleNameMapper": {
-        "^src/(.*)$": "<rootDir>/src/$1"
+import * as dotenv from 'dotenv';
+dotenv.config({ path: '.env.test' });
+
+import type { Config } from 'jest';
+
+const config: Config = {
+    moduleFileExtensions: ['js', 'json', 'ts'],
+    rootDir: '.',
+    testRegex: '.*\\.spec\\.ts$',
+    transform: {
+        '^.+\\.(t|j)s$': 'ts-jest',
     },
-    "moduleFileExtensions": ["js", "json", "ts"],
-    "rootDir": ".",
-    "testEnvironment": "node",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-        "^.+\\.(t|j)s$": ["ts-jest", {
-            "tsconfig": "tsconfig.json"
-        }]
+    testEnvironment: 'node',
+    moduleNameMapper: {
+        '^src/(.*)$': '<rootDir>/src/$1',
     },
-    "verbose": true,
-}
+    globals: {
+        'ts-jest': {
+            tsconfig: 'tsconfig.json',
+        },
+    },
+    verbose: true,
+    testPathIgnorePatterns: ['/dist/', '/node_modules/'],
+};
+
+export default config;

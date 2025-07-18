@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 
 // SERVICE
-import { PrismaService } from 'prisma/prisma.service';
+import { PrismaService } from '../../../prisma/prisma.service';
 
 
 

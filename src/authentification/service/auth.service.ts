@@ -5,7 +5,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 // SERVICE
-import { PrismaService, } from 'prisma/prisma.service';
+import { PrismaService, } from '../../../prisma/prisma.service';
 import { UserService } from 'src/user/service/user.service';
 import { ConfigService } from '@nestjs/config';
 

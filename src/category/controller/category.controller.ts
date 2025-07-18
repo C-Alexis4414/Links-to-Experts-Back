@@ -1,5 +1,5 @@
 // TOOLS
-import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 // SERVICES
@@ -10,6 +10,7 @@ import { CategoryType } from '../type/category.type';
 
 // DTO
 import { CategoryDto } from '../dto/category.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 
 @ApiTags('CATEGORY')
@@ -34,6 +35,7 @@ export class CategoryController {
         return await this.categoryService.getAllCategory();
     }
 
+    // @UseGuards(AuthGuard('jwt'))
     @Post('createCategorie')
     async createCategory(@Body() categoryName: CategoryDto): Promise<CategoryType> {
         return await this.categoryService.createCategory(categoryName)
