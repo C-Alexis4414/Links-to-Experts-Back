@@ -5,7 +5,7 @@ import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundExc
 import { UserType, } from '../type/user.type';
 
 // SERVICE
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../../../prisma/prisma.service';
 import { User } from '@prisma/client';
 
 //DTO
@@ -17,7 +17,8 @@ import { ProfessionalType } from '../type/professional.type';
 
 @Injectable()
 export class UserService {
-    private readonly prisma = new PrismaService();
+    // private readonly prisma = new PrismaService();
+    constructor(private readonly prisma: PrismaService) {}
 
     // find a user by id
     async getUser(id: number): Promise<User> {
@@ -137,19 +138,21 @@ export class UserService {
             throw new BadRequestException('User must be either a Youtuber or a Professional');
         }
 
+        const { tagChannel, urlLinkedin } = userData;
+
         if (userData.is_Youtuber) {
-            const isValidChannel = await this.verifyYTChannel(userData.tagChannel);
+            const isValidChannel = await this.verifyYTChannel(tagChannel);
             if (!isValidChannel) {
                 throw new BadRequestException('Invalid Youtube Channel');
             }
         }
         const youtuberData = userData.is_Youtuber
-            ? { create: { tagChannel: userData.tagChannel } }
+            ? { create: { tagChannel } }
             : undefined;
 
         //TODO comment gérer les recommandations linkedins pendant la créations?
         const professionalData = userData.is_Professional
-            ? { create: { urlLinkedin: userData.urlLinkedin, recommandationLinkedin: {} } }
+            ? { create: { urlLinkedin, recommandationLinkedin: {} } }
             : undefined;
 
         const newUser = await this.prisma.user.create({
@@ -214,9 +217,9 @@ export class UserService {
     
     // TODO: gérer la modifications des données et les relations queries
     async updateUser(id: number, userData: UpdateUserDataDto): Promise<UserType> {
-        // if (!userData.is_Youtuber && !userData.is_Professional) {
-        //     throw new BadRequestException('User must be either a Youtuber or a Professional');
-        // }
+        if (!userData.is_Youtuber && !userData.is_Professional) {
+            throw new BadRequestException('User must be either a Youtuber or a Professional');
+        }
         // comment gerer les mofdifications de channel youtube (api)
         // const youtuberData = userData.is_Youtuber
         //     ? { update: { tagChannel: userData.tagChannel } }
@@ -231,17 +234,17 @@ export class UserService {
             where: { id },
             data: {
                 userName: userData.userName,
-                // password: userData.password,
+                password: userData.password,
                 email: userData.email,
-                // is_Youtuber: userData.is_Youtuber,
-                // is_Professional: userData.is_Professional,
+                is_Youtuber: userData.is_Youtuber,
+                is_Professional: userData.is_Professional,
                 // youtuber: youtuberData,
                 // professional: professionalData,
             },
-            // include: {
-            //     youtuber: true,
-            //     professional: true,
-            // },
+            include: {
+                youtuber: true,
+                professional: true,
+            },
         });
         return updatedUser;
     }
@@ -257,6 +260,6 @@ export class UserService {
                 likes: true
             },
         });
-        ;
+        return deletedUser;
     }
 }

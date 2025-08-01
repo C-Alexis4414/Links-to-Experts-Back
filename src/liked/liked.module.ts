@@ -6,7 +6,7 @@ import { LikedController } from './controller/liked.controller';
 
 // SERVICES
 import { LikedService } from './service/liked.service';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../../prisma/prisma.service';
 
 // MODULES
 import { UserModule } from 'src/user/user.module';

@@ -1,20 +1,21 @@
 // NEST
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UseGuards } from '@nestjs/common';
 
 // SERVICE
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../../../prisma/prisma.service';
 
 // TYPE
 import { CategoryType } from '../type/category.type';
-import { CategoryWithLikeStatus } from '../type/CategoryWithLikeStatus.type';
 
 // DTO
 import { CategoryDto } from '../dto/category.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 
 @Injectable()
 export class CategoryService {
-    private readonly prisma = new PrismaService();
+    // private readonly prisma = new PrismaService();
+    constructor(private readonly prisma: PrismaService) {}
 
     /*
     TODO:

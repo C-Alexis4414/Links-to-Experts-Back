@@ -10,7 +10,6 @@ import { CategoryType } from '../type/category.type';
 
 // DTO
 import { CategoryDto } from '../dto/category.dto';
-import { JwtAuthGuard } from 'src/authentification/guards/accessToken.guard';
 import { AccessTokenPayload } from 'src/authentification/type/accessTokenPayload.type';
 
 
@@ -36,6 +35,7 @@ export class CategoryController {
         return await this.categoryService.getAllCategory();
     }
 
+    // @UseGuards(AuthGuard('jwt'))
     @Post('createCategorie')
     async createCategory(@Body() categoryName: CategoryDto): Promise<CategoryType> {
         return await this.categoryService.createCategory(categoryName)
