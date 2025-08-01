@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
+import { ResponseSanitizerInterceptor } from './common/interceptors/responseSanitizer.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +13,8 @@ async function bootstrap() {
     next();
   });
 
+  app.useGlobalInterceptors(new ResponseSanitizerInterceptor());
+  
   const config = new DocumentBuilder()
     .setTitle('Swagger Links-to-experts')
     .setDescription('testing API address')

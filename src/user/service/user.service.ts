@@ -217,9 +217,9 @@ export class UserService {
     
     // TODO: gérer la modifications des données et les relations queries
     async updateUser(id: number, userData: UpdateUserDataDto): Promise<UserType> {
-        if (!userData.is_Youtuber && !userData.is_Professional) {
-            throw new BadRequestException('User must be either a Youtuber or a Professional');
-        }
+        // if (!userData.is_Youtuber && !userData.is_Professional) {
+        //     throw new BadRequestException('User must be either a Youtuber or a Professional');
+        // }
         // comment gerer les mofdifications de channel youtube (api)
         // const youtuberData = userData.is_Youtuber
         //     ? { update: { tagChannel: userData.tagChannel } }
