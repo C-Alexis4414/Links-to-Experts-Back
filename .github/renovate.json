@@ -1,0 +1,45 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": ["config:recommended"],
+    "schedule": ["before 9am on monday"],
+    "labels": ["dependencies"],
+    "prConcurrentLimit": 5,
+    "packageRules": [
+        {
+        "matchUpdateTypes": ["bump"],
+        "matchDepTypes": ["dependencies", "devDependencies"],
+        "matchManagers": ["npm", "docker-compose", "github-actions"],
+        "labels": ["security"],
+        "prPriority": 1,
+        "separateMinorPatch": true
+        },
+        {
+        "matchManagers": ["npm"],
+        "groupName": "npm dependencies",
+        "labels": ["npm"],
+        "automerge": false
+        },
+        {
+        "matchManagers": ["github-actions"],
+        "groupName": "GitHub Actions",
+        "labels": ["ci"]
+        },
+        {
+        "matchManagers": ["docker-compose"],
+        "groupName": "Docker",
+        "labels": ["docker"]
+        }
+    ],
+    "npm": {
+        "enabled": true
+    },
+    "dockerfile": {
+        "enabled": true
+    },
+    "docker-compose": {
+        "enabled": true
+    },
+    "github-actions": {
+        "enabled": true
+    }
+}
