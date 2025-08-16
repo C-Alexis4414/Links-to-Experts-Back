@@ -1,7 +1,7 @@
-
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from './user.service';
-import { PrismaService } from '../../../prisma/prisma.service';
+
+import { UserService } from '../src/user/service/user.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 describe('UserService', () => {
     let service: UserService;
@@ -47,15 +47,15 @@ describe('UserService', () => {
     });
 
     it('should create a user', async () => {
-    const dto = { 
-        userName: 'testUser',
-        email: 'testuser@youlink.com',
-        password: 'P@ssw0rd',
-        is_Youtuber: true,
-        is_Professional: true,
-        tagChannel: 'testuser1234',
-        urlLinkedin: 'https://www.linkedin.com/in/test-user/',
-    };
+        const dto = {
+            userName: 'testUser',
+            email: 'testuser@youlink.com',
+            password: 'P@ssw0rd',
+            is_Youtuber: true,
+            is_Professional: true,
+            tagChannel: 'testuser1234',
+            urlLinkedin: 'https://www.linkedin.com/in/test-user/',
+        };
         const result = await service.createUser(dto);
         expect(prismaService.user.create).toHaveBeenCalledWith({
             data: {
@@ -79,7 +79,7 @@ describe('UserService', () => {
             include: {
                 youtuber: true,
                 professional: true,
-            },        
+            },
         });
         expect(result).toEqual(mockUser);
     });

@@ -1,6 +1,4 @@
-# Use the specific version of node
-FROM node:lts-slim
-# Mettre à jour les paquets et installer OpenSSL
+FROM node:24.6.0-trixie-slim
 RUN apt-get update -y && apt-get install -y openssl
 WORKDIR /code
 COPY package*.json ./

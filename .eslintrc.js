@@ -32,5 +32,23 @@ module.exports = {
         '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/explicit-module-boundary-types': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
+        'import/extensions': [
+            'error',
+            'ignorePackages',
+            {
+                js: 'never',
+                ts: 'never',
+            },
+        ],
+    },
+    settings: {
+        'import/resolver': {
+            typescript: {
+                alwaysTryTypes: true,
+            },
+            node: {
+                extensions: ['.js', '.ts'],
+            },
+        },
     },
 };
