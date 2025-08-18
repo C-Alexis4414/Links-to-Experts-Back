@@ -103,14 +103,14 @@ describe('CategoryController (e2e)', () => {
 
         await app.init();
 
-        const existing = await prisma.user.findUnique({
+        let existing = await prisma.user.findUnique({
             where: { email: testUser.email },
         });
 
         if (!existing) {
             const hashedPassword = await bcrypt.hash(testUser.password, 10);
 
-            await prisma.user.create({
+            existing = await prisma.user.create({
                 data: {
                     email: testUser.email,
                     password: hashedPassword,
