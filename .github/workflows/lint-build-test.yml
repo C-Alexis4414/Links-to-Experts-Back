@@ -116,7 +116,7 @@ jobs:
       
     - name: Run test with coverage
       env:
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_SECRET: test-secret
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
       run: npm run test:all -- --coverage
 
