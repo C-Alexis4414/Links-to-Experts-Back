@@ -114,15 +114,15 @@ jobs:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
       run: npx prisma db push
       
+    - name: Reset DB before tests
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
+      run: npx prisma migrate reset --force --skip-seed
+
     - name: Seed test DB
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
       run: npx ts-node prisma/seed/test-seed.ts
-
-    - name: Reset DB before tests
-      env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
-      run: npx prisma migrate reset --force --seed
 
     - name: Run test with coverage
       env:
