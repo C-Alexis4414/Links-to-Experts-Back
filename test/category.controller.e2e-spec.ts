@@ -120,30 +120,29 @@ describe('CategoryController (e2e)', () => {
 
             testUserId = existing.id;
 
-            const jwtService = new JwtService({ secret: 'test-secret' });
-            const payload = {
-                userId: testUserId,
-                email: testUser.email,
-                userName: testUser.userName,
-            };
-            const accessToken = jwtService.sign(payload, { expiresIn: '1h' });
-            const refreshToken = jwtService.sign(
-                { ...payload, type: 'refresh' },
-                { expiresIn: '7d' },
-            );
-            const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+            // const jwtService = new JwtService({ secret: 'test-secret' });
+            // const payload = {
+            //     userId: testUserId,
+            //     email: testUser.email,
+            //     userName: testUser.userName,
+            // };
+            // const accessToken = jwtService.sign(payload, { expiresIn: '1h' });
+            // const refreshToken = jwtService.sign(
+            //     { ...payload, type: 'refresh' },
+            //     { expiresIn: '7d' },
+            // );
+            // const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
 
-            await prisma.user.update({
-                where: { id: testUserId },
-                data: {
-                    accessToken,
-                    hashRefreshToken: hashedRefreshToken,
-                    refreshExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-                },
-            });
+            // await prisma.user.update({
+            //     where: { id: testUserId },
+            //     data: {
+            //         accessToken,
+            //         hashRefreshToken: hashedRefreshToken,
+            //         refreshExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            //     },
+            // });
         }
 
-        // Initialise l'agent et se connecte
         agent = request.agent(app.getHttpServer());
 
         const loginResponse = await agent.post('/authentication/login').send({
