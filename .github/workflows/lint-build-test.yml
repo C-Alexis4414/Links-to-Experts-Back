@@ -114,6 +114,11 @@ jobs:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
       run: npx prisma db push
       
+    - name: Seed test DB
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
+      run: npx ts-node prisma/seed/seed.ts
+
     - name: Run test with coverage
       env:
           JWT_SECRET: test-secret
