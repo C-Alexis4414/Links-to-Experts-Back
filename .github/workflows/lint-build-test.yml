@@ -94,10 +94,26 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 22
+        cache: 'npm'
 
     - name: Install dependancies
       run: npm ci
 
+    - name: Wait for Postgres
+      run: |
+        until pg_isready -h localhost -p 5432 -U postgres; do
+          echo "Waiting for postgres..."
+          sleep 2
+        done
+
+    - name: Prisma generate
+      run: npx prisma generate
+
+    - name: Push schema to test DB
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
+      run: npx prisma db push
+      
     - name: Run test with coverage
       env:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
