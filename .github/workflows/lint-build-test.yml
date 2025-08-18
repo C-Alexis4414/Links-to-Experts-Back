@@ -117,7 +117,7 @@ jobs:
     - name: Seed test DB
       env:
         DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
-      run: npx ts-node prisma/seed/seed.ts
+      run: npx ts-node prisma/seed/test-seed.ts
 
     - name: Run test with coverage
       env:
