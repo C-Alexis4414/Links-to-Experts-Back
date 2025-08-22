@@ -44,5 +44,4 @@ export class LinkedinDto {
     @ApiProperty()
     @IsString()
     userName: string;
-
 }

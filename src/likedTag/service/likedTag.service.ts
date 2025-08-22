@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma.service';
+
+import { PrismaService } from '../../../prisma/prisma.service';
 
 @Injectable()
 export class LikedTagService {
@@ -8,22 +9,22 @@ export class LikedTagService {
     async findUsersWhoLikedTagById(tagId: number) {
         return await this.prisma.likedTag.findMany({
             where: {
-                tagId: tagId
+                tagId: tagId,
             },
             select: {
-                user: true
-            }
+                user: true,
+            },
         });
     }
 
     async findTagsLikedByUserId(userId: number) {
         return await this.prisma.likedTag.findMany({
             where: {
-                userId: userId
+                userId: userId,
             },
             select: {
-                tag: true
-            }
+                tag: true,
+            },
         });
     }
 
@@ -34,68 +35,73 @@ export class LikedTagService {
         }
         return await this.prisma.likedTag.findMany({
             where: {
-                tagId: tag.id
+                tagId: tag.id,
             },
             select: {
                 user: {
                     select: {
-                        userName: true
-                    }
-                }
-            }
+                        userName: true,
+                    },
+                },
+            },
         });
     }
 
     async toggleTagLike(userId: number, tagId: number) {
-        const existingLike = await this.prisma.likedTag.findUnique({
-            where: {
-                likedTagId: {
-                    userId,
-                    tagId,
-                }
-            },
-            select: {
-                user: {
-                    select: {
-                        userName: true
-                    }
-                },
-                tag: {
-                    select: {
-                        name: true
-                    }
-                }
-            }
-        });
-
-        if (existingLike) {
-            return await this.prisma.likedTag.delete({
+        try {
+            const existingLike = await this.prisma.likedTag.findUnique({
                 where: {
                     likedTagId: {
                         userId,
                         tagId,
                     },
-                }
-            });
-        } else {
-            return await this.prisma.likedTag.create({
-                data: {
-                    userId,
-                    tagId,
                 },
                 select: {
                     user: {
                         select: {
-                            userName: true
-                        }
+                            userName: true,
+                        },
                     },
                     tag: {
                         select: {
-                            name: true
-                        }
-                    }
-                }
+                            name: true,
+                        },
+                    },
+                },
             });
+
+            if (existingLike) {
+                return await this.prisma.likedTag.delete({
+                    where: {
+                        likedTagId: {
+                            userId,
+                            tagId,
+                        },
+                    },
+                });
+            } else {
+                return await this.prisma.likedTag.create({
+                    data: {
+                        userId,
+                        tagId,
+                    },
+                    select: {
+                        user: {
+                            select: {
+                                userName: true,
+                            },
+                        },
+                        tag: {
+                            select: {
+                                name: true,
+                            },
+                        },
+                    },
+                });
+            }
+        } catch (error) {
+            console.error('Error in tag Like:', error);
+            throw error;
         }
     }
 
@@ -106,11 +112,11 @@ export class LikedTagService {
         }
         return await this.prisma.likedTag.findMany({
             where: {
-                userId: user.id
+                userId: user.id,
             },
             select: {
-                tag: true
-            }
+                tag: true,
+            },
         });
     }
 }

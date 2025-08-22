@@ -1,13 +1,14 @@
-import { Controller, Get, Put, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Put, Param, ParseIntPipe, UseGuards, Req } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+
+import { JwtAuthGuard } from 'src/authentification/guards/accessToken.guard';
+
 import { LikedTagService } from '../service/likedTag.service';
 
 @ApiTags('LIKED_TAG')
 @Controller('likedTag')
 export class LikedTagController {
-    constructor(
-        private readonly likedTagService: LikedTagService,
-    ) { }
+    constructor(private readonly likedTagService: LikedTagService) {}
 
     @Get('UserWhoLikeATag/:tagId')
     async findUsersWhoLikedTag(@Param('tagId', ParseIntPipe) tagId: number): Promise<any> {
@@ -29,10 +30,13 @@ export class LikedTagController {
         return await this.likedTagService.findUsersWhoLikedByTagName(tagName);
     }
 
-    @Put('likeOrUnlike/:userId/:tagId')
+    @Put('likeOrUnlike/me/:tagId')
+    @UseGuards(JwtAuthGuard)
     async toggleTagLike(
-        @Param('userId', ParseIntPipe) userId: number,
-        @Param('tagId', ParseIntPipe) tagId: number): Promise<any> {
-        return await this.likedTagService.toggleTagLike(userId, tagId);
+        @Req() req: any,
+        @Param('tagId', ParseIntPipe) tagId: number,
+    ): Promise<any> {
+        const tagLikeUserId = req.user?.userId;
+        return await this.likedTagService.toggleTagLike(tagLikeUserId, tagId);
     }
 }

@@ -4,3 +4,11 @@ npm-debug.log
 dist
 .codegpt
 pgadmin/sessions/
+*.spec.ts
+test/
+prisma/seed/seed.ts
+coverage/
+.git
+.gitignore
+Dockerfile*
+docker-compose*.yml

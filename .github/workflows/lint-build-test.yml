@@ -1,0 +1,134 @@
+name: Lint, build & test
+
+on:
+    push:
+        branches: ['main']
+    pull_request:
+        branches: ['main']
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+
+            - name: Install dependancies
+              run: npm ci
+
+            - name: Run ESLint
+              run: npm run lint
+
+            - name: Run Prettier check
+              run: npm run format:check
+
+    type-check:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+
+            - name: Install dependancies
+              run: npm ci
+
+            - name: Run TypeScript type check
+              run: npm run type-check
+
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+
+            - name: Install dependancies
+              run: npm ci
+
+            - name: Run build
+              run: npm run build
+
+    test:
+        runs-on: ubuntu-latest
+
+        services:
+            postgres:
+                image: postgres:16
+                ports:
+                    - 5432:5432
+                env:
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: postgres
+                    POSTGRES_DB: testdb
+                options: >-
+                    --health-cmd="pg_isready -U postgres"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=5
+
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: 'npm'
+
+            - name: Install dependancies
+              run: npm ci
+
+            - name: Wait for Postgres
+              run: |
+                  until pg_isready -h localhost -p 5432 -U postgres; do
+                    echo "Waiting for postgres..."
+                    sleep 2
+                  done
+
+            - name: Prisma generate
+              run: npx prisma generate
+
+            - name: Push schema to test DB
+              env:
+                  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
+              run: npx prisma db push
+
+            - name: Reset DB before tests
+              env:
+                  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
+              run: npx prisma migrate reset --force --skip-generate --skip-seed
+
+            - name: Seed test DB
+              env:
+                  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
+              run: npx ts-node prisma/seed/test-seed.ts
+
+            - name: Run test with coverage
+              env:
+                  JWT_SECRET: test-secret
+                  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
+              run: npm run test:all -- --coverage
+
+            - name: Upload coverage report
+              uses: actions/upload-artifact@v4
+              with:
+                  name: coverage-report
+                  path: coverage/
+                  retention-days: 7
