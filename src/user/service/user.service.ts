@@ -1,16 +1,23 @@
 // NEST
-import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+    BadRequestException,
+    HttpException,
+    HttpStatus,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 
 // TYPE
-import { UserType, } from '../type/user.type';
+import { User } from '@prisma/client';
+import axios from 'axios';
+
+import { UserType } from '../type/user.type';
 
 // SERVICE
 import { PrismaService } from '../../../prisma/prisma.service';
-import { User } from '@prisma/client';
 
 //DTO
 import { CreateUserDto } from '../dto/userData.dto';
-import axios from 'axios';
 import { UpdateUserDataDto } from '../dto/updateUserData';
 import { YoutuberType } from '../type/youtuber.type';
 import { ProfessionalType } from '../type/professional.type';
@@ -31,7 +38,8 @@ export class UserService {
         return getName;
     }
 
-    async getUserWithDetails(userId: number): Promise<any> { // User & { youtuber?: YoutuberType; professional?: ProfessionalType}>
+    async getUserWithDetails(userId: number): Promise<any> {
+        // User & { youtuber?: YoutuberType; professional?: ProfessionalType}>
         return await this.prisma.user.findUnique({
             where: { id: userId },
             select: {
@@ -41,30 +49,32 @@ export class UserService {
                 is_Professional: true,
                 youtuber: {
                     select: {
-                        tagChannel: true
-                    }},
+                        tagChannel: true,
+                    },
+                },
                 professional: {
                     select: {
-                        urlLinkedin: true
-                    }},
+                        urlLinkedin: true,
+                    },
+                },
                 _count: {
                     select: {
                         followers: true,
                         subscriptions: true,
-                        }
                     },
+                },
                 likes: {
                     take: 5,
                     select: {
                         categoryId: true,
                         category: {
                             select: {
-                                name: true
+                                name: true,
                             },
-                        }
-                    }
+                        },
+                    },
                 },
-            }
+            },
         });
     }
 
@@ -88,7 +98,11 @@ export class UserService {
         if (!channelId) {
             throw new HttpException('Invalid Youtube Channel', HttpStatus.BAD_REQUEST);
         }
-        const url = "https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=" + channelId + "&key=" + apiKey;
+        const url =
+            'https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=' +
+            channelId +
+            '&key=' +
+            apiKey;
         try {
             const response = await axios.get(url);
             const channels = response.data.items;
@@ -104,18 +118,18 @@ export class UserService {
     doit gérer regex 
     nb d'appel/mois : 10
     */
-    
+
     async verifyLinkedinSkills(userName: string): Promise<any> {
         const options = {
             method: 'GET',
             url: process.env.URL_LINKEDIN_SCRAPER,
             params: {
-                username: userName
+                username: userName,
             },
             headers: {
                 'x-rapidapi-key': process.env.RAPID_API_KEY,
-                'x-rapidapi-host': process.env.REQUEST_LINKEDIN_SCRAPER_HOST
-            }
+                'x-rapidapi-host': process.env.REQUEST_LINKEDIN_SCRAPER_HOST,
+            },
         };
 
         try {
@@ -126,13 +140,14 @@ export class UserService {
                 .filter((skill: any) => skill.endorsementsCount)
                 .map((skill: any) => skill.name);
 
-            return [skills, endorsedSkills]
+            return [skills, endorsedSkills];
         } catch (error) {
             console.error(error);
         }
     }
-    
-    async createUser(userData: CreateUserDto): Promise<User> { //dto pour youtube et pro
+
+    async createUser(userData: CreateUserDto): Promise<User> {
+        //dto pour youtube et pro
 
         if (!userData.is_Youtuber && !userData.is_Professional) {
             throw new BadRequestException('User must be either a Youtuber or a Professional');
@@ -146,9 +161,7 @@ export class UserService {
                 throw new BadRequestException('Invalid Youtube Channel');
             }
         }
-        const youtuberData = userData.is_Youtuber
-            ? { create: { tagChannel } }
-            : undefined;
+        const youtuberData = userData.is_Youtuber ? { create: { tagChannel } } : undefined;
 
         //TODO comment gérer les recommandations linkedins pendant la créations?
         const professionalData = userData.is_Professional
@@ -214,7 +227,7 @@ export class UserService {
             isFollowed: followedIds.has(user.id),
         }));
     }
-    
+
     // TODO: gérer la modifications des données et les relations queries
     async updateUser(id: number, userData: UpdateUserDataDto): Promise<UserType> {
         // if (!userData.is_Youtuber && !userData.is_Professional) {
@@ -257,7 +270,7 @@ export class UserService {
                 professional: true,
                 subscriptions: true,
                 followers: true,
-                likes: true
+                likes: true,
             },
         });
         return deletedUser;

@@ -4,15 +4,13 @@ import { Injectable } from '@nestjs/common';
 // SERVICE
 import { PrismaService } from '../../../prisma/prisma.service';
 
-
-
 @Injectable()
 export class SubscriptionService {
     private readonly prisma = new PrismaService();
-    constructor() { }
+    constructor() {}
 
     /**
-     * 
+     *
      * TODO:
      *  valider les return des fonctions subscribe et getfollowedUser
      */
@@ -23,27 +21,27 @@ export class SubscriptionService {
                 where: {
                     subscriptionId: {
                         subscribeUserId,
-                        followedUserId
-                    }
+                        followedUserId,
+                    },
                 },
-            })
+            });
 
             if (!existingSubscription) {
                 return await this.prisma.subscription.create({
                     data: {
                         subscribeUserId,
-                        followedUserId
-                    }
+                        followedUserId,
+                    },
                 });
             } else {
                 return await this.prisma.subscription.delete({
                     where: {
                         subscriptionId: {
                             subscribeUserId,
-                            followedUserId
-                        }
+                            followedUserId,
+                        },
                     },
-                })
+                });
             }
         } catch (error) {
             console.error('Error in subscribe:', error);
@@ -54,8 +52,8 @@ export class SubscriptionService {
     async getFollowedUserByUserName(userName: string) {
         const user = await this.prisma.user.findUnique({
             where: {
-                userName: userName
-            }
+                userName: userName,
+            },
         });
 
         if (!user) {
@@ -64,16 +62,16 @@ export class SubscriptionService {
 
         return await this.prisma.subscription.findMany({
             where: {
-                subscribeUserId: user.id
+                subscribeUserId: user.id,
             },
             select: {
                 followedUser: {
                     select: {
                         id: true,
-                        userName: true
-                    }
-                }
-            }
+                        userName: true,
+                    },
+                },
+            },
         });
     }
 }

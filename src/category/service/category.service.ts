@@ -2,6 +2,8 @@
 import { BadRequestException, Injectable, UseGuards } from '@nestjs/common';
 
 // SERVICE
+import { AuthGuard } from '@nestjs/passport';
+
 import { PrismaService } from '../../../prisma/prisma.service';
 
 // TYPE
@@ -9,8 +11,6 @@ import { CategoryType } from '../type/category.type';
 
 // DTO
 import { CategoryDto } from '../dto/category.dto';
-import { AuthGuard } from '@nestjs/passport';
-
 
 @Injectable()
 export class CategoryService {
@@ -47,19 +47,20 @@ export class CategoryService {
     async createCategory(CategoryName: CategoryDto): Promise<CategoryType> {
         const newCategory = await this.prisma.category.create({
             data: {
-                ...CategoryName
+                ...CategoryName,
             },
             include: {
                 likes: true,
-                tags: true
-            }
-        })
+                tags: true,
+            },
+        });
         return newCategory;
     }
 
     async deleteCategoryByName(categoryName: string): Promise<void> {
-
-        const existingCategory = await this.prisma.category.findUnique({ where: { name: categoryName } })
+        const existingCategory = await this.prisma.category.findUnique({
+            where: { name: categoryName },
+        });
         if (!existingCategory) {
             throw new BadRequestException(`Category ${categoryName} does not exist.`);
         }
@@ -68,9 +69,9 @@ export class CategoryService {
             where: { id: existingCategory.id },
             include: {
                 likes: true,
-                tags: true
-            }
-        })
+                tags: true,
+            },
+        });
     }
 
     async deleteCategoryById(id: number): Promise<void> {
@@ -78,28 +79,30 @@ export class CategoryService {
             where: { id },
             include: {
                 likes: true,
-                tags: true
-            }
-        })
+                tags: true,
+            },
+        });
     }
 
     async searchByName(name: string, userId?: number) {
         const categories = await this.prisma.category.findMany({
             where: {
                 name: {
-                contains: name,
-                mode: 'insensitive',
+                    contains: name,
+                    mode: 'insensitive',
                 },
             },
             include: {
-                likes: userId ? {
-                where: { userId: userId },
-                select: { userId: true },
-                } : false,
+                likes: userId
+                    ? {
+                          where: { userId: userId },
+                          select: { userId: true },
+                      }
+                    : false,
             },
             take: 10,
         });
-    
+
         return categories.map((category) => ({
             ...category,
             isLikedByCurrentUser: category.likes?.length > 0,
@@ -121,7 +124,7 @@ export class CategoryService {
     //         },
     //       },
     //     });
-    
+
     //     return categories.map((category) => ({
     //       ...category,
     //       isLikedByCurrentUser: category.likedBy.length > 0,

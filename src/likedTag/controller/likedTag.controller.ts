@@ -1,14 +1,14 @@
 import { Controller, Get, Put, Param, ParseIntPipe, UseGuards, Req } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { LikedTagService } from '../service/likedTag.service';
+
 import { JwtAuthGuard } from 'src/authentification/guards/accessToken.guard';
+
+import { LikedTagService } from '../service/likedTag.service';
 
 @ApiTags('LIKED_TAG')
 @Controller('likedTag')
 export class LikedTagController {
-    constructor(
-        private readonly likedTagService: LikedTagService,
-    ) { }
+    constructor(private readonly likedTagService: LikedTagService) {}
 
     @Get('UserWhoLikeATag/:tagId')
     async findUsersWhoLikedTag(@Param('tagId', ParseIntPipe) tagId: number): Promise<any> {
@@ -34,7 +34,8 @@ export class LikedTagController {
     @UseGuards(JwtAuthGuard)
     async toggleTagLike(
         @Req() req: any,
-        @Param('tagId', ParseIntPipe) tagId: number): Promise<any> {
+        @Param('tagId', ParseIntPipe) tagId: number,
+    ): Promise<any> {
         const tagLikeUserId = req.user?.userId;
         return await this.likedTagService.toggleTagLike(tagLikeUserId, tagId);
     }

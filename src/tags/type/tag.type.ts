@@ -1,6 +1,5 @@
-
 export type TagType = {
     id: number;
-    name: String;
+    name: string;
     categoryId: number;
-}
+};

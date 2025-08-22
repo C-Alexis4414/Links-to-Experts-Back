@@ -9,8 +9,9 @@ const config: Config = {
     testRegex: '.*\\.spec\\.ts$',
     transform: {
         '^.+\\.(t|j)s$': [
-            'ts-jest', { 
-                tsconfig: 'tsconfig.json' 
+            'ts-jest',
+            {
+                tsconfig: 'tsconfig.json',
             },
         ],
     },

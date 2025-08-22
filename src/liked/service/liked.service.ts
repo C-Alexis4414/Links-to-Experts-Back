@@ -4,25 +4,22 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 // SERVICE
 import { PrismaService } from '../../../prisma/prisma.service';
 
-
-
 @Injectable()
 export class LikedService {
     private readonly prisma = new PrismaService();
 
-
     /**
      * ce service permet de connaitre tout les user qui ont like 1 categorie et inversement
      * il permet egalement de gerer les like et unlike d'un utilisateur
-     * 
-     * 
+     *
+     *
      * si un user ou une categorie venais a etre supprimer les données liés seront supprimer aussi, cela est deja gerer par le model de donnée
-     * 
+     *
      * TODO: refactoriser en utilisant les outils nest et prisma
      *       faire les dto
      *       faire les type/interface
-     *  
-     *      
+     *
+     *
      */
 
     async findUsersWhoLikedCategoryById(categoryId: number) {
@@ -74,10 +71,9 @@ export class LikedService {
             select: {
                 user: {
                     select: {
-                        userName: true
-                    }
-
-                }
+                        userName: true,
+                    },
+                },
             },
         });
     }
@@ -89,20 +85,20 @@ export class LikedService {
                     likedId: {
                         userId,
                         categoryId,
-                    }
+                    },
                 },
                 select: {
                     user: {
                         select: {
-                            userName: true
-                        }
+                            userName: true,
+                        },
                     },
                     category: {
                         select: {
-                            name: true
-                        }
-                    }
-                }
+                            name: true,
+                        },
+                    },
+                },
             });
 
             if (existingLike) {
@@ -123,15 +119,15 @@ export class LikedService {
                     select: {
                         user: {
                             select: {
-                                userName: true
-                            }
+                                userName: true,
+                            },
                         },
                         category: {
                             select: {
-                                name: true
-                            }
-                        }
-                    }
+                                name: true,
+                            },
+                        },
+                    },
                 });
             }
         } catch (error) {

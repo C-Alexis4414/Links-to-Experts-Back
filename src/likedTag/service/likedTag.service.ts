@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+
 import { PrismaService } from '../../../prisma/prisma.service';
 
 @Injectable()
@@ -8,22 +9,22 @@ export class LikedTagService {
     async findUsersWhoLikedTagById(tagId: number) {
         return await this.prisma.likedTag.findMany({
             where: {
-                tagId: tagId
+                tagId: tagId,
             },
             select: {
-                user: true
-            }
+                user: true,
+            },
         });
     }
 
     async findTagsLikedByUserId(userId: number) {
         return await this.prisma.likedTag.findMany({
             where: {
-                userId: userId
+                userId: userId,
             },
             select: {
-                tag: true
-            }
+                tag: true,
+            },
         });
     }
 
@@ -34,15 +35,15 @@ export class LikedTagService {
         }
         return await this.prisma.likedTag.findMany({
             where: {
-                tagId: tag.id
+                tagId: tag.id,
             },
             select: {
                 user: {
                     select: {
-                        userName: true
-                    }
-                }
-            }
+                        userName: true,
+                    },
+                },
+            },
         });
     }
 
@@ -53,20 +54,20 @@ export class LikedTagService {
                     likedTagId: {
                         userId,
                         tagId,
-                    }
+                    },
                 },
                 select: {
                     user: {
                         select: {
-                            userName: true
-                        }
+                            userName: true,
+                        },
                     },
                     tag: {
                         select: {
-                            name: true
-                        }
-                    }
-                }
+                            name: true,
+                        },
+                    },
+                },
             });
 
             if (existingLike) {
@@ -76,7 +77,7 @@ export class LikedTagService {
                             userId,
                             tagId,
                         },
-                    }
+                    },
                 });
             } else {
                 return await this.prisma.likedTag.create({
@@ -87,15 +88,15 @@ export class LikedTagService {
                     select: {
                         user: {
                             select: {
-                                userName: true
-                            }
+                                userName: true,
+                            },
                         },
                         tag: {
                             select: {
-                                name: true
-                            }
-                        }
-                    }
+                                name: true,
+                            },
+                        },
+                    },
                 });
             }
         } catch (error) {
@@ -111,11 +112,11 @@ export class LikedTagService {
         }
         return await this.prisma.likedTag.findMany({
             where: {
-                userId: user.id
+                userId: user.id,
             },
             select: {
-                tag: true
-            }
+                tag: true,
+            },
         });
     }
 }

@@ -112,7 +112,7 @@ async function main() {
         data: {
             name: 'AI',
             categoryId: category1.id,
-            userId: user1.id,
+            // userId: user1.id,
         },
     });
 
@@ -120,7 +120,7 @@ async function main() {
         data: {
             name: 'Football',
             categoryId: category2.id,
-            userId: user2.id,
+            // userId: user2.id,
         },
     });
 

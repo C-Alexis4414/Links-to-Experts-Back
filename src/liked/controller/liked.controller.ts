@@ -3,20 +3,20 @@ import { Controller, Get, Put, Param, ParseIntPipe, UseGuards, Req } from '@nest
 import { ApiTags } from '@nestjs/swagger';
 
 // SERVICES
-import { LikedService } from '../service/liked.service';
 import { JwtAuthGuard } from 'src/authentification/guards/accessToken.guard';
-import { CategoryService } from '../../category/service/category.service';
 
+import { LikedService } from '../service/liked.service';
+import { CategoryService } from '../../category/service/category.service';
 
 @ApiTags('LIKED')
 @Controller('liked')
 export class LikedController {
-    constructor(
-        private readonly likedService: LikedService,
-    ) { }
+    constructor(private readonly likedService: LikedService) {}
 
     @Get('UserWhoLikeACategory/:categoryId')
-    async findUsersWhoLikedCategory(@Param('categoryId', ParseIntPipe) categoryId: number): Promise<any> {
+    async findUsersWhoLikedCategory(
+        @Param('categoryId', ParseIntPipe) categoryId: number,
+    ): Promise<any> {
         return await this.likedService.findUsersWhoLikedCategoryById(categoryId);
     }
 
@@ -31,7 +31,9 @@ export class LikedController {
     }
 
     @Get('UsersWhoLikeByCategoryName/:categoryName')
-    async findUsersWhoLikedByCategoryName(@Param('categoryName') categoryName: string): Promise<any> {
+    async findUsersWhoLikedByCategoryName(
+        @Param('categoryName') categoryName: string,
+    ): Promise<any> {
         return await this.likedService.findUsersWhoLikedByCategoryName(categoryName);
     }
 
@@ -39,7 +41,8 @@ export class LikedController {
     @UseGuards(JwtAuthGuard)
     async toggleCategoryLike(
         @Req() req: any,
-        @Param('categoryId', ParseIntPipe) categoryId: number): Promise<any> {
+        @Param('categoryId', ParseIntPipe) categoryId: number,
+    ): Promise<any> {
         const likeUserId = req.user?.userId;
         return await this.likedService.toggleCategoryLike(likeUserId, categoryId);
     }

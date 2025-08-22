@@ -6,28 +6,28 @@
     "prConcurrentLimit": 5,
     "packageRules": [
         {
-        "matchUpdateTypes": ["bump"],
-        "matchDepTypes": ["dependencies", "devDependencies"],
-        "matchManagers": ["npm", "docker-compose", "github-actions"],
-        "labels": ["security"],
-        "prPriority": 1,
-        "separateMinorPatch": true
+            "matchUpdateTypes": ["bump"],
+            "matchDepTypes": ["dependencies", "devDependencies"],
+            "matchManagers": ["npm", "docker-compose", "github-actions"],
+            "labels": ["security"],
+            "prPriority": 1,
+            "separateMinorPatch": true
         },
         {
-        "matchManagers": ["npm"],
-        "groupName": "npm dependencies",
-        "labels": ["npm"],
-        "automerge": false
+            "matchManagers": ["npm"],
+            "groupName": "npm dependencies",
+            "labels": ["npm"],
+            "automerge": false
         },
         {
-        "matchManagers": ["github-actions"],
-        "groupName": "GitHub Actions",
-        "labels": ["ci"]
+            "matchManagers": ["github-actions"],
+            "groupName": "GitHub Actions",
+            "labels": ["ci"]
         },
         {
-        "matchManagers": ["docker-compose"],
-        "groupName": "Docker",
-        "labels": ["docker"]
+            "matchManagers": ["docker-compose"],
+            "groupName": "Docker",
+            "labels": ["docker"]
         }
     ],
     "npm": {

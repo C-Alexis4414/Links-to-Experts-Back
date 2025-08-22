@@ -4,19 +4,19 @@ import { AuthGuard } from '@nestjs/passport';
 
 // ce fichier permet de faire une route public, il faut le lier a un decorateur
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('accessToken') { 
+export class JwtAuthGuard extends AuthGuard('accessToken') {
     constructor(private reflector: Reflector) {
         super();
-      }
-    
-      canActivate(context: ExecutionContext) {
+    }
+
+    canActivate(context: ExecutionContext) {
         const isPublic = this.reflector.getAllAndOverride('isPublic', [
-          context.getHandler(),
-          context.getClass()
+            context.getHandler(),
+            context.getClass(),
         ]);
-    
+
         if (isPublic) return true;
-    
+
         return super.canActivate(context);
-      }
+    }
 }
