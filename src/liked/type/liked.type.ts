@@ -1,4 +1,1 @@
-
-export type LikedType = {
-
-}
+export type LikedType = object;

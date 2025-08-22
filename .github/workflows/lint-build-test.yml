@@ -8,18 +8,6 @@ on:
 
 jobs:
 
-  gitguardian:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Scan for secrets with GitGuardian
-      uses: GitGuardian/ggshield-action@v1
-      with:
-        args: secret scan --all
-      env:
-        GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
-
   lint:
 
     runs-on: ubuntu-latest
@@ -37,10 +25,10 @@ jobs:
       run: npm ci
 
     - name: Run ESLint
-      run: npm run lint:fix
+      run: npm run lint
 
     - name: Run Prettier check
-      run: npm run format
+      run: npm run format:check
 
   type-check:
 

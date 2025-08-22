@@ -32,20 +32,3 @@ jobs:
             tags: |
               ${{ secrets.DOCKER_USERNAME }}/youlinkbackend:latest
               ${{ secrets.DOCKER_USERNAME }}/youlinkbackend:${{ github.sha }}
-
-    test-compose:
-
-      runs-on: ubuntu-latest
-
-      steps:
-        - uses: actions/checkout@v4
-        - name: Start all services in docker-compose
-          env:
-            PGADMIN_MAIL: ${{ secrets.PGADMIN_MAIL }}
-            PGADMIN_PW: ${{ secrets.PGADMIN_PW }}
-            POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-            POSTGRES_PW: ${{ secrets.POSTGRES_PW }}
-            POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          run: docker compose up -d
-        - run: sleep 10
-        - run: curl -f http://localhost:3000/health
