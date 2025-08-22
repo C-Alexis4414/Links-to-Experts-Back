@@ -39,6 +39,13 @@ jobs:
 
       steps:
         - uses: actions/checkout@v4
-        - run: docker compose up -d
+        - name: Start all services in docker-compose
+          env:
+            PGADMIN_MAIL: ${{ secrets.PGADMIN_MAIL }}
+            PGADMIN_PW: ${{ secrets.PGADMIN_PW }}
+            POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+            POSTGRES_PW: ${{ secrets.POSTGRES_PW }}
+            POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          run: docker compose up -d
         - run: sleep 10
         - run: curl -f http://localhost:3000/health

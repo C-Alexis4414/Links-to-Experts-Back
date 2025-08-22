@@ -1,0 +1,13 @@
+version: 1
+secret:
+  ignore:
+    - name: "JWT test secret"
+      match: "test-secret"
+    - name: "Test user email"
+      match: "j-b.goode@youlink.com"
+    - name: "Test user name"
+      match: "testUser"
+    - name: "Test tag channel"
+      match: "testuser1234"
+    - name: "Test user LinkedIn"
+      match: "https://www.linkedin.com/in/test-user/"
