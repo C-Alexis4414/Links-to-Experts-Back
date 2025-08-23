@@ -17,8 +17,12 @@ services:
         restart: unless-stopped
 
     backend:
-        container_name: nestappcompose
-        build: .
+        container_name: nestapp-dev
+        image: node:trixie-slim
+        working_dir: /app
+        volumes:
+            - .:/app
+            - /app/node_modules
         ports:
             - '3000:3000'
         networks:
