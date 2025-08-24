@@ -20,6 +20,17 @@ COPY package*.json ./
 ENV NODE_ENV production \
     PORT=3000 \
     JWT_SECRET=changeme \
-    DATABASE_URL=postgresql://user:password@postgres:5432/mydb
+    JWT_REFRESH_TOKEN=changeme2 \
+    DATABASE_URL=postgresql://user:password@postgres:5432/mydb \
+    YOUTUBE_API_KEY=my_youtube_api_key \
+    URL_LINKEDIN_SCRAPER=my_linkedin_scraper_url \
+    REQUEST_LINKEDIN_SCRAPER_HOST=my_request_linkedin_scraper_host \
+    RAPID_API_KEY=my_rapid_api_key \
+    POSTGRES_USER=user \
+    POSTGRES_PASSWORD=password \
+    POSTGRES_DB=mydb \
+    PGADMIN_MAIL=my_pgadmin_mail \
+    PGADMIN_PW=my_pgadmin_pw \
+    URL_BACKEND=http://youlink-api.com
 EXPOSE 3000
 CMD npx prisma migrate deploy && node ./dist/src/main.js
