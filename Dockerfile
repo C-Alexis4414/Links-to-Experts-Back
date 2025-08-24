@@ -1,23 +1,15 @@
 # ---- Build stage ----
 FROM node:current-alpine AS builder 
-RUN apk add --no-cache openssl libc6-compat
 WORKDIR /app
 COPY package*.json ./
-COPY prisma ./prisma
 RUN npm ci
-RUN npx prisma generate
 COPY . .
 RUN npm run build
 
 # ---- Runtime stage ----
 FROM node:current-alpine AS runner
-RUN apk add --no-cache openssl
 WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-COPY package*.json ./
-ENV NODE_ENV production \
+ENV NODE_ENV=production \
     PORT=3000 \
     JWT_SECRET=changeme \
     JWT_REFRESH_TOKEN=changeme2 \
@@ -30,7 +22,14 @@ ENV NODE_ENV production \
     POSTGRES_PASSWORD=password \
     POSTGRES_DB=mydb \
     PGADMIN_MAIL=my_pgadmin_mail \
-    PGADMIN_PW=my_pgadmin_pw \
-    URL_BACKEND=http://youlink-api.com
+    PGADMIN_PW=my_pgadmin_pw
+COPY package*.json ./
+RUN apk add --no-cache openssl
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
+RUN npm ci --omit=dev --ignore-scripts \
+    && npx prisma generate
+# RUN ls -R dist
 EXPOSE 3000
 CMD npx prisma migrate deploy && node ./dist/src/main.js

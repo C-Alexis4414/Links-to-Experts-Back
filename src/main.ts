@@ -28,6 +28,8 @@ async function bootstrap() {
         .setTitle('Swagger Links-to-experts')
         .setDescription('testing API address')
         .setVersion('1.0')
+        .addServer('http://localhost:3000', 'Local dev')
+        .addServer('https://youlink.app/api', 'Production')
         .addTag('links')
         // .addCookieAuth('csrf-token', {
         //   type: 'apiKey',
@@ -47,10 +49,11 @@ async function bootstrap() {
 
     app.enableCors({
         origin: isProd ? 'https://youlink.com' : 'http://localhost:5173',
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
         credentials: true,
         allowedHeaders: ['Content-Type', 'Authorization'],
     });
 
-    await app.listen(3000, '0.0.0.0');
+    await app.listen(process.env.PORT || 3000, '0.0.0.0');
 }
 bootstrap();
