@@ -62,7 +62,7 @@
         "@snaplet/seed": "^0.97.20",
         "@types/express": "^5.0.0",
         "@types/jest": "^29.5.2",
-        "@types/node": "^20.14.9",
+        "@types/node": "^22.0.0",
         "@types/supertest": "^6.0.0",
         "@typescript-eslint/eslint-plugin": "^6.21.0",
         "@typescript-eslint/parser": "^6.21.0",
