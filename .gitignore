@@ -40,7 +40,7 @@ lerna-debug.log*
 .env
 .env.development.local
 .env.test.local
-.env.production.local
+.env.railway.local
 .env.local
 .env.test
 
@@ -65,3 +65,6 @@ pgadmin/sessions/
 
 # CODEOWNERS
 .github/CODEOWNERS
+
+# Workflows temporarily
+.github/workflows/deploy-railway.yml

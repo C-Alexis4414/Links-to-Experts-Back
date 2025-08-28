@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 
 // TYPE
-import { User } from '@prisma/client';
+// import { User } from '@prisma/client';
 import axios from 'axios';
 
 import { UserType } from '../type/user.type';
@@ -28,7 +28,7 @@ export class UserService {
     constructor(private readonly prisma: PrismaService) {}
 
     // find a user by id
-    async getUser(id: number): Promise<User> {
+    async getUser(id: number): Promise<UserType> {
         return await this.prisma.user.findUnique({ where: { id: id } });
     }
 
@@ -146,7 +146,7 @@ export class UserService {
         }
     }
 
-    async createUser(userData: CreateUserDto): Promise<User> {
+    async createUser(userData: CreateUserDto): Promise<UserType> {
         //dto pour youtube et pro
 
         if (!userData.is_Youtuber && !userData.is_Professional) {

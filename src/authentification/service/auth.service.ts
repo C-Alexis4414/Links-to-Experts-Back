@@ -6,7 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 
 // SERVICE
 import { ConfigService } from '@nestjs/config';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 import { UserService } from 'src/user/service/user.service';
 import { CreateUserDto } from 'src/user/dto/userData.dto';

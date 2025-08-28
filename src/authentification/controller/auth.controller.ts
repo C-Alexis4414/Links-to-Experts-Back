@@ -52,10 +52,10 @@ export class AuthController {
 
         const data = await this.authService.register(req.body);
         res.cookie('accessToken', data.token.accessToken, {
-            httpOnly: true,
-            secure: false,
-            sameSite: 'lax',
-            expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
+            // expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            maxAge: 15 * 60 * 1000,
         });
         return {
             id: data.payload.userId,
@@ -87,9 +87,10 @@ export class AuthController {
         const data = await this.authService.getToken(req.user);
         res.cookie('accessToken', data.accessToken, {
             httpOnly: true,
-            secure: false,
-            sameSite: 'lax',
-            expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
+            // expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            maxAge: 15 * 60 * 1000,
         });
 
         return {
@@ -107,8 +108,8 @@ export class AuthController {
         const token = await this.authService.refreshToken(req.cookies.accessToken);
         res.cookie('accessToken', token.accessToken, {
             httpOnly: true,
-            secure: false,
-            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'none',
             expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         });
     }
