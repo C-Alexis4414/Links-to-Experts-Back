@@ -29,7 +29,7 @@ async function bootstrap() {
         .setDescription('testing API address')
         .setVersion('1.0')
         .addServer('http://localhost:3000', 'Local dev')
-        .addServer('https://youlink.app/api', 'Production')
+        .addServer('https://links-to-experts-back-production.up.railway.app', 'Production')
         .addTag('links')
         // .addCookieAuth('csrf-token', {
         //   type: 'apiKey',
@@ -48,7 +48,9 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, document);
 
     app.enableCors({
-        origin: isProd ? 'https://youlink.com' : 'http://localhost:5173',
+        origin: isProd
+            ? 'https://links-to-experts-back-production.up.railway.app'
+            : 'http://localhost:5173',
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
         credentials: true,
         allowedHeaders: ['Content-Type', 'Authorization'],

@@ -19,7 +19,7 @@
         "start:prod": "NODE_ENV=production node dist/src/main.js",
         "lint": "eslint . --ext .ts --ignore-path .gitignore",
         "lint:fix": "eslint . --ext .ts --fix",
-        "test:all": "npm run test:unit && npm run test:e2e",
+        "test:all": "jest --config jest.config.ts --coverage && jest --config jest.e2e.config.ts --coverage",
         "test:watch": "jest --watch",
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
