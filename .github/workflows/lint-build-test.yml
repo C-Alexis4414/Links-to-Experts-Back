@@ -132,3 +132,23 @@ jobs:
                   name: coverage-report
                   path: coverage/
                   retention-days: 7
+
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Install Railway CLI
+              run: npm install -g @railway/cli
+
+            - name: Link Railway project
+              run: railway link ${{ secrets.RAILWAY_PROJECT_ID }}
+              env: 
+                RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+            - name: Deploy to Railway
+              run: railway up --service Links-to-Experts-Back
+              env: 
+                RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
