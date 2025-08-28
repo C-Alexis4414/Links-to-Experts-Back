@@ -23,3 +23,4 @@ jobs:
               run: railway up --service Links-to-Experts-Back
               env: 
                 RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+                RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
