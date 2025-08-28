@@ -145,17 +145,7 @@ jobs:
             - name: Install Railway CLI
               run: npm install -g @railway/cli
 
-            - name: Railway login
-              run: npx railway login
-              env:
-                RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
-            - name: Link Railway project
-              run: npx railway link --service Links-to-Experts-Back
-              env: 
-                RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-
             - name: Deploy to Railway
-              run: npx railway up --service Links-to-Experts-Back
               env: 
                 RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+              run: npx railway up --service Links-to-Experts-Back -c
