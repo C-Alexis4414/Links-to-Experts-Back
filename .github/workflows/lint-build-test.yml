@@ -144,11 +144,11 @@ jobs:
               run: npm install -g @railway/cli
 
             - name: Link Railway project
-              run: railway link ${{ secrets.RAILWAY_PROJECT_ID }}
+              run: npx railway link --service Links-to-Experts-Back
               env: 
                 RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
             - name: Deploy to Railway
-              run: railway up --service Links-to-Experts-Back
+              run: npx railway up --service Links-to-Experts-Back
               env: 
                 RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
