@@ -138,14 +138,15 @@ jobs:
 
         runs-on: ubuntu-latest
 
+        container: ghcr.io/railwayapp/cli:latest
+
+        env:
+          SVC_ID: Links-to-Experts-Back
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
         steps:
             - name: Checkout repo
               uses: actions/checkout@v4
 
-            - name: Install Railway CLI
-              run: npm install -g @railway/cli
-
             - name: Deploy to Railway
-              env: 
-                RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-              run: npx railway up --service Links-to-Experts-Back -c
+              run: npx railway up --service={{ env.SVC_ID }}
