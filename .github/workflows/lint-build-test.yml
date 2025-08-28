@@ -134,6 +134,8 @@ jobs:
                   retention-days: 7
 
     deploy:
+        needs: [lint, type-check, build, test]
+
         runs-on: ubuntu-latest
 
         steps:
@@ -142,6 +144,11 @@ jobs:
 
             - name: Install Railway CLI
               run: npm install -g @railway/cli
+
+            - name: Railway login (browserless)
+              run: npx railway login --browserless
+              env:
+                RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
             - name: Link Railway project
               run: npx railway link --service Links-to-Experts-Back
