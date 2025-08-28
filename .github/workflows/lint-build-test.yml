@@ -47,6 +47,8 @@ jobs:
               run: npm run type-check
 
     build:
+        needs: [lint, type-check]
+
         runs-on: ubuntu-latest
 
         steps:
@@ -64,7 +66,9 @@ jobs:
             - name: Run build
               run: npm run build
 
-    test:
+    tests:
+        needs: build
+
         runs-on: ubuntu-latest
 
         services:
@@ -110,10 +114,10 @@ jobs:
                   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
               run: npx prisma db push
 
-            - name: Reset DB before tests
-              env:
-                  DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
-              run: npx prisma migrate reset --force --skip-generate --skip-seed
+            # - name: Reset DB before tests
+            #   env:
+            #       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
+            #   run: npx prisma migrate reset --force --skip-generate --skip-seed
 
             - name: Seed test DB
               env:
@@ -126,15 +130,45 @@ jobs:
                   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
               run: npm run test:all -- --coverage
 
+            - name: List workspace
+              run: ls -R
+
             - name: Upload coverage report
               uses: actions/upload-artifact@v4
               with:
                   name: coverage-report
-                  path: coverage/
+                  path: coverage/lcov-report
                   retention-days: 7
 
+    build-and-push-docker-image:
+        needs: tests
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v5
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                  username: ${{ secrets.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+
+            - name: Build and push backend image
+              uses: docker/build-push-action@v6
+              with:
+                  push: true
+                  platforms: linux/amd64,linux/arm64
+                  tags: |
+                      ${{ secrets.DOCKER_USERNAME }}/youlinkbackend:latest
+                      ${{ secrets.DOCKER_USERNAME }}/youlinkbackend:${{ github.sha }}
+
     deploy:
-        needs: [lint, type-check, build, test]
+        needs: build-and-push-docker-image
 
         runs-on: ubuntu-latest
 
