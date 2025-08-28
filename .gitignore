@@ -65,3 +65,6 @@ pgadmin/sessions/
 
 # CODEOWNERS
 .github/CODEOWNERS
+
+# Workflows temporarily
+.github/workflows/deploy-railway.yml
