@@ -16,12 +16,12 @@ How did these changes were implemented and how do they work ?
 
 ## Checklist
 
--   [ ] Manually tested
--   [ ] Automatically tested
--   [ ] Documented or commented
--   [ ] Search for duplicates code or PRs or issues
--   [ ] Blocked
--   [ ] WIP
+- [ ] Manually tested
+- [ ] Automatically tested
+- [ ] Documented or commented
+- [ ] Search for duplicates code or PRs or issues
+- [ ] Blocked
+- [ ] WIP
 
 ---
 

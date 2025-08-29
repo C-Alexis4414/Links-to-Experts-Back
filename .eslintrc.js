@@ -1,7 +1,7 @@
 module.exports = {
     parser: '@typescript-eslint/parser',
     parserOptions: {
-        project: 'tsconfig.json',
+        project: ['tsconfig.json', 'tsconfig.eslint.json'],
         // tsconfigRootDir: __dirname,
         sourceType: 'module',
     },
@@ -47,7 +47,7 @@ module.exports = {
                 alwaysTryTypes: true,
             },
             node: {
-                extensions: ['.js', '.ts'],
+                extensions: '.ts',
             },
         },
     },
