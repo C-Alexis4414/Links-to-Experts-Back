@@ -23,7 +23,7 @@ model User {
   professional     Professional?
   followers        Subscription[] @relation("follow")
   subscriptions    Subscription[] @relation("subscription")
-  tags             Tags[]
+  // tags             Tags[]
   youtuber         Youtuber?
 }
 
@@ -56,10 +56,10 @@ model Tags {
   id         Int        @id @default(autoincrement())
   name       String     @unique
   categoryId Int
-  userId     Int
+  // userId     Int
   likedTag   LikedTag[]
   category   Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Subscription {

@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsInt } from 'class-validator';
 
 export class TagDto {
-
     @ApiProperty()
     @IsString()
     name: string;
@@ -11,8 +10,7 @@ export class TagDto {
     @IsInt()
     categoryId: number;
 
-    @ApiProperty()
-    @IsInt()
-    userId: number;
-
+    // @ApiProperty()
+    // @IsInt()
+    // userId: number;
 }

@@ -2,27 +2,24 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 
 // SERVICE
-import { PrismaService } from 'src/prisma.service';
-
-
+import { PrismaService } from '../../../prisma/prisma.service';
 
 @Injectable()
 export class LikedService {
     private readonly prisma = new PrismaService();
 
-
     /**
      * ce service permet de connaitre tout les user qui ont like 1 categorie et inversement
      * il permet egalement de gerer les like et unlike d'un utilisateur
-     * 
-     * 
+     *
+     *
      * si un user ou une categorie venais a etre supprimer les données liés seront supprimer aussi, cela est deja gerer par le model de donnée
-     * 
+     *
      * TODO: refactoriser en utilisant les outils nest et prisma
      *       faire les dto
      *       faire les type/interface
-     *  
-     *      
+     *
+     *
      */
 
     async findUsersWhoLikedCategoryById(categoryId: number) {
@@ -74,64 +71,68 @@ export class LikedService {
             select: {
                 user: {
                     select: {
-                        userName: true
-                    }
-
-                }
+                        userName: true,
+                    },
+                },
             },
         });
     }
 
     async toggleCategoryLike(userId: number, categoryId: number) {
-        const existingLike = await this.prisma.liked.findUnique({
-            where: {
-                likedId: {
-                    userId,
-                    categoryId,
-                }
-            },
-            select: {
-                user: {
-                    select: {
-                        userName: true
-                    }
-                },
-                category: {
-                    select: {
-                        name: true
-                    }
-                }
-            }
-        });
-
-        if (existingLike) {
-            return await this.prisma.liked.delete({
+        try {
+            const existingLike = await this.prisma.liked.findUnique({
                 where: {
                     likedId: {
                         userId,
                         categoryId,
                     },
                 },
-            });
-        } else {
-            return await this.prisma.liked.create({
-                data: {
-                    userId,
-                    categoryId,
-                },
                 select: {
                     user: {
                         select: {
-                            userName: true
-                        }
+                            userName: true,
+                        },
                     },
                     category: {
                         select: {
-                            name: true
-                        }
-                    }
-                }
+                            name: true,
+                        },
+                    },
+                },
             });
+
+            if (existingLike) {
+                return await this.prisma.liked.delete({
+                    where: {
+                        likedId: {
+                            userId,
+                            categoryId,
+                        },
+                    },
+                });
+            } else {
+                return await this.prisma.liked.create({
+                    data: {
+                        userId,
+                        categoryId,
+                    },
+                    select: {
+                        user: {
+                            select: {
+                                userName: true,
+                            },
+                        },
+                        category: {
+                            select: {
+                                name: true,
+                            },
+                        },
+                    },
+                });
+            }
+        } catch (error) {
+            console.error('Error in like:', error);
+            throw error;
         }
     }
 }

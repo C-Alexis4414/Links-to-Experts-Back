@@ -1,6 +1,15 @@
 node_modules
 npm-debug.log
 .env
+.env.test
 dist
 .codegpt
-pgadmin/sessions/
+*.spec.ts
+*.e2e-spec.ts
+test
+prisma/seed/seed.ts
+prisma/seed/test-seed.ts
+coverage
+.git
+.gitignore
+docker-compose*.yml

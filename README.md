@@ -64,9 +64,9 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 ## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+-   Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
+-   Website - [https://nestjs.com](https://nestjs.com/)
+-   Twitter - [@nestframework](https://twitter.com/nestframework)
 
 ## License
 
@@ -78,7 +78,7 @@ Nest is [MIT licensed](LICENSE).
 # init schema.prisma
 npx prisma init
 
-# create migration 
+# create migration
 npx prisma migrate dev \--name \<migration name\>
 
 # generate client to interact with database
@@ -100,7 +100,7 @@ npx prisma db seed
 #run a container with .env file
 docker run -p port:port --env-file .env name
 
-#exec terminal in container 
+#exec terminal in container
 docker exec -it onctainerId /bin/bash
 
 
