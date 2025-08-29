@@ -47,7 +47,7 @@ module.exports = {
                 alwaysTryTypes: true,
             },
             node: {
-                extensions: ['.js', '.ts'],
+                extensions: '.ts',
             },
         },
     },
