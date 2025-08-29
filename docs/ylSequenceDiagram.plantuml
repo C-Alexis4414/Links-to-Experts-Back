@@ -1,0 +1,110 @@
+@startuml Diagramme de séquence YouLink
+actor User as U
+participant "Frontend (React/Vite.js)" as FE
+participant "Backend (NestJS)" as BE
+participant "DB (PostgreSQL/Prisma)" as DB
+
+== Authentification ==
+alt Inscription
+  U -> FE : Remplit formulaire d'inscription
+  FE -> BE : POST /register
+  BE -> DB : INSERT User
+  DB --> BE : OK
+  BE --> FE : Succès inscription
+  FE --> U : Compte créé
+end
+
+alt Connexion
+  U -> FE : Remplit formulaire de login
+  FE -> BE : POST /login
+  BE -> DB : Vérifie user/password
+  DB --> BE : OK
+  BE --> FE : JWT/Session
+  FE --> U : Connexion réussie
+end
+
+== Gestion Catégories & Tags ==
+alt Création catégorie
+  U -> FE : Crée nouvelle catégorie
+  FE -> BE : POST /categories
+  BE -> DB : INSERT Category
+  DB --> BE : OK
+  BE --> FE : Succès création
+end
+
+alt Création tag
+  U -> FE : Crée nouveau tag
+  FE -> BE : POST /tags
+  BE -> DB : INSERT Tag
+  DB --> BE : OK
+  BE --> FE : Succès création
+end
+
+alt Like catégorie/tag
+  U -> FE : Clique bouton like
+  FE -> BE : POST /likes
+  BE -> DB : INSERT Like(userId, entityId)
+  DB --> BE : OK
+  BE --> FE : Like ajouté
+end
+
+== Recherche ==
+alt Recherche simple
+  U -> FE : Rechercher (utilisateur/catégorie/tag)
+  FE -> BE : GET /search?q=...
+  BE -> DB : SELECT ...
+  DB --> BE : Résultats
+  BE --> FE : Résultats
+  FE --> U : Affiche résultats
+end
+
+alt Recherche croisée (avec filtres)
+  U -> FE : Rechercher utilisateur par catégorie/tag
+  FE -> BE : GET /search?category=...&tag=...
+  BE -> DB : SELECT Users WHERE category/tag
+  DB --> BE : Résultats filtrés
+  BE --> FE : Résultats
+  FE --> U : Affiche résultats filtrés
+end
+
+== Relations entre utilisateurs ==
+  U -> FE : Clique "s’abonner"
+  FE -> BE : POST /subscriptions
+  BE -> DB : INSERT Subscription
+  DB --> BE : OK
+  BE --> FE : Souscription validée
+
+== Consultation catégories/tags ==
+U -> FE : Consulter catégories/tags populaires
+FE -> BE : GET /popular
+BE -> DB : SELECT avec COUNT(likes)
+DB --> BE : Liste triée
+BE --> FE : Résultats
+FE --> U : Affiche top catégories/tags
+
+== Gestion profil ==
+alt Modification données personnelles
+  U -> FE : Modifier infos perso
+  FE -> BE : PUT /user/:id
+  BE -> DB : UPDATE User
+  DB --> BE : OK
+  BE --> FE : Données mises à jour
+end
+
+alt Gestion souscriptions
+  U -> FE : Liste/retire souscriptions
+  FE -> BE : GET/DELETE /subscriptions
+  BE -> DB : SELECT/DELETE Subscription
+  DB --> BE : OK
+  BE --> FE : Succès
+end
+
+alt Gestion catégories/tags likés
+  U -> FE : Liste/supprime catégories/tags likés
+  FE -> BE : GET/DELETE /likes
+  BE -> DB : SELECT/DELETE Like
+  DB --> BE : OK
+  BE --> FE : Succès
+end
+
+@enduml
