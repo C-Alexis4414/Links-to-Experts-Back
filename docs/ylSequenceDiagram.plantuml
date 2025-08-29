@@ -1,14 +1,27 @@
 @startuml Diagramme de séquence YouLink
 actor User as U
-participant "Frontend (React/Vite.js)" as FE
-participant "Backend (NestJS)" as BE
-participant "DB (PostgreSQL/Prisma)" as DB
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "DB" as DB
 
 == Authentification ==
 alt Inscription
   U -> FE : Remplit formulaire d'inscription
   FE -> BE : POST /register
-  BE -> DB : INSERT User
+  BE -> DB : Vérif utilisateur existant
+else Utilisateur déjà existant
+  DB --> BE : NOK (utilisateur déjà existant)
+  BE --> FE : Erreur inscription
+  FE --> U : Compte déjà existant
+else Aucun statut choisi
+  DB --> BE : NOK (aucun statut choisi)
+  BE --> FE : Erreur inscription
+  FE --> U : Statut requis
+else URL de chaine YouTube invalide (si statut yt)
+  DB --> BE : NOK (url chaîne YouTube invalide)
+  BE --> FE : Erreur inscription
+  FE --> U : URL chaîne YouTube invalide
+else Inscription réussie
   DB --> BE : OK
   BE --> FE : Succès inscription
   FE --> U : Compte créé
@@ -18,6 +31,11 @@ alt Connexion
   U -> FE : Remplit formulaire de login
   FE -> BE : POST /login
   BE -> DB : Vérifie user/password
+else Identifiants invalides
+  DB --> BE : NOK
+  BE --> FE : Erreur d'authentification
+  FE --> U : Connexion échouée
+else Authentification valide
   DB --> BE : OK
   BE --> FE : JWT/Session
   FE --> U : Connexion réussie
@@ -27,25 +45,47 @@ end
 alt Création catégorie
   U -> FE : Crée nouvelle catégorie
   FE -> BE : POST /categories
-  BE -> DB : INSERT Category
-  DB --> BE : OK
+  BE -> DB : Vérif catégorie existante
+else Catégorie déjà existante
+  DB --> BE : NOK (catégorie déjà existante)
+  BE --> FE : Erreur création catégorie
+  FE --> U : Catégorie déjà existante
+else Catégorie valide
+  DB --> BE : Insert OK
   BE --> FE : Succès création
+  FE --> U : Catégorie créée
 end
 
 alt Création tag
   U -> FE : Crée nouveau tag
   FE -> BE : POST /tags
-  BE -> DB : INSERT Tag
-  DB --> BE : OK
-  BE --> FE : Succès création
+  BE -> DB : Vérif existence tag
+else Tag déjà présent dans même catégorie
+  DB --> BE: NOK (doublon dans catégorie)
+  BE --> FE: Erreur création tag
+  FE --> U: Tag déjà présent dans cette catégorie
+else Tag existe déjà ailleurs
+  DB --> BE: NOK (tag existe dans autre catégorie)
+  BE --> FE: Erreur création tag
+  FE --> U: Tag déjà présent dans une autre catégorie
+else Tag valide
+  DB --> BE: Insert OK
+  BE --> FE: OK (tag créé)
+  FE --> U: Tag créé
 end
 
 alt Like catégorie/tag
   U -> FE : Clique bouton like
   FE -> BE : POST /likes
-  BE -> DB : INSERT Like(userId, entityId)
+  BE -> DB : Vérif si déjà liké
+else Déjà liké
+  DB --> BE : Supprimer like
+  BE --> FE : Unlike OK
+  FE --> U : Like supprimé
+else Pas encore liké
   DB --> BE : OK
-  BE --> FE : Like ajouté
+  BE --> FE : Like OK
+  FE --> U : Like ajouté
 end
 
 == Recherche ==
@@ -68,11 +108,19 @@ alt Recherche croisée (avec filtres)
 end
 
 == Relations entre utilisateurs ==
+alt S'abonner à un utilisateur
   U -> FE : Clique "s’abonner"
   FE -> BE : POST /subscriptions
-  BE -> DB : INSERT Subscription
+  BE -> DB : Vérif si déjà abonné
+else Déjà abonné
+  DB --> BE : Supprimer abonnement
+  BE --> FE : Unsubscribe OK
+  FE --> U : Abonnement supprimé
+else Pas abonné
   DB --> BE : OK
-  BE --> FE : Souscription validée
+  BE --> FE : Subscribe OK
+  FE --> U : Abonnement réussi
+end
 
 == Consultation catégories/tags ==
 U -> FE : Consulter catégories/tags populaires
