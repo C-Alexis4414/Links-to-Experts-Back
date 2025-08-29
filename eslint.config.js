@@ -18,4 +18,7 @@ const compat = new FlatCompat({
 export default [
     // mimic ESLintRC-style extends
     ...compat.extends('.eslintrc.js'),
+    {
+        ignores: ['*.config.js'],
+    },
 ];
