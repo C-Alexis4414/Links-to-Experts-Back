@@ -41,6 +41,15 @@ else Authentification valide
   FE --> U : Connexion réussie
 end
 
+alt Déconnexion
+  U -> FE : Clique "déconnexion"
+  FE -> BE : POST /logout
+  BE -> DB : Invalide session/JWT
+  DB --> BE : OK
+  BE --> FE : Succès déconnexion
+  FE --> U : Déconnecté
+end
+
 == Gestion Catégories & Tags ==
 alt Création catégorie
   U -> FE : Crée nouvelle catégorie
@@ -137,6 +146,7 @@ alt Modification données personnelles
   BE -> DB : UPDATE User
   DB --> BE : OK
   BE --> FE : Données mises à jour
+  FE --> U : Affiche nouvelles infos
 end
 
 alt Gestion souscriptions
@@ -145,6 +155,7 @@ alt Gestion souscriptions
   BE -> DB : SELECT/DELETE Subscription
   DB --> BE : OK
   BE --> FE : Succès
+  FE --> U : Affiche nouvelles infos
 end
 
 alt Gestion catégories/tags likés
@@ -153,6 +164,16 @@ alt Gestion catégories/tags likés
   BE -> DB : SELECT/DELETE Like
   DB --> BE : OK
   BE --> FE : Succès
+  FE --> U : Affiche nouvelles infos
+end
+
+alt Suppression compte
+  U -> FE : Demande suppression compte
+  FE -> BE : DELETE /user/:id
+  BE -> DB : Supprime utilisateur
+  DB --> BE : OK
+  BE --> FE : Succès
+  FE --> U : Compte supprimé
 end
 
 @enduml
