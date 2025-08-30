@@ -1,61 +1,64 @@
-@startuml Youlink MEA
-' Style for readability
-allow_mixing
+@startuml Diagramme UML Youlink
+skinparam classAttributeIconSize 0
 
-' Entités
-entity "User" as User {
-  🔑 id
-  userName
-  email
+' ==== Classes principales ====
+class User {
+  +id: UUID
+  +userName: String
+  +password: String
+  +email: String
+  +isYoutuber: Boolean
+  +isProfessional: Boolean
 }
 
-entity "Youtuber" as Youtuber {
-  🔑 userId
-  tagChannel
+class Youtuber {
+  +id: UUID
+  +tagChannel: String
 }
 
-entity "Professional" as Professional {
-  🔑 userId
-  urlLinkedin
+class Professional {
+  +id: UUID
+  +urlLinkedin: String
+  +recommandationLinkedin: String
 }
 
-entity "Category" {
-  🔑 id
-  name
+class Category {
+  +id: UUID
+  +name: String
 }
 
-entity "Tag" {
-  🔑 id
-  name
-  categoryId
+class Tag {
+  +id: UUID
+  +name: String
 }
 
-usecase "LikesCat"
+' ==== Associations ====
 
-usecase "LikesTag"
+' Subscription (user follows another user)
+User "0..*" --> "0..*" User : subscribes
 
-usecase "Subscribes"
+' Likes on Category
+User "0..*" --> "0..*" Category : likesCat
 
-' Relations entre entités
-User -- Youtuber : "has"
-User -- Professional : "has"
+' Likes on Tag
+User "0..*" --> "0..*" Tag : likesTag
 
-User -- LikesCat : "0,n"
-Category -- LikesCat : "0,n"
+' Category contains Tag
+Category "0..*" --- "1" Tag : contains
 
-User -- LikesTag : "0,n"
-Tag -- LikesTag : "0,n"
+' ==== Héritage ====
+User <|-- Youtuber
+User <|-- Professional
 
-User -- Subscribes : "0,n"
-Subscribes -- User : "0,n"
+' ==== Notes ====
+note bottom of User
+  A User must be either Youtuber or Professional
+  (total specialization, inclusive).
+  A User can be both.
+end note
 
-Category -- Tag : "contains"
-
-' Contraintes
-note right of User
-* Must have at least one of:
-  - YoutuberProfile
-  - ProfessionalProfile
+note right of Category
+  A Tag belongs to exactly one Category.
 end note
 
 @enduml
