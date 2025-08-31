@@ -1,0 +1,64 @@
+@startuml Diagramme UML Youlink
+skinparam classAttributeIconSize 0
+
+' ==== Classes principales ====
+class User {
+  +id: UUID
+  +userName: String
+  +password: String
+  +email: String
+  +isYoutuber: Boolean
+  +isProfessional: Boolean
+}
+
+class Youtuber {
+  +id: UUID
+  +tagChannel: String
+}
+
+class Professional {
+  +id: UUID
+  +urlLinkedin: String
+  +recommandationLinkedin: String
+}
+
+class Category {
+  +id: UUID
+  +name: String
+}
+
+class Tag {
+  +id: UUID
+  +name: String
+}
+
+' ==== Associations ====
+
+' Subscription (user follows another user)
+User "0..*" --> "0..*" User : subscribes
+
+' Likes on Category
+User "0..*" --> "0..*" Category : likesCat
+
+' Likes on Tag
+User "0..*" --> "0..*" Tag : likesTag
+
+' Category contains Tag
+Category "0..*" *-- "1" Tag : contains
+
+' ==== Héritage ====
+User <|-- Youtuber
+User <|-- Professional
+
+' ==== Notes ====
+note bottom of User
+  A User must be either Youtuber or Professional
+  (total specialization, inclusive).
+  A User can be both.
+end note
+
+note right of Tag
+  A Tag belongs to exactly one Category.
+end note
+
+@enduml

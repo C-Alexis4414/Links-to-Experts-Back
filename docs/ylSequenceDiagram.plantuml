@@ -1,0 +1,179 @@
+@startuml Diagramme de séquence YouLink
+actor User as U
+participant "Frontend" as FE
+participant "Backend" as BE
+participant "DB" as DB
+
+== Authentification ==
+alt Inscription
+  U -> FE : Remplit formulaire d'inscription
+  FE -> BE : POST /register
+  BE -> DB : Vérif utilisateur existant
+else Utilisateur déjà existant
+  DB --> BE : NOK (utilisateur déjà existant)
+  BE --> FE : Erreur inscription
+  FE --> U : Compte déjà existant
+else Aucun statut choisi
+  DB --> BE : NOK (aucun statut choisi)
+  BE --> FE : Erreur inscription
+  FE --> U : Statut requis
+else URL de chaine YouTube invalide (si statut yt)
+  DB --> BE : NOK (url chaîne YouTube invalide)
+  BE --> FE : Erreur inscription
+  FE --> U : URL chaîne YouTube invalide
+else Inscription réussie
+  DB --> BE : OK
+  BE --> FE : Succès inscription
+  FE --> U : Compte créé
+end
+
+alt Connexion
+  U -> FE : Remplit formulaire de login
+  FE -> BE : POST /login
+  BE -> DB : Vérifie user/password
+else Identifiants invalides
+  DB --> BE : NOK
+  BE --> FE : Erreur d'authentification
+  FE --> U : Connexion échouée
+else Authentification valide
+  DB --> BE : OK
+  BE --> FE : JWT/Session
+  FE --> U : Connexion réussie
+end
+
+alt Déconnexion
+  U -> FE : Clique "déconnexion"
+  FE -> BE : POST /logout
+  BE -> DB : Invalide session/JWT
+  DB --> BE : OK
+  BE --> FE : Succès déconnexion
+  FE --> U : Déconnecté
+end
+
+== Gestion Catégories & Tags ==
+alt Création catégorie
+  U -> FE : Crée nouvelle catégorie
+  FE -> BE : POST /categories
+  BE -> DB : Vérif catégorie existante
+else Catégorie déjà existante
+  DB --> BE : NOK (catégorie déjà existante)
+  BE --> FE : Erreur création catégorie
+  FE --> U : Catégorie déjà existante
+else Catégorie valide
+  DB --> BE : Insert OK
+  BE --> FE : Succès création
+  FE --> U : Catégorie créée
+end
+
+alt Création tag
+  U -> FE : Crée nouveau tag
+  FE -> BE : POST /tags
+  BE -> DB : Vérif existence tag
+else Tag déjà présent dans même catégorie
+  DB --> BE: NOK (doublon dans catégorie)
+  BE --> FE: Erreur création tag
+  FE --> U: Tag déjà présent dans cette catégorie
+else Tag existe déjà ailleurs
+  DB --> BE: NOK (tag existe dans autre catégorie)
+  BE --> FE: Erreur création tag
+  FE --> U: Tag déjà présent dans une autre catégorie
+else Tag valide
+  DB --> BE: Insert OK
+  BE --> FE: OK (tag créé)
+  FE --> U: Tag créé
+end
+
+alt Like catégorie/tag
+  U -> FE : Clique bouton like
+  FE -> BE : POST /likes
+  BE -> DB : Vérif si déjà liké
+else Déjà liké
+  DB --> BE : Supprimer like
+  BE --> FE : Unlike OK
+  FE --> U : Like supprimé
+else Pas encore liké
+  DB --> BE : OK
+  BE --> FE : Like OK
+  FE --> U : Like ajouté
+end
+
+== Recherche ==
+alt Recherche simple
+  U -> FE : Rechercher (utilisateur/catégorie/tag)
+  FE -> BE : GET /search?q=...
+  BE -> DB : SELECT ...
+  DB --> BE : Résultats
+  BE --> FE : Résultats
+  FE --> U : Affiche résultats
+end
+
+alt Recherche croisée (avec filtres)
+  U -> FE : Rechercher utilisateur par catégorie/tag
+  FE -> BE : GET /search?category=...&tag=...
+  BE -> DB : SELECT Users WHERE category/tag
+  DB --> BE : Résultats filtrés
+  BE --> FE : Résultats
+  FE --> U : Affiche résultats filtrés
+end
+
+== Relations entre utilisateurs ==
+alt S'abonner à un utilisateur
+  U -> FE : Clique "s’abonner"
+  FE -> BE : POST /subscriptions
+  BE -> DB : Vérif si déjà abonné
+else Déjà abonné
+  DB --> BE : Supprimer abonnement
+  BE --> FE : Unsubscribe OK
+  FE --> U : Abonnement supprimé
+else Pas abonné
+  DB --> BE : OK
+  BE --> FE : Subscribe OK
+  FE --> U : Abonnement réussi
+end
+
+== Consultation catégories/tags ==
+U -> FE : Consulter catégories/tags populaires
+FE -> BE : GET /popular
+BE -> DB : SELECT avec COUNT(likes)
+DB --> BE : Liste triée
+BE --> FE : Résultats
+FE --> U : Affiche top catégories/tags
+
+== Gestion profil ==
+alt Modification données personnelles
+  U -> FE : Modifier infos perso
+  FE -> BE : PUT /user/:id
+  BE -> DB : UPDATE User
+  DB --> BE : OK
+  BE --> FE : Données mises à jour
+  FE --> U : Affiche nouvelles infos
+end
+
+alt Gestion souscriptions
+  U -> FE : Liste/retire souscriptions
+  FE -> BE : GET/DELETE /subscriptions
+  BE -> DB : SELECT/DELETE Subscription
+  DB --> BE : OK
+  BE --> FE : Succès
+  FE --> U : Affiche nouvelles infos
+end
+
+alt Gestion catégories/tags likés
+  U -> FE : Liste/supprime catégories/tags likés
+  FE -> BE : GET/DELETE /likes
+  BE -> DB : SELECT/DELETE Like
+  DB --> BE : OK
+  BE --> FE : Succès
+  FE --> U : Affiche nouvelles infos
+end
+
+alt Suppression compte
+  U -> FE : Demande suppression compte
+  FE -> BE : DELETE /user/:id
+  BE -> DB : Supprime utilisateur
+  DB --> BE : OK
+  BE --> FE : Succès
+  FE --> U : Compte supprimé
+end
+
+@enduml
