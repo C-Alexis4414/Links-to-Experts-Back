@@ -1,0 +1,27 @@
+@startuml YouLink Use cases
+left to right direction
+actor "Visiteur" as A0
+actor "Utilisateur (auth)" as A1
+actor "YouTubeur" as A2
+actor "Professionnel" as A3
+
+rectangle "YouLink" {
+  usecase "Créer un compte / Se connecter /\nse déconnecter" as UC1
+  usecase "Configurer profil YouTubeur\n(chaîne)" as UC2
+  usecase "Configurer profil Pro\n(URL LinkedIn)" as UC3
+  usecase "Rechercher Pros par\ncatégorie / tag" as UC4
+  usecase "Rechercher YouTubeurs par\ncatégorie / tag" as UC5
+  usecase "S'abonner / se désabonner" as UC6
+  usecase "Gérer mon profil / supprimer mon compte" as UC7
+  usecase "Like / Dislike catégorie(s) / tag(s)\npour être trouvé ou non\nselon ceux-ci" as UC8
+}
+
+A0 --> UC1
+A1 --> UC7
+A2 --> UC2
+A3 --> UC3
+A2 --> UC4
+A3 --> UC5
+A1 --> UC6
+A1 --> UC8
+@enduml

@@ -44,7 +44,7 @@ User "0..*" --> "0..*" Category : likesCat
 User "0..*" --> "0..*" Tag : likesTag
 
 ' Category contains Tag
-Category "0..*" --- "1" Tag : contains
+Category "0..*" *-- "1" Tag : contains
 
 ' ==== Héritage ====
 User <|-- Youtuber
@@ -57,7 +57,7 @@ note bottom of User
   A User can be both.
 end note
 
-note right of Category
+note right of Tag
   A Tag belongs to exactly one Category.
 end note
 
