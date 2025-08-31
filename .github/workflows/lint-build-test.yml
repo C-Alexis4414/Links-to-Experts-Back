@@ -167,6 +167,8 @@ jobs:
     deploy:
         needs: build-and-push-docker-image
 
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
         runs-on: ubuntu-latest
 
         container: ghcr.io/railwayapp/cli:latest
