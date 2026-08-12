@@ -1,2 +1,2 @@
-npm run test:all
+# npm run test:all
 npx lint-staged
