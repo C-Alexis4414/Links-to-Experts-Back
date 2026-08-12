@@ -68,3 +68,4 @@ pgadmin/sessions/
 
 # Workflows temporarily
 # .github/workflows/deploy-railway.yml
+.github/workflows/lint-build-test.yml
